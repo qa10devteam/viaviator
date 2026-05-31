@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json.schemastore.org/style-dictionary-tokens.json",
+  "color": {
+    "brand": {
+      "red":     { "$value": "#F13223", "$type": "color", "$description": "Via Viator primary red — logo, CTA, accents" },
+      "red-700": { "$value": "#C2261A", "$type": "color", "$description": "Darker red for hover/active states" },
+      "red-100": { "$value": "#FCDAD6", "$type": "color", "$description": "Light red tint — chips, focus rings" },
+      "red-50":  { "$value": "#FEF1EF", "$type": "color", "$description": "Faintest red — section backgrounds" },
+      "black":   { "$value": "#000000", "$type": "color" },
+      "white":   { "$value": "#FFFFFF", "$type": "color" }
+    },
+    "bg": {
+      "page":     { "$value": "#FFFFFF", "$type": "color" },
+      "elevated": { "$value": "#FAFAFA", "$type": "color" },
+      "inverse":  { "$value": "#0A0A0A", "$type": "color" },
+      "surface":  { "$value": "#F5F5F5", "$type": "color" }
+    },
+    "fg": {
+      "primary":   { "$value": "#0A0A0A", "$type": "color" },
+      "secondary": { "$value": "#525252", "$type": "color" },
+      "muted":     { "$value": "#737373", "$type": "color" },
+      "inverse":   { "$value": "#FAFAFA", "$type": "color" },
+      "accent":    { "$value": "#C2261A", "$type": "color", "$description": "Foreground accent (text on white). WCAG AA: 6.45:1. Original #F13223 fails normal-text 4.5:1." }
+    },
+    "border": {
+      "subtle": { "$value": "#E5E5E5", "$type": "color" },
+      "strong": { "$value": "#A3A3A3", "$type": "color" },
+      "brand":  { "$value": "#F13223", "$type": "color" }
+    },
+    "state": {
+      "success": { "$value": "#0F7A3D", "$type": "color" },
+      "warning": { "$value": "#B4530A", "$type": "color" },
+      "danger":  { "$value": "#B4170A", "$type": "color" },
+      "info":    { "$value": "#1E58D9", "$type": "color" }
+    },
+    "segment": {
+      "korpo":       { "$value": "#1E58D9", "$type": "color", "$description": "Transfery korporacyjne" },
+      "pielgrzymki": { "$value": "#7A4CB0", "$type": "color", "$description": "Pielgrzymki i wyjazdy religijne" },
+      "dostepny":    { "$value": "#0F7A3D", "$type": "color", "$description": "Transport dostępny / PRM" },
+      "rodzinne":    { "$value": "#D97706", "$type": "color", "$description": "Wyjazdy rodzinne i grupy" },
+      "wynajem":     { "$value": "#525252", "$type": "color", "$description": "Wynajem z kierowcą" },
+      "eventy":      { "$value": "#F13223", "$type": "color", "$description": "Eventy i okolicznościowe" }
+    }
+  },
+  "typography": {
+    "font": {
+      "family": {
+        "display": { "$value": "'Bricolage Grotesque Variable', 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif", "$type": "string" },
+        "body":    { "$value": "'Bricolage Grotesque Variable', 'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif", "$type": "string" },
+        "mono":    { "$value": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace", "$type": "string" }
+      },
+      "weight": {
+        "regular":  { "$value": 400, "$type": "fontWeight" },
+        "medium":   { "$value": 500, "$type": "fontWeight" },
+        "semibold": { "$value": 600, "$type": "fontWeight" },
+        "bold":     { "$value": 700, "$type": "fontWeight" },
+        "extrabold":{ "$value": 800, "$type": "fontWeight" }
+      },
+      "size": {
+        "xs":   { "$value": "12px", "$type": "dimension" },
+        "sm":   { "$value": "14px", "$type": "dimension" },
+        "base": { "$value": "16px", "$type": "dimension" },
+        "lg":   { "$value": "18px", "$type": "dimension" },
+        "xl":   { "$value": "20px", "$type": "dimension" },
+        "2xl":  { "$value": "24px", "$type": "dimension" },
+        "3xl":  { "$value": "30px", "$type": "dimension" },
+        "4xl":  { "$value": "36px", "$type": "dimension" },
+        "5xl":  { "$value": "48px", "$type": "dimension" },
+        "6xl":  { "$value": "60px", "$type": "dimension" },
+        "7xl":  { "$value": "72px", "$type": "dimension" },
+        "8xl":  { "$value": "96px", "$type": "dimension" }
+      }
+    },
+    "line": {
+      "height": {
+        "tight":   { "$value": 1.1,  "$type": "number" },
+        "snug":    { "$value": 1.25, "$type": "number" },
+        "normal":  { "$value": 1.5,  "$type": "number" },
+        "relaxed": { "$value": 1.65, "$type": "number" }
+      }
+    },
+    "letter": {
+      "spacing": {
+        "tight":  { "$value": "-0.02em", "$type": "dimension" },
+        "normal": { "$value": "0",       "$type": "dimension" },
+        "wide":   { "$value": "0.05em",  "$type": "dimension" },
+        "wider":  { "$value": "0.1em",   "$type": "dimension" }
+      }
+    }
+  },
+  "space": {
+    "0":  { "$value": "0",     "$type": "dimension" },
+    "1":  { "$value": "4px",   "$type": "dimension" },
+    "2":  { "$value": "8px",   "$type": "dimension" },
+    "3":  { "$value": "12px",  "$type": "dimension" },
+    "4":  { "$value": "16px",  "$type": "dimension" },
+    "5":  { "$value": "20px",  "$type": "dimension" },
+    "6":  { "$value": "24px",  "$type": "dimension" },
+    "8":  { "$value": "32px",  "$type": "dimension" },
+    "10": { "$value": "40px",  "$type": "dimension" },
+    "12": { "$value": "48px",  "$type": "dimension" },
+    "16": { "$value": "64px",  "$type": "dimension" },
+    "20": { "$value": "80px",  "$type": "dimension" },
+    "24": { "$value": "96px",  "$type": "dimension" },
+    "32": { "$value": "128px", "$type": "dimension" },
+    "40": { "$value": "160px", "$type": "dimension" }
+  },
+  "radius": {
+    "none": { "$value": "0",      "$type": "dimension" },
+    "sm":   { "$value": "4px",    "$type": "dimension" },
+    "md":   { "$value": "8px",    "$type": "dimension" },
+    "lg":   { "$value": "12px",   "$type": "dimension" },
+    "xl":   { "$value": "16px",   "$type": "dimension" },
+    "2xl":  { "$value": "24px",   "$type": "dimension" },
+    "full": { "$value": "9999px", "$type": "dimension" }
+  },
+  "shadow": {
+    "sm":  { "$value": "0 1px 2px 0 rgba(0, 0, 0, 0.04)",                                          "$type": "shadow" },
+    "md":  { "$value": "0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 4px 8px -2px rgba(0, 0, 0, 0.06)",   "$type": "shadow" },
+    "lg":  { "$value": "0 4px 8px -2px rgba(0, 0, 0, 0.08), 0 12px 24px -4px rgba(0, 0, 0, 0.08)", "$type": "shadow" },
+    "xl":  { "$value": "0 8px 16px -4px rgba(0, 0, 0, 0.10), 0 20px 40px -8px rgba(0, 0, 0, 0.10)","$type": "shadow" },
+    "2xl": { "$value": "0 16px 32px -8px rgba(0, 0, 0, 0.12), 0 32px 64px -16px rgba(0, 0, 0, 0.12)","$type": "shadow" }
+  },
+  "motion": {
+    "duration": {
+      "instant": { "$value": "75ms",  "$type": "duration" },
+      "fast":    { "$value": "150ms", "$type": "duration" },
+      "base":    { "$value": "250ms", "$type": "duration" },
+      "slow":    { "$value": "400ms", "$type": "duration" },
+      "slower":  { "$value": "600ms", "$type": "duration" }
+    },
+    "easing": {
+      "standard": { "$value": "cubic-bezier(0.2, 0, 0, 1)", "$type": "cubicBezier" },
+      "entrance": { "$value": "cubic-bezier(0, 0, 0.2, 1)", "$type": "cubicBezier" },
+      "exit":     { "$value": "cubic-bezier(0.4, 0, 1, 1)", "$type": "cubicBezier" }
+    }
+  },
+  "z": {
+    "behind":   { "$value": -1,  "$type": "number" },
+    "base":     { "$value": 0,   "$type": "number" },
+    "dropdown": { "$value": 10,  "$type": "number" },
+    "sticky":   { "$value": 100, "$type": "number" },
+    "header":   { "$value": 200, "$type": "number" },
+    "overlay":  { "$value": 300, "$type": "number" },
+    "modal":    { "$value": 400, "$type": "number" },
+    "popover":  { "$value": 500, "$type": "number" },
+    "toast":    { "$value": 600, "$type": "number" },
+    "tooltip":  { "$value": 700, "$type": "number" }
+  },
+  "container": {
+    "max-width": {
+      "prose":   { "$value": "65ch",   "$type": "dimension" },
+      "narrow":  { "$value": "640px",  "$type": "dimension" },
+      "default": { "$value": "1200px", "$type": "dimension" },
+      "wide":    { "$value": "1440px", "$type": "dimension" }
+    }
+  },
+  "breakpoint": {
+    "sm":  { "$value": "640px",  "$type": "dimension" },
+    "md":  { "$value": "768px",  "$type": "dimension" },
+    "lg":  { "$value": "1024px", "$type": "dimension" },
+    "xl":  { "$value": "1280px", "$type": "dimension" },
+    "2xl": { "$value": "1536px", "$type": "dimension" }
+  }
+}

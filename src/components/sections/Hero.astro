@@ -1,0 +1,247 @@
+---
+/**
+ * Hero — sekcja hero z headline, subhead, eyebrow i CTA.
+ * Dwukolumnowy layout (tekst + image), responsywny (mobile stack).
+ * Gradient overlay na image dla czytelności.
+ */
+
+import Container from "@components/ui/Container.astro";
+import Button from "@components/ui/Button.astro";
+import Icon from "@components/ui/Icon.astro";
+
+interface CtaProps {
+  label: string;
+  href: string;
+  ariaLabel?: string;
+  external?: boolean;
+}
+
+interface Props {
+  headline: string;
+  subhead?: string;
+  eyebrow?: string;
+  microcopy?: string;
+  image?: string;
+  imageAlt?: string;
+  primaryCta?: CtaProps;
+  secondaryCta?: CtaProps;
+  align?: "left" | "center";
+  tone?: "default" | "dark" | "elevated";
+  /** Czy ten Hero jest above-the-fold (pierwszy na stronie). */
+  priority?: boolean;
+}
+
+const {
+  headline,
+  subhead,
+  eyebrow,
+  microcopy,
+  image,
+  imageAlt = "",
+  primaryCta,
+  secondaryCta,
+  align = "left",
+  tone = "default",
+  priority = true,
+} = Astro.props;
+
+// WebP fallback: jeśli prop kończy się na .jpg → spróbuj WebP variant.
+// Wszystkie hero/services/fleet/brand-detail mają WebP w public/images/.
+const webpImage =
+  image && image.endsWith(".jpg")
+    ? image.replace(/\.jpg$/, ".webp")
+    : undefined;
+---
+
+<section
+  class:list={[
+    "vv-hero",
+    `vv-hero--${tone}`,
+    `vv-hero--align-${align}`,
+    image ? "vv-hero--has-image" : null,
+  ]}
+>
+  <Container size="wide" class="vv-hero__inner">
+    <div class="vv-hero__content">
+      {eyebrow && <p class="vv-hero__eyebrow eyebrow">{eyebrow}</p>}
+      <h1 class="vv-hero__headline display">{headline}</h1>
+      {subhead && <p class="vv-hero__subhead lede">{subhead}</p>}
+      {
+        (primaryCta || secondaryCta) && (
+          <div class="vv-hero__ctas">
+            {primaryCta && (
+              <Button
+                variant="primary"
+                size="lg"
+                href={primaryCta.href}
+                external={primaryCta.external}
+                ariaLabel={primaryCta.ariaLabel}
+              >
+                <span>{primaryCta.label}</span>
+                <Icon name="arrow-right" size={18} />
+              </Button>
+            )}
+            {secondaryCta && (
+              <Button
+                variant={tone === "dark" ? "ghost" : "secondary"}
+                size="lg"
+                href={secondaryCta.href}
+                external={secondaryCta.external}
+                ariaLabel={secondaryCta.ariaLabel}
+              >
+                {secondaryCta.label}
+              </Button>
+            )}
+          </div>
+        )
+      }
+      {microcopy && <p class="vv-hero__microcopy">{microcopy}</p>}
+    </div>
+
+    {
+      image && (
+        <div class="vv-hero__media">
+          <picture>
+            {webpImage && (
+              <source srcset={webpImage} type="image/webp" />
+            )}
+            <img
+              src={image}
+              alt={imageAlt}
+              class="vv-hero__image"
+              loading={priority ? "eager" : "lazy"}
+              decoding={priority ? "sync" : "async"}
+              fetchpriority={priority ? "high" : "auto"}
+              width="1600"
+              height="1280"
+            />
+          </picture>
+          <div class="vv-hero__overlay" aria-hidden="true" />
+        </div>
+      )
+    }
+  </Container>
+</section>
+
+<style>
+  .vv-hero {
+    position: relative;
+    padding-block: var(--vv-space-16) var(--vv-space-20);
+    overflow: hidden;
+  }
+
+  @media (max-width: 768px) {
+    .vv-hero {
+      padding-block: var(--vv-space-10) var(--vv-space-12);
+    }
+  }
+
+  .vv-hero--default {
+    background-color: var(--vv-color-bg-page);
+  }
+
+  .vv-hero--elevated {
+    background-color: var(--vv-color-bg-elevated);
+  }
+
+  .vv-hero--dark {
+    background-color: var(--vv-color-bg-inverse);
+    color: var(--vv-color-fg-inverse);
+  }
+
+  .vv-hero__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-10);
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    .vv-hero--has-image .vv-hero__inner {
+      grid-template-columns: 1.1fr 1fr;
+      gap: var(--vv-space-12);
+    }
+  }
+
+  /* ---- Content ---- */
+
+  .vv-hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-5);
+    max-width: 640px;
+  }
+
+  .vv-hero--align-center .vv-hero__content {
+    margin-inline: auto;
+    text-align: center;
+    align-items: center;
+  }
+
+  .vv-hero__eyebrow {
+    margin: 0;
+  }
+
+  .vv-hero__headline {
+    margin: 0;
+  }
+
+  .vv-hero__subhead {
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  .vv-hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+    margin-top: var(--vv-space-2);
+  }
+
+  .vv-hero__microcopy {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  .vv-hero--dark .vv-hero__microcopy {
+    color: var(--vv-color-border-strong);
+  }
+
+  /* ---- Media ---- */
+
+  .vv-hero__media {
+    position: relative;
+    border-radius: var(--vv-radius-xl);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background-color: var(--vv-color-bg-elevated);
+    box-shadow: var(--vv-shadow-xl);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-hero__media {
+      aspect-ratio: 5 / 4;
+    }
+  }
+
+  .vv-hero__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .vv-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      transparent 60%,
+      color-mix(in srgb, var(--vv-color-brand-black) 18%, transparent) 100%
+    );
+    pointer-events: none;
+  }
+</style>

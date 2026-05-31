@@ -1,0 +1,104 @@
+---
+/**
+ * Icon — inline SVG ze stałą paletą (Lucide-like), stroke=currentColor.
+ * Brak external HTTP, brak fetcha — wszystkie ścieżki SVG zapisane w mapie.
+ *
+ * Dodawanie nowej ikony: dorzucasz wpis do `ICONS` (path lub paths jako array).
+ * Stroke + fill kontroluje konsument przez `color` na rodzicu.
+ *
+ * Typ `IconName` re-eksportowany dla konsumentów (FeatureGrid, SegmentGrid) —
+ * Astro nie wspiera bezpośredniego `export type` z frontmattera, więc używamy
+ * deklaracji wewnątrz frontmattera + eksport przez `Props.name` literal union.
+ */
+
+export type IconName = "phone" | "mail" | "arrow-right" | "arrow-up-right" | "chevron-down" | "chevron-up" | "menu" | "close" | "check" | "globe" | "map-pin" | "clock" | "shield-check" | "users" | "truck" | "wheelchair" | "church" | "sparkles" | "tent" | "briefcase" | "key" | "candle" | "external-link" | "info";
+
+interface Props {
+  name: IconName;
+  size?: number;
+  class?: string;
+  ariaLabel?: string;
+  decorative?: boolean;
+  strokeWidth?: number;
+  id?: string;
+}
+
+const ICONS: Record<IconName, string> = {
+  phone:
+    '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/>',
+  mail:
+    '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>',
+  "arrow-right": '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  "arrow-up-right": '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+  "chevron-down": '<path d="m6 9 6 6 6-6"/>',
+  "chevron-up": '<path d="m18 15-6-6-6 6"/>',
+  menu: '<line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>',
+  close: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  globe:
+    '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  "map-pin":
+    '<path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/>',
+  clock:
+    '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  "shield-check":
+    '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+  users:
+    '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  truck:
+    '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+  wheelchair:
+    '<circle cx="12" cy="4" r="2"/><path d="M10 6v6h6l3 4"/><path d="M11 12a6 6 0 1 0 6 6"/>',
+  church:
+    '<path d="M12 2v6M9 5h6"/><path d="M18 22V8L12 4 6 8v14"/><path d="M10 14h4"/><path d="M2 22h20"/>',
+  sparkles:
+    '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
+  tent:
+    '<path d="M3.5 21 12 3l8.5 18"/><path d="M12 3v18"/><path d="M3.5 21H8l4-9 4 9h4.5"/>',
+  briefcase:
+    '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>',
+  key: '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+  candle:
+    '<path d="M12 3c0 2-2 2-2 4s2 2 2 4-2 2-2 4 2 2 2 4"/><rect x="7" y="13" width="10" height="8" rx="1"/>',
+  "external-link":
+    '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+  info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+};
+
+const {
+  name,
+  size = 20,
+  class: extraClass = "",
+  ariaLabel,
+  decorative = !ariaLabel,
+  strokeWidth = 1.75,
+} = Astro.props;
+
+const path = ICONS[name];
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  class:list={["vv-icon", extraClass]}
+  aria-hidden={decorative ? "true" : undefined}
+  aria-label={!decorative ? ariaLabel : undefined}
+  role={!decorative ? "img" : undefined}
+  focusable="false"
+  set:html={path}
+/>
+
+<style>
+  .vv-icon {
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+  }
+</style>

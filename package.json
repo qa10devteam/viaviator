@@ -1,0 +1,49 @@
+{
+  "name": "viaviator",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Via Viator sp. z o.o. — przewóz osób w południowej Polsce. Strona dwujęzyczna PL+EN. Wykonawca: QA10 (qa10.io), pieczęć QA10 Quality Seal v1.0.",
+  "homepage": "https://viaviator.pl",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qa10devteam/viaviator.git"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "npm run tokens:build && astro dev",
+    "build": "npm run tokens:build && astro check && astro build",
+    "preview": "astro preview",
+    "tokens:build": "style-dictionary build --config tokens/style-dictionary.config.mjs",
+    "tokens:watch": "style-dictionary build --config tokens/style-dictionary.config.mjs --watch",
+    "lint": "astro check",
+    "format": "prettier --write \"src/**/*.{astro,ts,tsx,css,md,mdx}\""
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^5.0.4",
+    "@astrojs/partytown": "^2.1.4",
+    "@astrojs/react": "^5.0.4",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.2",
+    "@astrojs/vercel": "^10.0.7",
+    "@aws-sdk/client-ses": "^3.1055.0",
+    "@fontsource-variable/bricolage-grotesque": "^5.2.8",
+    "@fontsource-variable/inter": "^5.2.8",
+    "astro": "^6.2.1",
+    "motion": "^12.38.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "prettier": "^3.4.0",
+    "prettier-plugin-astro": "^0.14.0",
+    "style-dictionary": "^4.4.0",
+    "typescript": "^5.7.0"
+  }
+}

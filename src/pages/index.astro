@@ -1,0 +1,405 @@
+---
+/**
+ * Homepage PL — `/`
+ *
+ * Sekcje:
+ *  1. Hero — Licheń + Trafic, dict.hero.homeHeadline/homeSubhead, primary→/kontakt, secondary→#dla-kogo
+ *  2. „Co robimy" — dict.home.sectionWhatWeDo
+ *  3. „Dla kogo jeździmy" — SegmentGrid (6 kart, id=dla-kogo)
+ *  4. „Nasza flota" — Trafic + Master (custom 2-card grid z obrazami)
+ *  5. „Dlaczego my" — FeatureGrid 4 punkty z dict.home.sectionWhyUs.points
+ *  6. „Zaufali nam" — placeholder strip z dict.home.sectionTrust
+ *  7. CTA finalna — CTASection tone="brand"
+ *
+ * SEO:
+ *  - title/description z seoMap.home (titlePl/descriptionPl)
+ *  - canonical via buildCanonical
+ *  - alternates hreflang via buildAlternates
+ *  - ogImage = /images/hero/hero-01-lichen-trafic.jpg (brak /og/*.jpg)
+ *  - JSON-LD graph: organizationSchema + websiteSchema + localBusinessSchema
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Card from "@components/ui/Card.astro";
+import Hero from "@components/sections/Hero.astro";
+import SegmentGrid from "@components/sections/SegmentGrid.astro";
+import FeatureGrid from "@components/sections/FeatureGrid.astro";
+import CTASection from "@components/sections/CTASection.astro";
+import { getDictionary } from "@i18n/index";
+import { company } from "@data/company";
+import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
+import {
+  organizationSchema,
+  websiteSchema,
+  localBusinessSchema,
+} from "@lib/schema";
+
+const locale = "pl" as const;
+const dict = getDictionary(locale);
+const seo = seoMap.home;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("home", locale, SITE);
+const alternates = buildAlternates("home", SITE);
+
+// JSON-LD graph dla home (Organization + LocalBusiness + WebSite — graf bazowy)
+const jsonLd: Record<string, unknown>[] = [
+  organizationSchema(SITE),
+  websiteSchema(SITE),
+  localBusinessSchema(SITE),
+];
+
+// Hero image (fallback dla og:image — /og/home.jpg nie istnieje w v1.0)
+const heroImage = "/images/hero/hero-01-lichen-trafic.jpg";
+const heroImageAlt =
+  "Renault Trafic Via Viator przed bazyliką w Licheniu — bus na pielgrzymki.";
+
+// Feature points dla „Dlaczego my" — 4 punkty z dict.home.sectionWhyUs.points
+// + przypisane ikony (mapowanie ręczne, zgodne z briefem: clock, map-pin, shield-check, phone)
+const whyUsIcons = ["clock", "map-pin", "shield-check", "phone"] as const;
+const whyUsItems = dict.home.sectionWhyUs.points.map((p, i) => ({
+  icon: whyUsIcons[i],
+  title: p.title,
+  body: p.body,
+}));
+
+// Fleet vehicles — Trafic + Master z company.fleet (pierwsze 2)
+// Dla każdego: model + dict.home.sectionFleet.vehicles.{traficName, traficDesc, masterName, masterDesc}
+const fleetCards = [
+  {
+    name: dict.home.sectionFleet.vehicles.traficName,
+    desc: dict.home.sectionFleet.vehicles.traficDesc,
+    image: "/images/fleet/fleet-trafic-front.jpg",
+    imageAlt: "Renault Trafic Via Viator — bus osobowy 8-miejscowy.",
+    seats: company.fleet[0]?.seats ?? 8,
+  },
+  {
+    name: dict.home.sectionFleet.vehicles.masterName,
+    desc: dict.home.sectionFleet.vehicles.masterDesc,
+    image: "/images/fleet/fleet-master-front.jpg",
+    imageAlt: "Renault Master Via Viator — cargo/osobowy do wynajmu.",
+    seats: company.fleet[1]?.seats ?? 8,
+  },
+];
+---
+
+<BaseLayout
+  title={seo.titlePl}
+  description={seo.descriptionPl}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={`${SITE}${heroImage}`}
+  jsonLd={jsonLd}
+  bodyClass="page-home"
+>
+  {/* 1. HERO */}
+  <Hero
+    headline={dict.hero.homeHeadline}
+    subhead={dict.hero.homeSubhead}
+    microcopy={dict.hero.homeMicrocopy}
+    image={heroImage}
+    imageAlt={heroImageAlt}
+    primaryCta={{
+      label: dict.hero.homeCtaPrimary,
+      href: "/kontakt",
+    }}
+    secondaryCta={{
+      label: dict.hero.homeCtaSecondary,
+      href: "#dla-kogo",
+    }}
+    align="left"
+    tone="default"
+    priority={true}
+  />
+
+  {/* 2. „Co robimy" */}
+  <Section tone="default" ariaLabelledby="home-what-title">
+    <Container size="default">
+      <div class="vv-home-what">
+        <h2 id="home-what-title" class="vv-home-what__title">
+          {dict.home.sectionWhatWeDo.title}
+        </h2>
+        <p class="vv-home-what__body">{dict.home.sectionWhatWeDo.body}</p>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 3. „Dla kogo jeździmy" — SegmentGrid */}
+  <Section tone="elevated" id="dla-kogo" ariaLabelledby="home-segments-title">
+    <Container size="wide">
+      <div class="vv-home-segments__head">
+        <h2 id="home-segments-title" class="vv-home-segments__title">
+          {dict.home.sectionForWhom.title}
+        </h2>
+        <p class="vv-home-segments__body">{dict.home.sectionForWhom.body}</p>
+        <p class="vv-home-segments__callout">
+          {dict.home.sectionForWhom.segmentsCallout}
+        </p>
+      </div>
+      <SegmentGrid locale={locale} />
+    </Container>
+  </Section>
+
+  {/* 4. „Nasza flota" — 2 karty Trafic + Master */}
+  <Section tone="default" ariaLabelledby="home-fleet-title">
+    <Container size="default">
+      <div class="vv-home-fleet__head">
+        <h2 id="home-fleet-title" class="vv-home-fleet__title">
+          {dict.home.sectionFleet.title}
+        </h2>
+        <p class="vv-home-fleet__body">{dict.home.sectionFleet.body}</p>
+      </div>
+      <ul class="vv-home-fleet__grid" role="list">
+        {
+          fleetCards.map((v) => (
+            <li>
+              <Card tone="default" class="vv-home-fleet__card">
+                <div class="vv-home-fleet__media">
+                  <img
+                    src={v.image}
+                    alt={v.imageAlt}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div class="vv-home-fleet__body-wrap">
+                  <h3 class="vv-home-fleet__name">{v.name}</h3>
+                  <p class="vv-home-fleet__desc">{v.desc}</p>
+                </div>
+              </Card>
+            </li>
+          ))
+        }
+      </ul>
+    </Container>
+  </Section>
+
+  {/* 5. „Dlaczego my" — FeatureGrid */}
+  <Section tone="elevated" ariaLabelledby="home-whyus-title">
+    <Container size="default">
+      <h2 id="home-whyus-title" class="vv-home-whyus__title">
+        {dict.home.sectionWhyUs.title}
+      </h2>
+      <FeatureGrid items={whyUsItems} columns={2} tone="default" />
+    </Container>
+  </Section>
+
+  {/* 6. „Zaufali nam" — placeholder strip */}
+  <Section tone="default" tight ariaLabelledby="home-trust-title">
+    <Container size="narrow">
+      <div class="vv-home-trust">
+        <h2 id="home-trust-title" class="vv-home-trust__title">
+          {dict.home.sectionTrust.title}
+        </h2>
+        <p class="vv-home-trust__body">{dict.home.sectionTrust.body}</p>
+        <p class="vv-home-trust__placeholder">
+          {dict.home.sectionTrust.placeholder}
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 7. CTA finalna */}
+  <CTASection
+    tone="brand"
+    title={dict.home.sectionContactTeaser.title}
+    body={dict.home.sectionContactTeaser.body}
+    primaryCta={{
+      label: dict.cta.requestQuote,
+      href: "/kontakt",
+    }}
+    secondaryCta={{
+      label: dict.cta.callNow,
+      href: company.phoneHref,
+    }}
+    align="center"
+  />
+</BaseLayout>
+
+<style>
+  /* „Co robimy" */
+  .vv-home-what {
+    max-width: 65ch;
+  }
+
+  .vv-home-what__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 4vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    margin: 0 0 var(--vv-space-5) 0;
+    color: var(--vv-color-fg-primary);
+    text-wrap: balance;
+  }
+
+  .vv-home-what__body {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* „Dla kogo" — head */
+  .vv-home-segments__head {
+    max-width: 70ch;
+    margin: 0 0 var(--vv-space-10) 0;
+  }
+
+  .vv-home-segments__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 4vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    margin: 0 0 var(--vv-space-4) 0;
+    color: var(--vv-color-fg-primary);
+    text-wrap: balance;
+  }
+
+  .vv-home-segments__body {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0 0 var(--vv-space-4) 0;
+  }
+
+  .vv-home-segments__callout {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-base);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-brand-red-700);
+    margin: 0;
+  }
+
+  /* Flota */
+  .vv-home-fleet__head {
+    max-width: 65ch;
+    margin: 0 0 var(--vv-space-10) 0;
+  }
+
+  .vv-home-fleet__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 4vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    margin: 0 0 var(--vv-space-4) 0;
+    color: var(--vv-color-fg-primary);
+    text-wrap: balance;
+  }
+
+  .vv-home-fleet__body {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+  }
+
+  .vv-home-fleet__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--vv-space-6);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .vv-home-fleet__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .vv-home-fleet__card {
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    gap: 0;
+  }
+
+  .vv-home-fleet__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background-color: var(--vv-color-bg-elevated);
+  }
+
+  .vv-home-fleet__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .vv-home-fleet__body-wrap {
+    padding: var(--vv-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-home-fleet__name {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-2xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+    margin: 0;
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-home-fleet__desc {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+  }
+
+  /* Dlaczego my */
+  .vv-home-whyus__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 4vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    margin: 0 0 var(--vv-space-10) 0;
+    color: var(--vv-color-fg-primary);
+    text-wrap: balance;
+  }
+
+  /* Trust */
+  .vv-home-trust {
+    text-align: center;
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+
+  .vv-home-trust__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-2xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+    margin: 0 0 var(--vv-space-4) 0;
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-home-trust__body {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0 0 var(--vv-space-3) 0;
+  }
+
+  .vv-home-trust__placeholder {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    font-style: italic;
+    margin: 0;
+  }
+</style>

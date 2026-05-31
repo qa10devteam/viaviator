@@ -1,0 +1,44 @@
+---
+/**
+ * StructuredData.astro — wstrzykuje JSON-LD do <head>.
+ *
+ * Użycie:
+ *   <StructuredData data={organizationSchema(site.href)} />
+ *   <StructuredData data={[orgSchema, websiteSchema, breadcrumbSchema]} />
+ *
+ * Konwencja:
+ *  - Pojedynczy schema obiekt → jeden <script type="application/ld+json">.
+ *  - Array schemas → osobny <script> per obiekt (lepsze diagnostyki w Rich Results
+ *    Test niż graf z @graph; każdy schema może być testowany indywidualnie).
+ *  - `set:html` (nie `set:text`) — JSON.stringify produkuje czysty string,
+ *    Astro nie escape'uje JSON-LD wewnątrz <script>, ale escapowanie znaków
+ *    `</script>` w wartościach descriptions jest zabezpieczane przez sanityze.
+ *
+ * Bezpieczeństwo: JSON.stringify nie pozwoli na XSS w danych statycznych,
+ * a wszystkie dane wejściowe pochodzą z plików statycznych (company.ts, seo.ts).
+ * Dla danych user-input — sanitizować PRZED przekazaniem do data prop.
+ */
+
+interface Props {
+  /** Pojedynczy schema obiekt albo tablica obiektów schema. */
+  readonly data: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const { data } = Astro.props;
+
+/**
+ * Sanityzuje string żeby nie zamknął <script> tagu.
+ * Edge case: jeśli description zawiera "</script>" — JSON.stringify
+ * NIE escape'uje tego (to valid JSON), ale parser HTML zinterpretuje to jako
+ * zamknięcie tagu. Replace na "<\\/script>" (escape forward slash) rozwiązuje.
+ */
+function safeJson(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
+const schemas = Array.isArray(data) ? data : [data];
+---
+
+{schemas.map((schema) => (
+  <script type="application/ld+json" set:html={safeJson(schema)} />
+))}

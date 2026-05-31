@@ -1,0 +1,155 @@
+---
+/**
+ * ContactInfo — blok kontaktowy: telefon (tel:), email (mailto:), adres, godziny.
+ * Telefon i email klikalne. Adres: jeśli company.address === null → fallback z i18n.
+ */
+
+import { getDictionary, type Locale } from "@i18n/index";
+import { company } from "@data/company";
+import Icon from "@components/ui/Icon.astro";
+
+interface Props {
+  locale: Locale;
+  /** Czy renderować jako horizontal grid (3 kolumny) zamiast vertical stack. */
+  horizontal?: boolean;
+  class?: string;
+}
+
+const {
+  locale,
+  horizontal = false,
+  class: extraClass = "",
+} = Astro.props;
+
+const dict = getDictionary(locale);
+
+const address = company.address ?? dict.contact.addressValue;
+---
+
+<dl class:list={["vv-contact", horizontal ? "vv-contact--horizontal" : null, extraClass]}>
+  <div class="vv-contact__item">
+    <dt class="vv-contact__label">
+      <Icon name="phone" size={16} />
+      <span>{dict.contact.phoneLabel}</span>
+    </dt>
+    <dd class="vv-contact__value">
+      <a
+        href={company.phoneHref}
+        class="vv-contact__link"
+        aria-label={`${dict.contact.phoneLabel}: ${company.phoneDisplay}`}
+      >
+        {company.phoneDisplay}
+      </a>
+      <span class="vv-contact__meta">{dict.contact.phoneHours}</span>
+    </dd>
+  </div>
+
+  <div class="vv-contact__item">
+    <dt class="vv-contact__label">
+      <Icon name="mail" size={16} />
+      <span>{dict.contact.emailLabel}</span>
+    </dt>
+    <dd class="vv-contact__value">
+      <a
+        href={`mailto:${company.emailContact}`}
+        class="vv-contact__link"
+        aria-label={`${dict.contact.emailLabel}: ${company.emailContact}`}
+      >
+        {company.emailContact}
+      </a>
+      <span class="vv-contact__meta">{dict.contact.emailHours}</span>
+    </dd>
+  </div>
+
+  <div class="vv-contact__item">
+    <dt class="vv-contact__label">
+      <Icon name="map-pin" size={16} />
+      <span>{dict.contact.addressLabel}</span>
+    </dt>
+    <dd class="vv-contact__value">
+      <span class="vv-contact__address">{address}</span>
+      <span class="vv-contact__meta">
+        {company.region.join(" · ")}
+      </span>
+    </dd>
+  </div>
+</dl>
+
+<style>
+  .vv-contact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-6);
+    margin: 0;
+    padding: 0;
+  }
+
+  .vv-contact--horizontal {
+    flex-direction: column;
+  }
+
+  @media (min-width: 768px) {
+    .vv-contact--horizontal {
+      flex-direction: row;
+      gap: var(--vv-space-8);
+    }
+    .vv-contact--horizontal .vv-contact__item {
+      flex: 1;
+    }
+  }
+
+  .vv-contact__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+  }
+
+  .vv-contact__label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-2);
+    margin: 0;
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xs);
+    font-weight: var(--vv-typography-font-weight-bold);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    color: var(--vv-color-fg-muted);
+  }
+
+  .vv-contact__value {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-1);
+    margin: 0;
+  }
+
+  .vv-contact__link {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    text-decoration: none;
+    line-height: var(--vv-typography-line-height-snug);
+    transition: color var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-contact__link:hover,
+  .vv-contact__link:focus-visible {
+    color: var(--vv-color-fg-accent);
+  }
+
+  .vv-contact__address {
+    font-size: var(--vv-typography-font-size-base);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-contact__meta {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+</style>

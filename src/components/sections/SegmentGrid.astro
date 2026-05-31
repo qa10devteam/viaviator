@@ -1,0 +1,195 @@
+---
+/**
+ * SegmentGrid — grid 6 segmentów (P1-P6).
+ * Każda karta: kolor accent z segment.color, nazwa, shortDesc, time-to-quote badge,
+ * link do /{slug} (PL) lub /en/{slugEn}.
+ *
+ * Wymaga `segments` + `getDictionary(locale)` — wszystko z @data + @i18n.
+ */
+
+import { segments } from "@data/segments";
+import { getDictionary, type Locale } from "@i18n/index";
+import Card from "@components/ui/Card.astro";
+import Badge from "@components/ui/Badge.astro";
+import Icon from "@components/ui/Icon.astro";
+import type { IconName } from "@components/ui/Icon.astro";
+
+interface Props {
+  locale: Locale;
+  /** Pokaż wszystkie 6, czy filtruj */
+  filterPersonaIds?: ("P1" | "P2" | "P3" | "P4" | "P5" | "P6")[];
+  class?: string;
+}
+
+const { locale, filterPersonaIds, class: extraClass = "" } = Astro.props;
+const dict = getDictionary(locale);
+
+const items = filterPersonaIds
+  ? segments.filter((s) => filterPersonaIds.includes(s.personaId))
+  : segments;
+
+function tKey(path: string): string {
+  const v = path
+    .split(".")
+    .reduce<unknown>(
+      (acc, k) =>
+        acc && typeof acc === "object"
+          ? (acc as Record<string, unknown>)[k]
+          : undefined,
+      dict,
+    );
+  return typeof v === "string" ? v : path;
+}
+
+// Mapa iconKeyword → IconName (z Icon.astro)
+const ICON_MAP: Record<string, IconName> = {
+  "briefcase-airport": "briefcase",
+  "candle-route": "church",
+  "wheelchair-care": "wheelchair",
+  "family-suitcase": "users",
+  "key-van": "key",
+  "tent-popcorn": "tent",
+};
+
+// CTA label — z słownika cta (PL: „Dowiedz się więcej", EN: „Learn more")
+const learnMore = dict.cta.learnMore;
+---
+
+<ul class:list={["vv-segments", extraClass]} role="list">
+  {
+    items.map((seg) => {
+      const href = locale === "pl" ? `/${seg.slug}` : `/en/${seg.slugEn}`;
+      const name = tKey(seg.nameKey);
+      const shortDesc = tKey(seg.shortDescKey);
+      const iconName = ICON_MAP[seg.iconKeyword];
+
+      return (
+        <li>
+          <Card
+            href={href}
+            interactive
+            tone="default"
+            accentColor={seg.color}
+            class="vv-segments__card"
+            ariaLabel={`${name} — ${shortDesc}`}
+          >
+            <div class="vv-segments__head">
+              {iconName && (
+                <span
+                  class="vv-segments__icon"
+                  style={`--vv-seg-color:${seg.color}`}
+                  aria-hidden="true"
+                >
+                  <Icon name={iconName} size={24} />
+                </span>
+              )}
+              <Badge size="sm" tone="default" accentColor={seg.color}>
+                <Icon name="clock" size={12} />
+                <span>{seg.timeToQuote}</span>
+              </Badge>
+            </div>
+
+            <h3 class="vv-segments__title">{name}</h3>
+            <p class="vv-segments__desc">{shortDesc}</p>
+
+            <span
+              class="vv-segments__cta"
+              style={`--vv-seg-color:${seg.color}`}
+            >
+              <span>{learnMore}</span>
+              <Icon name="arrow-right" size={16} />
+            </span>
+          </Card>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .vv-segments {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 640px) {
+    .vv-segments {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-segments {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .vv-segments__card {
+    height: 100%;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-segments__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-segments__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--vv-radius-md);
+    background-color: color-mix(in srgb, var(--vv-seg-color) 12%, transparent);
+    color: var(--vv-seg-color);
+  }
+
+  .vv-segments__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+  }
+
+  .vv-segments__desc {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .vv-segments__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-2);
+    /* WCAG 1.4.3 AA: niektóre segment colors (#D97706 rodzinne 3.18:1,
+       #F13223 eventy 4.42:1) failują 4.5:1 dla tekstu sm semibold na białym.
+       Tekst CTA = primary fg; akcent segmentowy zostaje przez ikonę chevron
+       (non-text 3:1) + left-border w Card. */
+    color: var(--vv-color-fg-primary);
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-sm);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    margin-top: auto;
+    transition: gap var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-segments__cta :global(.vv-icon) {
+    color: var(--vv-seg-color);
+  }
+
+  .vv-segments__card:hover .vv-segments__cta,
+  .vv-segments__card:focus-visible .vv-segments__cta {
+    gap: var(--vv-space-3);
+  }
+</style>

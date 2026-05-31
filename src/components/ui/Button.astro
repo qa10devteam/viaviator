@@ -1,0 +1,224 @@
+---
+/**
+ * Button — Astro-native (nie React island). Renderuje <a> jeśli href, inaczej <button>.
+ * Cztery warianty: primary (czerwone CTA), secondary (outline), ghost (transparent),
+ * link (tekst z underline).
+ *
+ * A11y: focus-visible ring z reset.css; disabled stan dla button.
+ */
+
+interface Props {
+  variant: "primary" | "secondary" | "ghost" | "link";
+  size?: "sm" | "md" | "lg";
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  as?: "a" | "button";
+  disabled?: boolean;
+  external?: boolean;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaControls?: string;
+  ariaExpanded?: boolean;
+  ariaPressed?: boolean;
+  name?: string;
+  value?: string;
+  fullWidth?: boolean;
+}
+
+const {
+  variant,
+  size = "md",
+  href,
+  type = "button",
+  as,
+  disabled = false,
+  external = false,
+  class: extraClass = "",
+  id,
+  ariaLabel,
+  ariaControls,
+  ariaExpanded,
+  ariaPressed,
+  name,
+  value,
+  fullWidth = false,
+} = Astro.props;
+
+const Tag = as ?? (href ? "a" : "button");
+
+const baseClasses = [
+  "vv-btn",
+  `vv-btn--${variant}`,
+  `vv-btn--size-${size}`,
+  fullWidth ? "vv-btn--full" : null,
+  extraClass,
+];
+
+const rel = external ? "noopener noreferrer" : undefined;
+const target = external ? "_blank" : undefined;
+---
+
+{
+  Tag === "a" ? (
+    <a
+      class:list={baseClasses}
+      href={href}
+      id={id}
+      aria-label={ariaLabel}
+      aria-controls={ariaControls}
+      aria-expanded={ariaExpanded}
+      aria-pressed={ariaPressed}
+      rel={rel}
+      target={target}
+      data-disabled={disabled ? "true" : undefined}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button
+      class:list={baseClasses}
+      type={type}
+      id={id}
+      aria-label={ariaLabel}
+      aria-controls={ariaControls}
+      aria-expanded={ariaExpanded}
+      aria-pressed={ariaPressed}
+      disabled={disabled}
+      name={name}
+      value={value}
+    >
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .vv-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--vv-space-2);
+    font-family: var(--vv-typography-font-family-display);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    line-height: var(--vv-typography-line-height-snug);
+    text-decoration: none;
+    border-radius: var(--vv-radius-md);
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition:
+      background-color var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      color var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      border-color var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      transform var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      box-shadow var(--vv-motion-duration-fast) var(--vv-motion-easing-standard);
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .vv-btn--full {
+    width: 100%;
+  }
+
+  /* ------- Sizes ------------------------------------------------------ */
+
+  .vv-btn--size-sm {
+    font-size: var(--vv-typography-font-size-sm);
+    padding: var(--vv-space-2) var(--vv-space-4);
+    min-height: 36px;
+  }
+
+  .vv-btn--size-md {
+    font-size: var(--vv-typography-font-size-base);
+    padding: var(--vv-space-3) var(--vv-space-5);
+    min-height: 44px;
+  }
+
+  .vv-btn--size-lg {
+    font-size: var(--vv-typography-font-size-lg);
+    padding: var(--vv-space-4) var(--vv-space-6);
+    min-height: 52px;
+  }
+
+  /* ------- Variant: primary ------------------------------------------ */
+
+  /* WCAG 1.4.3 AA: white na brand-red (#F13223) = 4.42:1 (fail dla button text);
+     brand-red-700 (#C2261A) na white = 6.45:1 — wszystkie rozmiary OK.
+     Hover state musi też zachować kontrast — używamy nieco ciemniejszego mix
+     (red-700 zmieszany z czarnym 12% → ~#A92117 → 7.4:1).
+     Visible state change zachowany przez translateY + shadow + lekkie darkening. */
+  .vv-btn--primary {
+    background-color: var(--vv-color-brand-red-700);
+    color: var(--vv-color-brand-white);
+    border-color: var(--vv-color-brand-red-700);
+  }
+
+  .vv-btn--primary:hover,
+  .vv-btn--primary:focus-visible {
+    background-color: color-mix(in srgb, var(--vv-color-brand-red-700) 88%, #000);
+    border-color: color-mix(in srgb, var(--vv-color-brand-red-700) 88%, #000);
+    transform: translateY(-1px);
+    box-shadow: var(--vv-shadow-md);
+  }
+
+  .vv-btn--primary:active {
+    transform: translateY(0);
+    box-shadow: var(--vv-shadow-sm);
+  }
+
+  /* ------- Variant: secondary ---------------------------------------- */
+
+  .vv-btn--secondary {
+    background-color: transparent;
+    color: var(--vv-color-fg-primary);
+    border-color: var(--vv-color-border-strong);
+  }
+
+  .vv-btn--secondary:hover,
+  .vv-btn--secondary:focus-visible {
+    background-color: var(--vv-color-bg-elevated);
+    border-color: var(--vv-color-fg-primary);
+  }
+
+  /* ------- Variant: ghost -------------------------------------------- */
+
+  .vv-btn--ghost {
+    background-color: transparent;
+    color: var(--vv-color-fg-primary);
+    border-color: transparent;
+  }
+
+  .vv-btn--ghost:hover,
+  .vv-btn--ghost:focus-visible {
+    background-color: var(--vv-color-bg-elevated);
+  }
+
+  /* ------- Variant: link --------------------------------------------- */
+
+  .vv-btn--link {
+    background-color: transparent;
+    color: var(--vv-color-fg-accent);
+    border-color: transparent;
+    padding-inline: var(--vv-space-1);
+    min-height: auto;
+    text-decoration: underline;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.16em;
+  }
+
+  .vv-btn--link:hover,
+  .vv-btn--link:focus-visible {
+    color: var(--vv-color-brand-red-700);
+  }
+
+  /* ------- Disabled --------------------------------------------------- */
+
+  .vv-btn:disabled,
+  .vv-btn[data-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
+  }
+</style>

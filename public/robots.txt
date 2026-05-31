@@ -1,0 +1,34 @@
+# Via Viator — robots.txt
+# Domena docelowa: https://viaviator.pl/
+# Stan: launch-ready (Phase 5 — SEO setup, QA10 sp. z o.o.)
+#
+# Zasady:
+#  - Allow all dla crawlerów (PL rynek + EN niche, Google + Bing).
+#  - Disallow /api/ — endpointy formularzowe (POST), nie powinny być indexowane.
+#  - Disallow /_brief/ — wewnętrzna dokumentacja briefu klienta, nie public-facing.
+#  - Pointer do sitemap-index — Astro sitemap generuje per-locale.
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_brief/
+
+# AI crawlers — explicit allow (Via Viator zgadza się na indeksację przez LLM-y,
+# llms.txt służy jako uzupełniający kanał semantyczny). Brand value rośnie
+# wraz z visibility w AI overviews.
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+Sitemap: https://viaviator.pl/sitemap-index.xml

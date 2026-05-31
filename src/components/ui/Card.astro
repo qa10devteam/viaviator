@@ -1,0 +1,108 @@
+---
+/**
+ * Card — kontener z paddingiem, radius i opcjonalnym shadow.
+ * Tone „brand" = czerwony border-left (akcent segmentu, lekka subtelność).
+ */
+
+interface Props {
+  as?: string;
+  tone?: "default" | "elevated" | "outlined" | "brand" | "surface";
+  href?: string;
+  interactive?: boolean;
+  /** Akcent kolorystyczny lewej krawędzi (np. var(--vv-color-segment-korpo)). */
+  accentColor?: string;
+  class?: string;
+  ariaLabel?: string;
+}
+
+const {
+  as,
+  tone = "default",
+  href,
+  interactive = false,
+  accentColor,
+  class: extraClass = "",
+  ariaLabel,
+} = Astro.props;
+
+const Tag = as ?? (href ? "a" : "div");
+const isInteractive = interactive || !!href;
+
+const styleVar = accentColor ? `--vv-card-accent:${accentColor}` : undefined;
+---
+
+<Tag
+  class:list={[
+    "vv-card",
+    `vv-card--${tone}`,
+    isInteractive ? "vv-card--interactive" : null,
+    accentColor ? "vv-card--has-accent" : null,
+    extraClass,
+  ]}
+  href={href}
+  style={styleVar}
+  aria-label={ariaLabel}
+>
+  <slot />
+</Tag>
+
+<style>
+  .vv-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-4);
+    padding: var(--vv-space-6);
+    border-radius: var(--vv-radius-lg);
+    background-color: var(--vv-color-bg-page);
+    color: var(--vv-color-fg-primary);
+    text-decoration: none;
+    position: relative;
+    isolation: isolate;
+    transition:
+      transform var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+      box-shadow var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+      border-color var(--vv-motion-duration-base) var(--vv-motion-easing-standard);
+  }
+
+  .vv-card--default {
+    border: 1px solid var(--vv-color-border-subtle);
+  }
+
+  .vv-card--elevated {
+    border: 1px solid transparent;
+    background-color: var(--vv-color-bg-elevated);
+    box-shadow: var(--vv-shadow-md);
+  }
+
+  .vv-card--outlined {
+    border: 1.5px solid var(--vv-color-border-strong);
+    background-color: transparent;
+  }
+
+  .vv-card--surface {
+    background-color: var(--vv-color-bg-surface);
+    border: 1px solid transparent;
+  }
+
+  .vv-card--brand {
+    background-color: var(--vv-color-brand-red-50);
+    border: 1px solid var(--vv-color-brand-red-100);
+  }
+
+  /* Accent: lewy pasek koloru segmentu */
+  .vv-card--has-accent {
+    border-left: 4px solid var(--vv-card-accent, var(--vv-color-brand-red));
+  }
+
+  /* Interactive — hover lift */
+  .vv-card--interactive {
+    cursor: pointer;
+  }
+
+  .vv-card--interactive:hover,
+  .vv-card--interactive:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: var(--vv-shadow-lg);
+    border-color: var(--vv-color-border-strong);
+  }
+</style>

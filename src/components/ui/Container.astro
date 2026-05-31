@@ -1,0 +1,34 @@
+---
+/**
+ * Container — wrapper z max-width z design tokens.
+ * Cztery rozmiary: narrow (640), default (1200), wide (1440), prose (65ch).
+ * Padding-inline responsywny (z utilities.css przez klasy).
+ */
+
+interface Props {
+  size?: "narrow" | "default" | "wide" | "prose";
+  as?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  size = "default",
+  as = "div",
+  class: extraClass = "",
+  id,
+} = Astro.props;
+
+const SIZE_CLASS_MAP: Record<NonNullable<Props["size"]>, string> = {
+  narrow: "container-narrow",
+  default: "container",
+  wide: "container-wide",
+  prose: "container-prose",
+};
+const sizeClass = SIZE_CLASS_MAP[size];
+const Tag = as as keyof HTMLElementTagNameMap;
+---
+
+<Tag class:list={[sizeClass, extraClass]} id={id}>
+  <slot />
+</Tag>

@@ -1,0 +1,17 @@
+/* TEAM */
+Owner: Via Viator sp. z o.o.
+Operations: Patryk Tomeczek
+Contact: kontakt [at] viaviator.pl
+Location: Southern Poland (śląskie, opolskie, małopolskie, świętokrzyskie)
+
+/* SITE */
+Built by: QA10 sp. z o.o.
+Site: https://qa10.io
+Quality Seal: https://qa10.io/seal/viaviator (v1.0)
+Last update: 2026-05-31
+
+/* TECH */
+Framework: Astro 6 + React 19
+Hosting: Vercel
+Languages: PL (default), EN (/en/)
+Standards: WCAG 2.2 AA, Core Web Vitals (LCP < 2.5s, INP < 200ms, CLS < 0.1)

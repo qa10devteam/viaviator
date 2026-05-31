@@ -1,0 +1,81 @@
+---
+/**
+ * Stat — pojedynczy blok statystyki (np. „200+ realizacji").
+ * Placeholder dla counters z danymi marketingowymi które dojadą po launch.
+ */
+
+interface Props {
+  value: string;
+  label: string;
+  description?: string;
+  tone?: "default" | "brand" | "inverse";
+  class?: string;
+}
+
+const {
+  value,
+  label,
+  description,
+  tone = "default",
+  class: extraClass = "",
+} = Astro.props;
+---
+
+<div class:list={["vv-stat", `vv-stat--${tone}`, extraClass]}>
+  <span class="vv-stat__value">{value}</span>
+  <span class="vv-stat__label">{label}</span>
+  {description && <span class="vv-stat__desc">{description}</span>}
+</div>
+
+<style>
+  .vv-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-1);
+    padding: var(--vv-space-4) 0;
+  }
+
+  .vv-stat__value {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-5xl);
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-stat--brand .vv-stat__value {
+    color: var(--vv-color-fg-accent);
+  }
+
+  .vv-stat--inverse .vv-stat__value {
+    color: var(--vv-color-fg-inverse);
+  }
+
+  .vv-stat__label {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-base);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-stat--inverse .vv-stat__label {
+    color: var(--vv-color-fg-inverse);
+  }
+
+  .vv-stat__desc {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-stat--inverse .vv-stat__desc {
+    color: var(--vv-color-border-strong);
+  }
+
+  @media (max-width: 480px) {
+    .vv-stat__value {
+      font-size: var(--vv-typography-font-size-4xl);
+    }
+  }
+</style>

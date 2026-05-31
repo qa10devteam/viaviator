@@ -1,0 +1,220 @@
+---
+/**
+ * LangSwitcher — minimalny przełącznik języka PL/EN.
+ * SSR dla początkowego renderu (linki działają bez JS-a).
+ * Vanilla JS rozwija dropdown — bez React island.
+ *
+ * Wymaga, by parent przekazał `alternates` z BaseLayout (PL↔EN URL pairs).
+ * Fallback: jeśli brak alternates, używamy `localizePath()` do prostego prefix flip.
+ */
+
+import { getDictionary, localizePath } from "@i18n/index";
+import type { Locale } from "@i18n/index";
+import Icon from "./Icon.astro";
+
+interface Alternate {
+  lang: string;
+  href: string;
+}
+
+interface Props {
+  currentLocale: Locale;
+  currentPath: string;
+  alternates?: Alternate[];
+  class?: string;
+}
+
+const {
+  currentLocale,
+  currentPath,
+  alternates,
+  class: extraClass = "",
+} = Astro.props;
+
+const dict = getDictionary(currentLocale);
+
+// Generuj linki: preferuj alternates jeśli podane, inaczej derive z currentPath
+const langs: { code: Locale; label: string; href: string }[] = (
+  ["pl", "en"] as const
+).map((code) => {
+  const alt = alternates?.find((a) => a.lang.toLowerCase().startsWith(code));
+  return {
+    code,
+    label: code.toUpperCase(),
+    href: alt?.href ?? localizePath(currentPath, code),
+  };
+});
+
+const id = `vv-lang-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div class:list={["vv-lang", extraClass]} data-vv-lang={id}>
+  <button
+    type="button"
+    class="vv-lang__toggle"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-controls={`${id}-list`}
+    aria-label={dict.nav.chooseLang}
+  >
+    <Icon name="globe" size={16} />
+    <span class="vv-lang__current">{currentLocale.toUpperCase()}</span>
+    <Icon name="chevron-down" size={14} class="vv-lang__caret" />
+  </button>
+
+  <ul
+    id={`${id}-list`}
+    class="vv-lang__list"
+    role="listbox"
+    aria-label={dict.nav.chooseLang}
+    hidden
+  >
+    {
+      langs.map((l) => (
+        <li role="none">
+          <a
+            href={l.href}
+            role="option"
+            aria-selected={l.code === currentLocale}
+            aria-current={l.code === currentLocale ? "true" : undefined}
+            class:list={[
+              "vv-lang__option",
+              l.code === currentLocale ? "is-current" : null,
+            ]}
+            hreflang={l.code}
+            lang={l.code}
+          >
+            {l.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  // Vanilla JS dropdown — brak React island, < 1kB.
+  const closeAll = () => {
+    document.querySelectorAll<HTMLElement>("[data-vv-lang]").forEach((root) => {
+      const toggle = root.querySelector<HTMLButtonElement>(".vv-lang__toggle");
+      const list = root.querySelector<HTMLElement>(".vv-lang__list");
+      toggle?.setAttribute("aria-expanded", "false");
+      if (list) list.hidden = true;
+    });
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-vv-lang]").forEach((root) => {
+    const toggle = root.querySelector<HTMLButtonElement>(".vv-lang__toggle");
+    const list = root.querySelector<HTMLElement>(".vv-lang__list");
+
+    if (!toggle || !list) return;
+
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      closeAll();
+      if (!isOpen) {
+        toggle.setAttribute("aria-expanded", "true");
+        list.hidden = false;
+      }
+    });
+
+    list.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        toggle.setAttribute("aria-expanded", "false");
+        list.hidden = true;
+        toggle.focus();
+      }
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest("[data-vv-lang]")) closeAll();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeAll();
+  });
+</script>
+
+<style>
+  .vv-lang {
+    position: relative;
+    display: inline-block;
+  }
+
+  .vv-lang__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-1);
+    padding: var(--vv-space-1) var(--vv-space-2);
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-sm);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: inherit;
+    border-radius: var(--vv-radius-sm);
+    background: transparent;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-lang__toggle:hover {
+    background-color: var(--vv-color-bg-elevated);
+  }
+
+  .vv-lang__current {
+    letter-spacing: var(--vv-typography-letter-spacing-wide);
+  }
+
+  .vv-lang__caret {
+    transition: transform var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-lang__toggle[aria-expanded="true"] .vv-lang__caret {
+    transform: rotate(180deg);
+  }
+
+  .vv-lang__list {
+    position: absolute;
+    top: calc(100% + var(--vv-space-1));
+    right: 0;
+    min-width: 80px;
+    margin: 0;
+    padding: var(--vv-space-1);
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-md);
+    box-shadow: var(--vv-shadow-lg);
+    z-index: var(--vv-z-dropdown);
+    list-style: none;
+  }
+
+  .vv-lang__option {
+    display: block;
+    padding: var(--vv-space-2) var(--vv-space-3);
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-sm);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+    text-decoration: none;
+    border-radius: var(--vv-radius-sm);
+    text-align: center;
+    letter-spacing: var(--vv-typography-letter-spacing-wide);
+    transition: background-color var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-lang__option:hover,
+  .vv-lang__option:focus-visible {
+    background-color: var(--vv-color-bg-elevated);
+  }
+
+  .vv-lang__option.is-current {
+    background-color: var(--vv-color-brand-red-50);
+    color: var(--vv-color-brand-red-700);
+  }
+</style>

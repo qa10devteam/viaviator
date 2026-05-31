@@ -1,0 +1,370 @@
+---
+/**
+ * /en/accessible-transport — P3 Accessible transport (EN mirror).
+ *
+ * Identyczna struktura jak `/transport-dostepny`, EN locale.
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Badge from "@components/ui/Badge.astro";
+import Icon from "@components/ui/Icon.astro";
+import Hero from "@components/sections/Hero.astro";
+import FeatureGrid from "@components/sections/FeatureGrid.astro";
+import FAQAccordion from "@components/sections/FAQAccordion.astro";
+import CTASection from "@components/sections/CTASection.astro";
+import { getDictionary } from "@i18n/index";
+import { company } from "@data/company";
+import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
+import { serviceForSegment, breadcrumbForRoute, faqSchema } from "@lib/schema";
+
+const locale = "en" as const;
+const dict = getDictionary(locale);
+const seg = dict.segments.dostepny;
+const seo = seoMap.dostepny;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("dostepny", locale, SITE);
+const alternates = buildAlternates("dostepny", SITE);
+
+const jsonLd: Record<string, unknown>[] = [
+  serviceForSegment("dostepny", locale, SITE),
+  breadcrumbForRoute("dostepny", locale, SITE),
+  faqSchema([...seg.faq.items]),
+];
+
+const heroImage = "/images/services/service-airport-mobile.jpg";
+const heroImageAlt =
+  "Via Viator Renault Trafic — luggage assistance, care context.";
+
+const driveRules = [
+  {
+    icon: "shield-check" as const,
+    title: "PRM-trained driver",
+    body:
+      "Training in passenger transfer, wheelchair securing and boarding assistance. We walk you through the procedure at the on-site meeting.",
+  },
+  {
+    icon: "clock" as const,
+    title: "Pace set by the passenger",
+    body:
+      "No rushing. Boarding and alighting at the passenger's pace — that's the standard, not the exception.",
+  },
+  {
+    icon: "users" as const,
+    title: "Active child seat available",
+    body:
+      "Active or stabilising child seat for children with disabilities — flag it in the brief and we'll have it in the van on the route.",
+  },
+  {
+    icon: "phone" as const,
+    title: "Direct contact with the carer",
+    body:
+      "Driver has the carer's or parent's number. SMS on departure, SMS on arrival, call if the situation changes.",
+  },
+];
+
+const decisionItems = [...seg.decisionList.items];
+const faqItems = [...seg.faq.items];
+---
+
+<BaseLayout
+  title={seo.titleEn}
+  description={seo.descriptionEn}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={`${SITE}${heroImage}`}
+  jsonLd={jsonLd}
+  bodyClass="page-segment page-segment--dostepny"
+>
+  {/* 1. HERO */}
+  <Hero
+    headline={seg.heroHeadline}
+    subhead={seg.heroSubhead}
+    image={heroImage}
+    imageAlt={heroImageAlt}
+    primaryCta={{
+      label: seg.cta,
+      href: "/en/contact?segment=dostepny#koordynator",
+    }}
+    secondaryCta={{
+      label: seg.ctaSecondary,
+      href: company.phoneHref,
+    }}
+    align="left"
+    tone="default"
+    priority={true}
+  />
+
+  {/* Meta */}
+  <Section tone="default" tight ariaLabel="Decision timeline">
+    <Container size="wide">
+      <div class="vv-seg-meta">
+        <Badge tone="brand" size="md">
+          <Icon name="clock" size={12} />
+          <span>Call in 30 min, contract in 8–16 weeks</span>
+        </Badge>
+        <span class="vv-seg-meta__hint">
+          Short intro call within 30 minutes. Framework contract — 8–16 weeks,
+          on your institution's timeline.
+        </span>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 2. What accessible transport means here */}
+  <Section tone="default" ariaLabelledby="seg-what-title">
+    <Container size="default">
+      <div class="vv-seg-block">
+        <h2 id="seg-what-title" class="vv-seg-block__title">
+          {seg.what.title}
+        </h2>
+        <p class="vv-seg-block__lead">{seg.what.body}</p>
+        <ul class="vv-seg-list" role="list">
+          {
+            seg.what.points.map((p) => (
+              <li class="vv-seg-list__item">
+                <span class="vv-seg-list__icon" aria-hidden="true">
+                  <Icon name="check" size={18} />
+                </span>
+                <span class="vv-seg-list__text">{p}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 3. What we watch on every trip */}
+  <Section tone="elevated" ariaLabelledby="seg-rules-title">
+    <Container size="default">
+      <div class="vv-seg-block">
+        <h2 id="seg-rules-title" class="vv-seg-block__title">
+          What we watch on every trip
+        </h2>
+        <p class="vv-seg-block__lead">
+          Four things we do every time — without asking for a surcharge,
+          without explaining that "it's not in the price list".
+        </p>
+      </div>
+      <FeatureGrid items={driveRules} columns={2} tone="default" />
+    </Container>
+  </Section>
+
+  {/* 4. Decision Criteria */}
+  <Section tone="default" ariaLabelledby="seg-decision-title">
+    <Container size="default">
+      <div class="vv-seg-block">
+        <h2 id="seg-decision-title" class="vv-seg-block__title">
+          {seg.decisionList.title}
+        </h2>
+        <p class="vv-seg-block__lead">{seg.decisionList.body}</p>
+      </div>
+      <FAQAccordion items={decisionItems} defaultOpenFirst={true} />
+    </Container>
+  </Section>
+
+  {/* 5. Trial procedure — no contract */}
+  <Section tone="surface" ariaLabelledby="seg-test-title">
+    <Container size="default">
+      <div class="vv-seg-test">
+        <h2 id="seg-test-title" class="vv-seg-test__title">
+          Trial procedure — no contract, no commitment
+        </h2>
+        <p class="vv-seg-test__lead">
+          We know a 12-month contract with a new carrier isn't a light
+          decision. So we offer 8 weeks of trial operation on individual
+          bookings, without signing a framework agreement.
+        </p>
+        <ul class="vv-seg-test__list" role="list">
+          <li>
+            <strong>Weeks 1–4:</strong> on-demand bookings — you flag the need
+            24 hours ahead, we deliver, invoice individually.
+          </li>
+          <li>
+            <strong>Weeks 5–8:</strong> 1–2 trips on a steady weekly schedule
+            — you check what recurrence looks like.
+          </li>
+          <li>
+            <strong>Week 8:</strong> wrap-up meeting. If it fits — we move to
+            a 12-month framework with a locked rate. If not — we part ways with
+            no trace in your accounting.
+          </li>
+        </ul>
+        <p class="vv-seg-test__note">
+          These are our standard terms — regardless of institution size and
+          number of routes. First meeting at your site, at no cost.
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 6. FAQ */}
+  <Section tone="default" ariaLabelledby="seg-faq-title">
+    <Container size="default">
+      <h2 id="seg-faq-title" class="vv-seg-block__title">
+        {seg.faq.title}
+      </h2>
+      <FAQAccordion items={faqItems} />
+    </Container>
+  </Section>
+
+  {/* 7. Final CTA */}
+  <CTASection
+    tone="brand"
+    title={seg.cta}
+    body={seg.heroSubhead}
+    primaryCta={{
+      label: dict.cta.bookCall,
+      href: "/en/contact?segment=dostepny#koordynator",
+    }}
+    secondaryCta={{
+      label: dict.cta.callNow,
+      href: company.phoneHref,
+    }}
+    align="center"
+  />
+</BaseLayout>
+
+<style>
+  .vv-seg-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--vv-space-4);
+    padding-block: var(--vv-space-2);
+    border-block: 1px solid var(--vv-color-border-subtle);
+  }
+
+  .vv-seg-meta__hint {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-seg-block {
+    max-width: 72ch;
+    margin: 0 0 var(--vv-space-8) 0;
+  }
+
+  .vv-seg-block__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 4vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    margin: 0 0 var(--vv-space-4) 0;
+    color: var(--vv-color-fg-primary);
+    text-wrap: balance;
+  }
+
+  .vv-seg-block__lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .vv-seg-list {
+    list-style: none;
+    margin: var(--vv-space-6) 0 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--vv-space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .vv-seg-list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--vv-space-5) var(--vv-space-8);
+    }
+  }
+
+  .vv-seg-list__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--vv-space-3);
+    align-items: start;
+  }
+
+  .vv-seg-list__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--vv-radius-full);
+    background-color: var(--vv-color-brand-red-50);
+    color: var(--vv-color-brand-red-700);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .vv-seg-list__text {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  /* Trial procedure */
+  .vv-seg-test {
+    max-width: 72ch;
+  }
+
+  .vv-seg-test__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 4vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    margin: 0 0 var(--vv-space-4) 0;
+    color: var(--vv-color-fg-primary);
+    text-wrap: balance;
+  }
+
+  .vv-seg-test__lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0 0 var(--vv-space-6) 0;
+    text-wrap: pretty;
+  }
+
+  .vv-seg-test__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--vv-space-6) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-4);
+  }
+
+  .vv-seg-test__list li {
+    padding-left: var(--vv-space-5);
+    border-left: 3px solid var(--vv-color-brand-red);
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-seg-test__list strong {
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-brand-red-700);
+  }
+
+  .vv-seg-test__note {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-muted);
+    font-style: italic;
+    margin: 0;
+  }
+</style>

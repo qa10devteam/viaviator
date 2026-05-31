@@ -1,0 +1,187 @@
+---
+/**
+ * BaseLayout — root document Via Viator.
+ * Renderuje: head (charset/viewport/SEO/fonts/favicons), body z skip link,
+ * Header, <main>, Footer, ConsentBanner (React island, client:idle).
+ *
+ * Wymaga: title, description, locale. Canonical jest auto-derived z Astro.url
+ * jeśli nie podany. Alternates (pary URL PL↔EN) są opcjonalne ale zalecane.
+ */
+
+import "@styles/global.css";
+import "@fontsource-variable/bricolage-grotesque";
+
+import { type Locale, getDictionary } from "@i18n/index";
+import { company, buildOrganizationSchema } from "@data/company";
+import SEO from "@components/seo/SEO.astro";
+import Header from "@components/sections/Header.astro";
+import Footer from "@components/sections/Footer.astro";
+import ConsentBanner from "@components/islands/ConsentBanner.tsx";
+
+interface Alternate {
+  lang: string;
+  href: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  canonical?: string;
+  alternates?: Alternate[];
+  ogImage?: string;
+  ogType?: "website" | "article" | "profile";
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  bodyClass?: string;
+  /** Czy włączyć Organization schema (default: false; włącz dla home). */
+  includeOrganizationSchema?: boolean;
+}
+
+const {
+  title,
+  description,
+  locale,
+  canonical,
+  alternates = [],
+  ogImage,
+  ogType = "website",
+  jsonLd,
+  bodyClass = "",
+  includeOrganizationSchema = false,
+} = Astro.props;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const resolvedCanonical: string =
+  canonical ?? `${SITE}${Astro.url.pathname.replace(/\/$/, "") || "/"}`;
+
+const dict = getDictionary(locale);
+
+// Build JSON-LD payload
+const jsonLdEntries: Record<string, unknown>[] = [];
+if (jsonLd) {
+  if (Array.isArray(jsonLd)) jsonLdEntries.push(...jsonLd);
+  else jsonLdEntries.push(jsonLd);
+}
+if (includeOrganizationSchema) {
+  jsonLdEntries.push(buildOrganizationSchema(SITE) as Record<string, unknown>);
+}
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang={locale} data-vv-fonts-loaded="false">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="generator" content={Astro.generator} />
+
+    {/* ---- Theme + brand ---- */}
+    <meta name="theme-color" content="#F13223" />
+    <meta name="application-name" content={dict.brand.name} />
+    <meta name="format-detection" content="telephone=yes" />
+
+    {/* ---- Favicons ---- */}
+    <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/brand/apple-touch-icon.png" />
+
+    {/* ---- Font preload: Bricolage Grotesque (latin-ext, wght axis, woff2) ---- */}
+    {/* PL diakrytyki są w latin-ext; wght axis pokrywa 200-800. Self-hosted, */}
+    {/* nie ma render-blocking @import ani preconnect do Google Fonts. */}
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/bricolage-grotesque-latin-ext-wght-normal.woff2"
+      crossorigin="anonymous"
+    />
+
+    {/* ---- QA10 Quality Seal meta (machine-readable) ---- */}
+    <meta name="qa10:seal-version" content="1.0" />
+    <meta name="qa10:contractor" content="QA10 sp. z o.o." />
+    <meta name="qa10:contractor-url" content={company.qa10.qa10Home} />
+
+    {/* ---- SEO ---- */}
+    <SEO
+      title={title}
+      description={description}
+      locale={locale}
+      canonical={resolvedCanonical}
+      alternates={alternates}
+      ogImage={ogImage}
+      ogType={ogType}
+      jsonLd={jsonLdEntries.length > 0 ? jsonLdEntries : undefined}
+      siteName={dict.brand.name}
+    />
+
+    {/* ---- Font-loaded flag (defer) ---- */}
+    <script is:inline>
+      if ("fonts" in document) {
+        document.fonts.ready.then(() => {
+          document.documentElement.dataset.vvFontsLoaded = "true";
+        });
+      } else {
+        document.documentElement.dataset.vvFontsLoaded = "true";
+      }
+    </script>
+  </head>
+
+  <body class:list={["vv-body", bodyClass]}>
+    <a href="#main" class="vv-skip-link">{dict.nav.skipToContent}</a>
+
+    <Header
+      locale={locale}
+      currentPath={currentPath}
+      alternates={alternates}
+    />
+
+    <main id="main" class="vv-main" tabindex="-1">
+      <slot />
+    </main>
+
+    <Footer locale={locale} />
+
+    <ConsentBanner client:idle locale={locale} />
+
+    <style is:global>
+      html, body {
+        min-height: 100%;
+      }
+      body.vv-body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .vv-main {
+        flex: 1 1 auto;
+        outline: none;
+      }
+
+      /* WCAG AA: brand-red-700 vs white = 6.45:1 (brand-red 4.42:1 = fail dla 14px semibold). */
+      .vv-skip-link {
+        position: absolute;
+        top: -100px;
+        left: var(--vv-space-2);
+        z-index: var(--vv-z-tooltip);
+        padding: var(--vv-space-2) var(--vv-space-4);
+        background-color: var(--vv-color-brand-red-700);
+        color: var(--vv-color-brand-white);
+        font-family: var(--vv-typography-font-family-display);
+        font-weight: var(--vv-typography-font-weight-semibold);
+        border-radius: var(--vv-radius-md);
+        text-decoration: none;
+        transition: top var(--vv-motion-duration-fast) var(--vv-motion-easing-standard);
+      }
+      .vv-skip-link:focus-visible {
+        top: var(--vv-space-2);
+      }
+
+      html[data-menu-open="true"] {
+        overflow: hidden;
+      }
+    </style>
+  </body>
+</html>

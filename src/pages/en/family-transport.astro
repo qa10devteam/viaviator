@@ -1,0 +1,477 @@
+---
+/**
+ * /en/family-transport — P4 Family transport (EN mirror).
+ *
+ * Mirrors /przewozy-rodzinne — same structure, EN copy from
+ * dict.segments.rodzinne. Buyer persona: family (4–8 people)
+ * heading to airport, wedding or christening.
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Card from "@components/ui/Card.astro";
+import Badge from "@components/ui/Badge.astro";
+import Icon from "@components/ui/Icon.astro";
+import Hero from "@components/sections/Hero.astro";
+import FeatureGrid from "@components/sections/FeatureGrid.astro";
+import FAQAccordion from "@components/sections/FAQAccordion.astro";
+import CTASection from "@components/sections/CTASection.astro";
+import { getDictionary } from "@i18n/index";
+import {
+  buildCanonical,
+  buildAlternates,
+  seoMap,
+} from "@lib/seo";
+import {
+  serviceForSegment,
+  breadcrumbForRoute,
+  faqSchema,
+} from "@lib/schema";
+import { company } from "@data/company";
+
+const locale = "en" as const;
+const dict = getDictionary(locale);
+const seg = dict.segments.rodzinne;
+const seo = seoMap.rodzinne;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("rodzinne", locale, SITE);
+const alternates = buildAlternates("rodzinne", SITE);
+
+const messengerHref = "https://m.me/viaviatorpl";
+const phoneHref = company.phoneHref;
+
+const routes = [
+  {
+    icon: "truck" as const,
+    title: "Airport",
+    body:
+      "Katowice, Kraków, Wrocław — from your door, to the arrivals hall, in one trip. Child seat, room for every suitcase, flight tracking when there's a delay.",
+  },
+  {
+    icon: "users" as const,
+    title: "Wedding",
+    body:
+      "Venue → hotel → home at 3 a.m. No parking at a friend's place, no chasing taxis. The 8-seat van fits close family with wedding luggage.",
+  },
+  {
+    icon: "sparkles" as const,
+    title: "Christening and birthdays",
+    body:
+      "Church → venue → home. Grandparents, aunts, godparents — all together. Gift boxes and the cake travel back with us without drama.",
+  },
+];
+
+const serviceJsonLd = serviceForSegment("rodzinne", locale, SITE);
+const breadcrumbJsonLd = breadcrumbForRoute("rodzinne", locale, SITE);
+const faqJsonLd = faqSchema([...seg.faq.items]);
+---
+
+<BaseLayout
+  title={seo.titleEn}
+  description={seo.descriptionEn}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={seo.ogImage}
+  jsonLd={[serviceJsonLd, breadcrumbJsonLd, faqJsonLd]}
+  bodyClass="page-segment page-rodzinne"
+>
+  {/* 1. HERO */}
+  <Hero
+    eyebrow={seg.name}
+    headline={seg.heroHeadline}
+    subhead={seg.heroSubhead}
+    image="/images/services/service-airport-mobile.jpg"
+    imageAlt="Family with luggage by a Via Viator van — airport transfer."
+    primaryCta={{
+      label: "Message us — reply in 2 hours",
+      href: messengerHref,
+      external: true,
+      ariaLabel: "Message Via Viator on Messenger",
+    }}
+    secondaryCta={{
+      label: "Call now",
+      href: phoneHref,
+      ariaLabel: `Call: ${company.phoneDisplay}`,
+    }}
+    microcopy="We pick up the phone. We read Messenger. You can see the van in the photos below — that's the one that'll come for you."
+  />
+
+  {/* Time-to-quote badge bar */}
+  <Section tone="surface" tight ariaLabel="Reply time and emergency phone">
+    <Container size="default">
+      <div class="vv-rodzinne-meta">
+        <Badge tone="brand">
+          <Icon name="clock" size={14} />
+          <span>2 hours — average reply time during business hours</span>
+        </Badge>
+        <Badge tone="neutral">
+          <Icon name="phone" size={14} />
+          <span>{company.phoneDisplay}</span>
+        </Badge>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 2. VEHICLE INTERIOR GALLERY — KEY persona section */}
+  <Section tone="default" ariaLabelledby="rodzinne-gallery-title">
+    <Container size="default">
+      <header class="vv-rodzinne-section-head">
+        <h2 id="rodzinne-gallery-title" class="vv-rodzinne-section-title">
+          Vehicle gallery
+        </h2>
+        <p class="vv-rodzinne-section-lead">
+          Before you board — see what you're boarding. This is the van that
+          will come for your family. No stock photos, no perfectly staged
+          stills lifted from the internet.
+        </p>
+      </header>
+
+      <ul class="vv-rodzinne-gallery" role="list">
+        <li class="vv-rodzinne-gallery__item">
+          <figure>
+            <img
+              src="/images/brand-detail/brand-logo-close.jpg"
+              alt="Via Viator logo on a Renault Trafic side panel — close-up."
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Via Viator logo — branded, real, our van.</figcaption>
+          </figure>
+        </li>
+        <li class="vv-rodzinne-gallery__item">
+          <figure>
+            <img
+              src="/images/brand-detail/brand-rear-cta.jpg"
+              alt="Rear of a Via Viator van with contact details, ready for luggage."
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Rear cargo space — airport suitcases, christening boxes.</figcaption>
+          </figure>
+        </li>
+        <li class="vv-rodzinne-gallery__item">
+          <figure>
+            <img
+              src="/images/fleet/fleet-trafic-front.jpg"
+              alt="Front view of a Via Viator 8-seater Renault Trafic — ready to depart."
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Van before departure — southern Poland, daily route.</figcaption>
+          </figure>
+        </li>
+      </ul>
+
+      <aside class="vv-rodzinne-gallery-note">
+        <p>
+          <strong>Interior cabin photos — currently in production.</strong>
+          {" "}If you'd like to see inside before booking, call us — we'll
+          describe it, and for recurring routes we'll show you the van on site.
+        </p>
+      </aside>
+    </Container>
+  </Section>
+
+  {/* 3. WHAT YOU GET */}
+  <Section tone="elevated" ariaLabelledby="rodzinne-what-title">
+    <Container size="default">
+      <div class="vv-rodzinne-what">
+        <div class="vv-rodzinne-what__copy">
+          <h2 id="rodzinne-what-title" class="vv-rodzinne-section-title">
+            {seg.what.title} — on a family trip
+          </h2>
+          <p class="vv-rodzinne-section-lead">{seg.what.body}</p>
+        </div>
+        <ul class="vv-rodzinne-what__list" role="list">
+          {seg.what.points.map((point) => (
+            <li class="vv-rodzinne-what__item">
+              <Icon name="check" size={18} />
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 4. THREE TYPICAL ROUTES */}
+  <Section tone="default" ariaLabelledby="rodzinne-routes-title">
+    <Container size="default">
+      <header class="vv-rodzinne-section-head">
+        <h2 id="rodzinne-routes-title" class="vv-rodzinne-section-title">
+          Three typical routes
+        </h2>
+        <p class="vv-rodzinne-section-lead">
+          Nine out of ten family trips we run are one of these three stories.
+          The tenth one — describe it in the brief, we'll drive it too.
+        </p>
+      </header>
+      <FeatureGrid items={routes} columns={3} tone="default" />
+    </Container>
+  </Section>
+
+  {/* 5. DECISION CRITERIA */}
+  <Section tone="surface" ariaLabelledby="rodzinne-decision-title">
+    <Container size="default">
+      <header class="vv-rodzinne-section-head">
+        <h2 id="rodzinne-decision-title" class="vv-rodzinne-section-title">
+          {seg.decisionList.title}
+        </h2>
+        <p class="vv-rodzinne-section-lead">{seg.decisionList.body}</p>
+      </header>
+      <ul class="vv-rodzinne-decision" role="list">
+        {seg.decisionList.items.map((item) => (
+          <li class="vv-rodzinne-decision__item">
+            <p class="vv-rodzinne-decision__q">{item.q}</p>
+            <p class="vv-rodzinne-decision__a">{item.a}</p>
+          </li>
+        ))}
+      </ul>
+    </Container>
+  </Section>
+
+  {/* 6. SOCIAL PROOF — Google reviews placeholder */}
+  <Section tone="default" tight ariaLabelledby="rodzinne-social-title">
+    <Container size="narrow">
+      <Card tone="brand" class="vv-rodzinne-social">
+        <p class="vv-rodzinne-social__eyebrow">What passengers say</p>
+        <p class="vv-rodzinne-social__quote">
+          „Average rating <strong>4.8 / 5</strong> from driver and passenger reviews."
+        </p>
+        <p class="vv-rodzinne-social__note">
+          The full Google reviews widget will follow once the Google Business
+          profile is connected — we're working on it. In the meantime: if you
+          need references, we'll share 3 contacts from families we've recently
+          driven for. Just ask.
+        </p>
+      </Card>
+    </Container>
+  </Section>
+
+  {/* 7. FAQ */}
+  <Section tone="default" ariaLabelledby="rodzinne-faq-title">
+    <Container size="default">
+      <header class="vv-rodzinne-section-head">
+        <h2 id="rodzinne-faq-title" class="vv-rodzinne-section-title">
+          {seg.faq.title}
+        </h2>
+      </header>
+      <FAQAccordion items={[...seg.faq.items]} defaultOpenFirst={true} />
+    </Container>
+  </Section>
+
+  {/* 8. FINAL CTA */}
+  <CTASection
+    title="Message us, call us, plan it"
+    body="Short brief, one price per route, child seat included. Messenger reaches us fastest — we reply within 2 hours during business hours."
+    primaryCta={{
+      label: "Message us on Messenger",
+      href: messengerHref,
+      external: true,
+      ariaLabel: "Message Via Viator on Messenger",
+    }}
+    secondaryCta={{
+      label: `Call: ${company.phoneDisplay}`,
+      href: phoneHref,
+      ariaLabel: `Call: ${company.phoneDisplay}`,
+    }}
+    tone="brand"
+  />
+</BaseLayout>
+
+<style>
+  .vv-rodzinne-section-head {
+    margin: 0 0 var(--vv-space-10) 0;
+    max-width: 64ch;
+  }
+
+  .vv-rodzinne-section-title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 3.5vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-3) 0;
+    text-wrap: balance;
+  }
+
+  .vv-rodzinne-section-lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .vv-rodzinne-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+    align-items: center;
+  }
+
+  .vv-rodzinne-gallery {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 768px) {
+    .vv-rodzinne-gallery {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .vv-rodzinne-gallery__item figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-rodzinne-gallery__item img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--vv-radius-lg);
+    background-color: var(--vv-color-bg-surface);
+    box-shadow: var(--vv-shadow-md);
+  }
+
+  .vv-rodzinne-gallery__item figcaption {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-rodzinne-gallery-note {
+    margin: var(--vv-space-8) 0 0 0;
+    padding: var(--vv-space-5) var(--vv-space-6);
+    background-color: var(--vv-color-bg-surface);
+    border-left: 4px solid var(--vv-color-brand-red);
+    border-radius: var(--vv-radius-md);
+  }
+
+  .vv-rodzinne-gallery-note p {
+    margin: 0;
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-rodzinne-what {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-8);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-rodzinne-what {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--vv-space-12);
+      align-items: start;
+    }
+  }
+
+  .vv-rodzinne-what__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-4);
+  }
+
+  .vv-rodzinne-what__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-rodzinne-what__item :global(.vv-icon) {
+    color: var(--vv-color-brand-red-700);
+    margin-top: 4px;
+  }
+
+  .vv-rodzinne-decision {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 768px) {
+    .vv-rodzinne-decision {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .vv-rodzinne-decision__item {
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    padding: var(--vv-space-6);
+  }
+
+  .vv-rodzinne-decision__q {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-2) 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-rodzinne-decision__a {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0;
+  }
+
+  .vv-rodzinne-social {
+    text-align: center;
+    align-items: center;
+  }
+
+  .vv-rodzinne-social__eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    color: var(--vv-color-brand-red-700);
+    margin: 0;
+  }
+
+  .vv-rodzinne-social__quote {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-2xl);
+    line-height: var(--vv-typography-line-height-snug);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .vv-rodzinne-social__note {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    max-width: 56ch;
+    margin: 0;
+  }
+</style>

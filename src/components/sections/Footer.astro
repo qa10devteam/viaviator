@@ -1,0 +1,427 @@
+---
+/**
+ * Footer — 4 kolumny + bottom strip + QA10 Seal.
+ * Kolumny: marka (logo+tagline+opis), oferta (segmenty), firma, prawne.
+ * Bottom strip: copyright + NIP + telefon + email + QA10 Seal.
+ *
+ * A11y: role="contentinfo" implicit przez <footer>, aria-label dla każdej kolumny.
+ */
+
+import { getDictionary, type Locale } from "@i18n/index";
+import {
+  footerNav,
+  footerBottomStrip,
+} from "@data/nav";
+import { company } from "@data/company";
+import Container from "@components/ui/Container.astro";
+import QualitySealBadge from "./QualitySealBadge.astro";
+import Icon from "@components/ui/Icon.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = getDictionary(locale);
+
+function tKey(path: string): string {
+  const v = path
+    .split(".")
+    .reduce<unknown>(
+      (acc, k) =>
+        acc && typeof acc === "object"
+          ? (acc as Record<string, unknown>)[k]
+          : undefined,
+      dict,
+    );
+  return typeof v === "string" ? v : path;
+}
+
+function urlFor(item: { href: string; hrefEn: string }): string {
+  return locale === "pl" ? item.href : item.hrefEn;
+}
+
+// Logo: mono variant ma SVG z fill="currentColor" — wstawimy go inline z public
+// jako tło lub <img src=...> (działa też na ciemnym tle dzięki mono).
+const logoHref = locale === "pl" ? "/" : "/en/";
+---
+
+<footer class="vv-footer" role="contentinfo">
+  <Container size="wide">
+    <div class="vv-footer__grid">
+      {/* ---- Column 1: brand ---- */}
+      <section
+        class="vv-footer__col vv-footer__col--brand"
+        aria-labelledby="vv-footer-brand-heading"
+      >
+        <a href={logoHref} class="vv-footer__brand-link" aria-label={dict.brand.name}>
+          <img
+            src={footerNav.brand.logoSrc}
+            alt={dict.brand.logoAlt}
+            height="40"
+            class="vv-footer__logo"
+            loading="lazy"
+            decoding="async"
+          />
+        </a>
+        <p class="vv-footer__tagline">
+          <strong id="vv-footer-brand-heading">
+            {tKey(footerNav.brand.taglineMainKey)}
+          </strong>
+          <span class="vv-footer__tagline-secondary">
+            {tKey(footerNav.brand.taglineOperationalKey)}
+          </span>
+        </p>
+        <p class="vv-footer__brand-desc">{tKey(footerNav.brand.brandShortKey)}</p>
+
+        {
+          footerNav.brand.social.length > 0 && (
+            <ul
+              class="vv-footer__social"
+              role="list"
+              aria-label={dict.social.ariaLabel}
+            >
+              {footerNav.brand.social.map((s) => (
+                <li>
+                  <a
+                    href={urlFor(s)}
+                    class="vv-footer__social-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={tKey(s.labelKey)}
+                  >
+                    <Icon
+                      name={
+                        s.labelKey.includes("messenger") ? "mail" : "globe"
+                      }
+                      size={16}
+                    />
+                    <span>{tKey(s.labelKey)}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </section>
+
+      {/* ---- Column 2: offer ---- */}
+      <nav
+        class="vv-footer__col"
+        aria-labelledby="vv-footer-offer-heading"
+      >
+        <h3 class="vv-footer__heading" id="vv-footer-offer-heading">
+          {tKey(footerNav.offer.headingKey)}
+        </h3>
+        <ul role="list" class="vv-footer__list">
+          {
+            footerNav.offer.items.map((item) => (
+              <li>
+                <a
+                  href={urlFor(item)}
+                  class="vv-footer__link"
+                  style={
+                    item.accentColor
+                      ? `--vv-footer-accent:${item.accentColor}`
+                      : undefined
+                  }
+                >
+                  <span class="vv-footer__link-dot" />
+                  <span>{tKey(item.labelKey)}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      {/* ---- Column 3: company ---- */}
+      <nav
+        class="vv-footer__col"
+        aria-labelledby="vv-footer-company-heading"
+      >
+        <h3 class="vv-footer__heading" id="vv-footer-company-heading">
+          {tKey(footerNav.company.headingKey)}
+        </h3>
+        <ul role="list" class="vv-footer__list">
+          {
+            footerNav.company.items.map((item) => (
+              <li>
+                <a href={urlFor(item)} class="vv-footer__link">
+                  <span>{tKey(item.labelKey)}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      {/* ---- Column 4: legal ---- */}
+      <nav
+        class="vv-footer__col"
+        aria-labelledby="vv-footer-legal-heading"
+      >
+        <h3 class="vv-footer__heading" id="vv-footer-legal-heading">
+          {tKey(footerNav.legal.headingKey)}
+        </h3>
+        <ul role="list" class="vv-footer__list">
+          {
+            footerNav.legal.items.map((item) => (
+              <li>
+                <a
+                  href={urlFor(item)}
+                  class="vv-footer__link"
+                  data-vv-consent-anchor={
+                    item.href === "#consent-manager" ? "true" : undefined
+                  }
+                >
+                  <span>{tKey(item.labelKey)}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    {/* ---- Bottom strip ---- */}
+    <div class="vv-footer__strip">
+      <div class="vv-footer__strip-meta">
+        <span>{footerBottomStrip.copyright}</span>
+        <span aria-hidden="true">·</span>
+        <span>{footerBottomStrip.nip}</span>
+        <span aria-hidden="true">·</span>
+        <a
+          href={footerBottomStrip.phone.href}
+          class="vv-footer__strip-link"
+          aria-label={`${dict.nav.phone}: ${footerBottomStrip.phone.display}`}
+        >
+          {footerBottomStrip.phone.display}
+        </a>
+        <span aria-hidden="true">·</span>
+        <a
+          href={footerBottomStrip.email.href}
+          class="vv-footer__strip-link"
+          aria-label={`${dict.nav.email}: ${footerBottomStrip.email.display}`}
+        >
+          {footerBottomStrip.email.display}
+        </a>
+      </div>
+
+      <div class="vv-footer__strip-seal">
+        <span class="vv-footer__built-by">{dict.footer.builtBy}</span>
+        <QualitySealBadge locale={locale} />
+      </div>
+    </div>
+  </Container>
+</footer>
+
+<style>
+  .vv-footer {
+    background-color: var(--vv-color-bg-inverse);
+    color: var(--vv-color-fg-inverse);
+    padding-block: var(--vv-space-16) var(--vv-space-8);
+    margin-top: auto;
+  }
+
+  .vv-footer :global(a) {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .vv-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-10);
+    padding-bottom: var(--vv-space-12);
+  }
+
+  @media (min-width: 640px) {
+    .vv-footer__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--vv-space-8);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-footer__grid {
+      /* 4 kolumny — brand szerszy */
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: var(--vv-space-10);
+    }
+  }
+
+  /* ---- Column ---- */
+
+  .vv-footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-4);
+  }
+
+  .vv-footer__col--brand {
+    gap: var(--vv-space-5);
+    max-width: 360px;
+  }
+
+  .vv-footer__brand-link {
+    display: inline-block;
+    width: fit-content;
+  }
+
+  .vv-footer__logo {
+    filter: brightness(0) invert(1);
+    width: auto;
+  }
+
+  .vv-footer__tagline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-1);
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-footer__tagline-secondary {
+    font-weight: var(--vv-typography-font-weight-medium);
+    color: var(--vv-color-border-strong);
+    font-size: var(--vv-typography-font-size-base);
+  }
+
+  .vv-footer__brand-desc {
+    font-size: var(--vv-typography-font-size-sm);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-border-strong);
+  }
+
+  .vv-footer__heading {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-sm);
+    font-weight: var(--vv-typography-font-weight-bold);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--vv-color-fg-inverse);
+  }
+
+  .vv-footer__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+    margin: 0;
+    padding: 0;
+  }
+
+  .vv-footer__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-2);
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-border-strong) !important;
+    line-height: var(--vv-typography-line-height-snug);
+    transition: color var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-footer__link:hover,
+  .vv-footer__link:focus-visible {
+    color: var(--vv-color-fg-inverse) !important;
+  }
+
+  .vv-footer__link-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--vv-radius-full);
+    background-color: var(--vv-footer-accent, var(--vv-color-brand-red));
+    flex-shrink: 0;
+  }
+
+  /* ---- Social ---- */
+
+  .vv-footer__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+    margin: 0;
+    padding: 0;
+  }
+
+  .vv-footer__social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-1);
+    padding: var(--vv-space-2) var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-sm);
+    font-weight: var(--vv-typography-font-weight-medium);
+    border: 1px solid var(--vv-color-border-strong);
+    border-radius: var(--vv-radius-full);
+    transition:
+      background-color var(--vv-motion-duration-fast)
+        var(--vv-motion-easing-standard),
+      border-color var(--vv-motion-duration-fast)
+        var(--vv-motion-easing-standard);
+  }
+
+  .vv-footer__social-link:hover,
+  .vv-footer__social-link:focus-visible {
+    background-color: var(--vv-color-fg-inverse);
+    color: var(--vv-color-bg-inverse) !important;
+    border-color: var(--vv-color-fg-inverse);
+  }
+
+  /* ---- Bottom strip ---- */
+
+  .vv-footer__strip {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-4);
+    padding-top: var(--vv-space-6);
+    border-top: 1px solid color-mix(in srgb, var(--vv-color-fg-inverse) 12%, transparent);
+    font-size: var(--vv-typography-font-size-xs);
+    color: var(--vv-color-border-strong);
+  }
+
+  @media (min-width: 768px) {
+    .vv-footer__strip {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .vv-footer__strip-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--vv-space-2);
+  }
+
+  /* WCAG 1.4.1 Use of Color: w paśmie copyright telefon/email mixed z tekstem,
+     więc underline jest wymagany jako non-color wskaźnik linku. */
+  .vv-footer__strip-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.18em;
+    transition: color var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-footer__strip-link:hover,
+  .vv-footer__strip-link:focus-visible {
+    color: var(--vv-color-fg-inverse) !important;
+  }
+
+  .vv-footer__strip-seal {
+    display: flex;
+    align-items: center;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-footer__built-by {
+    font-size: var(--vv-typography-font-size-xs);
+    color: var(--vv-color-border-strong);
+  }
+</style>

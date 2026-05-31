@@ -1,0 +1,779 @@
+---
+/**
+ * Header — strona docelowo headera Via Viator.
+ * - Top utility bar: telefon klikalny + LangSwitcher (>=lg)
+ * - Main bar: LogoMark + primary nav z dropdownem „Oferta" + CTA „Zadzwoń"
+ * - Mobile: hamburger toggle + drawer (vanilla JS, no React island)
+ * - Sticky on scroll z subtle shadow
+ *
+ * A11y: role="banner" na <header>, role="navigation" + aria-label na <nav>,
+ * aria-expanded na hamburgerze, aria-current="page" na aktywnym linku.
+ */
+
+import { getDictionary, type Locale, type Dictionary } from "@i18n/index";
+import { primaryNav } from "@data/nav";
+import type { NavLink } from "@data/nav";
+import { company } from "@data/company";
+import Container from "@components/ui/Container.astro";
+import LogoMark from "@components/ui/LogoMark.astro";
+import Button from "@components/ui/Button.astro";
+import LangSwitcher from "@components/ui/LangSwitcher.astro";
+import Icon from "@components/ui/Icon.astro";
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+  alternates?: { lang: string; href: string }[];
+}
+
+const { locale, currentPath, alternates } = Astro.props;
+
+const dict: Dictionary = getDictionary(locale);
+
+// Pomocniki — wyciągnięte poza JSX, by Astro parser nie krzyczał na `<`.
+function isActive(href: string, current: string): boolean {
+  if (href === "/" || href === "/en/") {
+    return current === href || current === href.replace(/\/$/, "");
+  }
+  return current === href || current.startsWith(href + "/");
+}
+
+function tKey(path: string): string {
+  const parts = path.split(".");
+  let cur: unknown = dict;
+  for (const k of parts) {
+    if (cur && typeof cur === "object" && k in (cur as Record<string, unknown>)) {
+      cur = (cur as Record<string, unknown>)[k];
+    } else {
+      return path;
+    }
+  }
+  return typeof cur === "string" ? cur : path;
+}
+
+function localizedHref(item: NavLink): string {
+  return locale === "pl" ? item.href : item.hrefEn;
+}
+
+const contactHref = locale === "pl" ? "/kontakt" : "/en/contact";
+const homeHref = locale === "pl" ? "/" : "/en/";
+const navAriaLabel = dict.nav.primaryNavAria;
+const drawerAriaLabel = dict.nav.mobileMenuAria;
+---
+
+<header class="vv-header" role="banner" data-vv-header>
+  {/* ---- Utility bar (>= lg) ---- */}
+  <div class="vv-header__utility">
+    <Container size="wide" class="vv-header__utility-inner">
+      <ul class="vv-header__utility-list" role="list">
+        <li>
+          <a
+            href={company.phoneHref}
+            class="vv-header__utility-link"
+            aria-label={`${dict.nav.phone}: ${company.phoneDisplay}`}
+          >
+            <Icon name="phone" size={14} />
+            <span>{company.phoneDisplay}</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href={`mailto:${company.emailContact}`}
+            class="vv-header__utility-link"
+            aria-label={`${dict.nav.email}: ${company.emailContact}`}
+          >
+            <Icon name="mail" size={14} />
+            <span>{company.emailContact}</span>
+          </a>
+        </li>
+        <li class="vv-header__utility-lang">
+          <LangSwitcher
+            currentLocale={locale}
+            currentPath={currentPath}
+            alternates={alternates}
+          />
+        </li>
+      </ul>
+    </Container>
+  </div>
+
+  {/* ---- Main bar ---- */}
+  <div class="vv-header__main">
+    <Container size="wide" class="vv-header__main-inner">
+      <a href={homeHref} class="vv-header__brand" aria-label={dict.brand.name}>
+        <LogoMark variant="primary" height={36} locale={locale} priority />
+      </a>
+
+      <nav class="vv-header__nav" aria-label={navAriaLabel} id="vv-primary-nav">
+        <ul role="list" class="vv-header__nav-list">
+          {
+            primaryNav.map((item) => {
+              const href = localizedHref(item);
+              const label = tKey(item.labelKey);
+              const active = isActive(href, currentPath);
+              const hasChildren = item.children && item.children.length > 0;
+              const dropdownId = `vv-offer-${item.labelKey.replace(/\./g, "-")}`;
+
+              if (hasChildren && item.children) {
+                return (
+                  <li class="vv-header__nav-item vv-header__nav-item--dropdown">
+                    <button
+                      type="button"
+                      class="vv-header__nav-link vv-header__nav-toggle"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                      aria-controls={dropdownId}
+                      data-vv-dropdown-toggle
+                    >
+                      <span>{label}</span>
+                      <Icon name="chevron-down" size={14} class="vv-header__caret" />
+                    </button>
+                    {/* Dropdown jest nawigacją site, nie aplikacją —
+                        świadomie unikamy role="menu"/role="menuitem"
+                        (anti-pattern wg WAI-ARIA APG dla nav). Standardowy
+                        <ul> z <a> + aria-expanded na trigger wystarcza. */}
+                    <div class="vv-header__dropdown" id={dropdownId} hidden>
+                      <ul role="list" class="vv-header__dropdown-list">
+                        {item.children.map((child) => {
+                          const childHref = localizedHref(child);
+                          const childLabel = tKey(child.labelKey);
+                          const childDesc = child.shortDescKey
+                            ? tKey(child.shortDescKey)
+                            : null;
+                          const childStyle = child.accentColor
+                            ? `--vv-dropdown-accent:${child.accentColor}`
+                            : undefined;
+                          return (
+                            <li>
+                              <a
+                                href={childHref}
+                                class="vv-header__dropdown-link"
+                                style={childStyle}
+                              >
+                                <span class="vv-header__dropdown-bullet" />
+                                <span class="vv-header__dropdown-text">
+                                  <span class="vv-header__dropdown-title">{childLabel}</span>
+                                  {childDesc && (
+                                    <span class="vv-header__dropdown-desc">{childDesc}</span>
+                                  )}
+                                </span>
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  </li>
+                );
+              }
+
+              return (
+                <li class="vv-header__nav-item">
+                  <a
+                    href={href}
+                    class:list={["vv-header__nav-link", active ? "is-active" : null]}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    {label}
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+
+      <div class="vv-header__cta">
+        <Button
+          variant="primary"
+          size="sm"
+          href={company.phoneHref}
+          ariaLabel={dict.nav.callUs}
+        >
+          <Icon name="phone" size={16} />
+          <span>{dict.nav.callUs}</span>
+        </Button>
+      </div>
+
+      <button
+        type="button"
+        class="vv-header__hamburger"
+        aria-label={dict.nav.menuOpen}
+        aria-controls="vv-mobile-drawer"
+        aria-expanded="false"
+        data-vv-mobile-toggle
+        data-label-open={dict.nav.menuOpen}
+        data-label-close={dict.nav.menuClose}
+      >
+        <Icon name="menu" size={24} class="vv-header__hamburger-open" />
+        <Icon name="close" size={24} class="vv-header__hamburger-close" />
+      </button>
+    </Container>
+  </div>
+
+  {/* ---- Mobile drawer ---- */}
+  <div
+    class="vv-header__drawer"
+    id="vv-mobile-drawer"
+    hidden
+    aria-label={drawerAriaLabel}
+  >
+    <Container size="wide" class="vv-header__drawer-inner">
+      <ul role="list" class="vv-header__drawer-list">
+        {
+          primaryNav.map((item) => {
+            const href = localizedHref(item);
+            const label = tKey(item.labelKey);
+            const active = isActive(href, currentPath);
+            const hasChildren = item.children && item.children.length > 0;
+
+            if (hasChildren && item.children) {
+              return (
+                <li>
+                  <details class="vv-header__drawer-details">
+                    <summary class="vv-header__drawer-summary">
+                      <span>{label}</span>
+                      <Icon name="chevron-down" size={16} />
+                    </summary>
+                    <ul role="list" class="vv-header__drawer-sublist">
+                      {item.children.map((child) => {
+                        const childHref = localizedHref(child);
+                        const childLabel = tKey(child.labelKey);
+                        return (
+                          <li>
+                            <a href={childHref} class="vv-header__drawer-sublink">
+                              {childLabel}
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </details>
+                </li>
+              );
+            }
+            return (
+              <li>
+                <a
+                  href={href}
+                  class:list={["vv-header__drawer-link", active ? "is-active" : null]}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {label}
+                </a>
+              </li>
+            );
+          })
+        }
+        <li class="vv-header__drawer-divider" aria-hidden="true" />
+        <li>
+          <a href={contactHref} class="vv-header__drawer-link">{dict.nav.contact}</a>
+        </li>
+        <li>
+          <a href={company.phoneHref} class="vv-header__drawer-link">
+            {company.phoneDisplay}
+          </a>
+        </li>
+        <li>
+          <a href={`mailto:${company.emailContact}`} class="vv-header__drawer-link">
+            {company.emailContact}
+          </a>
+        </li>
+        <li class="vv-header__drawer-lang">
+          <LangSwitcher
+            currentLocale={locale}
+            currentPath={currentPath}
+            alternates={alternates}
+          />
+        </li>
+      </ul>
+    </Container>
+  </div>
+</header>
+
+<script>
+  // ---- Sticky shadow on scroll ----
+  const header = document.querySelector<HTMLElement>("[data-vv-header]");
+  if (header) {
+    const onScroll = () => {
+      if (window.scrollY > 8) header.dataset.scrolled = "true";
+      else delete header.dataset.scrolled;
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  // ---- Desktop dropdown ----
+  const dropdownToggles = document.querySelectorAll<HTMLButtonElement>(
+    "[data-vv-dropdown-toggle]",
+  );
+
+  const closeAllDropdowns = () => {
+    dropdownToggles.forEach((t) => {
+      t.setAttribute("aria-expanded", "false");
+      const id = t.getAttribute("aria-controls");
+      const panel = id ? document.getElementById(id) : null;
+      if (panel) panel.hidden = true;
+    });
+  };
+
+  dropdownToggles.forEach((toggle) => {
+    const id = toggle.getAttribute("aria-controls");
+    const panel = id ? document.getElementById(id) : null;
+    if (!panel) return;
+
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      closeAllDropdowns();
+      if (!isOpen) {
+        toggle.setAttribute("aria-expanded", "true");
+        panel.hidden = false;
+      }
+    });
+
+    const parentItem = toggle.closest(".vv-header__nav-item");
+    if (parentItem) {
+      const mediaQuery = window.matchMedia("(min-width: 1024px)");
+      let hoverTimer: number | undefined;
+
+      parentItem.addEventListener("mouseenter", () => {
+        if (!mediaQuery.matches) return;
+        window.clearTimeout(hoverTimer);
+        closeAllDropdowns();
+        toggle.setAttribute("aria-expanded", "true");
+        panel.hidden = false;
+      });
+      parentItem.addEventListener("mouseleave", () => {
+        if (!mediaQuery.matches) return;
+        hoverTimer = window.setTimeout(() => {
+          toggle.setAttribute("aria-expanded", "false");
+          panel.hidden = true;
+        }, 150);
+      });
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest(".vv-header__nav-item--dropdown")) {
+      closeAllDropdowns();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeAllDropdowns();
+  });
+
+  // ---- Mobile drawer toggle ----
+  const mobileToggle = document.querySelector<HTMLButtonElement>(
+    "[data-vv-mobile-toggle]",
+  );
+  const drawer = document.getElementById("vv-mobile-drawer");
+  if (mobileToggle && drawer) {
+    const closeDrawer = (returnFocus = true) => {
+      mobileToggle.setAttribute("aria-expanded", "false");
+      mobileToggle.setAttribute(
+        "aria-label",
+        mobileToggle.dataset.labelOpen ?? mobileToggle.getAttribute("aria-label") ?? "",
+      );
+      drawer.hidden = true;
+      document.documentElement.dataset.menuOpen = "false";
+      if (returnFocus) mobileToggle.focus();
+    };
+
+    const labelOpen =
+      mobileToggle.dataset.labelOpen ?? mobileToggle.getAttribute("aria-label") ?? "";
+    const labelClose = mobileToggle.dataset.labelClose ?? labelOpen;
+
+    mobileToggle.addEventListener("click", () => {
+      const isOpen = mobileToggle.getAttribute("aria-expanded") === "true";
+      mobileToggle.setAttribute("aria-expanded", String(!isOpen));
+      mobileToggle.setAttribute("aria-label", isOpen ? labelOpen : labelClose);
+      drawer.hidden = isOpen;
+      document.documentElement.dataset.menuOpen = isOpen ? "false" : "true";
+    });
+
+    // Escape zamyka drawer i wraca focus na hamburger (WCAG 2.1.2 No Keyboard Trap).
+    document.addEventListener("keydown", (e) => {
+      if (
+        e.key === "Escape" &&
+        mobileToggle.getAttribute("aria-expanded") === "true"
+      ) {
+        e.stopPropagation();
+        closeDrawer(true);
+      }
+    });
+
+    // Klik w link w drawerze → zamknij (UX, nie a11y blocker, ale wzmacnia poczucie kontroli).
+    drawer.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      if (target.closest("a[href]")) closeDrawer(false);
+    });
+  }
+</script>
+
+<style>
+  .vv-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--vv-z-header);
+    background-color: var(--vv-color-bg-page);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      box-shadow var(--vv-motion-duration-fast) var(--vv-motion-easing-standard);
+  }
+
+  .vv-header[data-scrolled="true"] {
+    border-bottom-color: var(--vv-color-border-subtle);
+    box-shadow: var(--vv-shadow-sm);
+  }
+
+  /* ---- Utility bar ---- */
+
+  .vv-header__utility {
+    display: none;
+    background-color: var(--vv-color-bg-elevated);
+    border-bottom: 1px solid var(--vv-color-border-subtle);
+    font-size: var(--vv-typography-font-size-xs);
+    color: var(--vv-color-fg-secondary);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-header__utility {
+      display: block;
+    }
+  }
+
+  .vv-header__utility-inner {
+    display: flex;
+    justify-content: flex-end;
+    padding-block: var(--vv-space-2);
+  }
+
+  .vv-header__utility-list {
+    display: flex;
+    align-items: center;
+    gap: var(--vv-space-5);
+    margin: 0;
+    padding: 0;
+  }
+
+  .vv-header__utility-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-1);
+    color: inherit;
+    text-decoration: none;
+    font-weight: var(--vv-typography-font-weight-medium);
+    transition: color var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-header__utility-link:hover {
+    color: var(--vv-color-fg-accent);
+  }
+
+  /* ---- Main bar ---- */
+
+  .vv-header__main-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--vv-space-4);
+    padding-block: var(--vv-space-3);
+  }
+
+  .vv-header__brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  /* ---- Nav (desktop) ---- */
+
+  .vv-header__nav {
+    display: none;
+    flex: 1;
+    justify-content: center;
+  }
+
+  @media (min-width: 1024px) {
+    .vv-header__nav {
+      display: flex;
+    }
+  }
+
+  .vv-header__nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--vv-space-2);
+    margin: 0;
+    padding: 0;
+  }
+
+  .vv-header__nav-item {
+    position: relative;
+  }
+
+  .vv-header__nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-1);
+    padding: var(--vv-space-2) var(--vv-space-3);
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-base);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+    text-decoration: none;
+    border-radius: var(--vv-radius-sm);
+    background: transparent;
+    cursor: pointer;
+    line-height: 1;
+    transition:
+      color var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      background-color var(--vv-motion-duration-fast)
+        var(--vv-motion-easing-standard);
+  }
+
+  .vv-header__nav-link:hover,
+  .vv-header__nav-link.is-active,
+  .vv-header__nav-link[aria-expanded="true"] {
+    color: var(--vv-color-fg-accent);
+    background-color: var(--vv-color-brand-red-50);
+  }
+
+  .vv-header__caret {
+    transition: transform var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-header__nav-link[aria-expanded="true"] .vv-header__caret {
+    transform: rotate(180deg);
+  }
+
+  /* ---- Dropdown ---- */
+
+  .vv-header__dropdown {
+    position: absolute;
+    top: calc(100% + var(--vv-space-2));
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 360px;
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    box-shadow: var(--vv-shadow-lg);
+    padding: var(--vv-space-2);
+    z-index: var(--vv-z-dropdown);
+  }
+
+  .vv-header__dropdown-list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .vv-header__dropdown-link {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--vv-space-3);
+    padding: var(--vv-space-3);
+    color: var(--vv-color-fg-primary);
+    text-decoration: none;
+    border-radius: var(--vv-radius-md);
+    transition: background-color var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-header__dropdown-link:hover,
+  .vv-header__dropdown-link:focus-visible {
+    background-color: var(--vv-color-bg-elevated);
+  }
+
+  .vv-header__dropdown-bullet {
+    flex-shrink: 0;
+    width: 4px;
+    height: 100%;
+    min-height: 28px;
+    background-color: var(--vv-dropdown-accent, var(--vv-color-brand-red));
+    border-radius: var(--vv-radius-full);
+  }
+
+  .vv-header__dropdown-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-header__dropdown-title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-base);
+    font-weight: var(--vv-typography-font-weight-semibold);
+  }
+
+  .vv-header__dropdown-desc {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-normal);
+  }
+
+  /* ---- CTA (desktop) ---- */
+
+  .vv-header__cta {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .vv-header__cta {
+      display: inline-flex;
+    }
+  }
+
+  /* ---- Hamburger ---- */
+
+  .vv-header__hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--vv-radius-md);
+    color: var(--vv-color-fg-primary);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color var(--vv-motion-duration-fast)
+      var(--vv-motion-easing-standard);
+  }
+
+  .vv-header__hamburger:hover {
+    background-color: var(--vv-color-bg-elevated);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-header__hamburger {
+      display: none;
+    }
+  }
+
+  .vv-header__hamburger-close {
+    display: none;
+  }
+
+  .vv-header__hamburger[aria-expanded="true"] .vv-header__hamburger-open {
+    display: none;
+  }
+
+  .vv-header__hamburger[aria-expanded="true"] .vv-header__hamburger-close {
+    display: inline-block;
+  }
+
+  /* ---- Mobile drawer ---- */
+
+  .vv-header__drawer {
+    background-color: var(--vv-color-bg-page);
+    border-top: 1px solid var(--vv-color-border-subtle);
+    box-shadow: var(--vv-shadow-md);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-header__drawer {
+      display: none !important;
+    }
+  }
+
+  .vv-header__drawer-inner {
+    padding-block: var(--vv-space-4) var(--vv-space-6);
+  }
+
+  .vv-header__drawer-list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-1);
+  }
+
+  .vv-header__drawer-link {
+    display: block;
+    padding: var(--vv-space-3) var(--vv-space-2);
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+    text-decoration: none;
+    border-radius: var(--vv-radius-sm);
+  }
+
+  .vv-header__drawer-link.is-active {
+    color: var(--vv-color-fg-accent);
+  }
+
+  .vv-header__drawer-details {
+    border-radius: var(--vv-radius-sm);
+  }
+
+  .vv-header__drawer-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--vv-space-2);
+    padding: var(--vv-space-3) var(--vv-space-2);
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .vv-header__drawer-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .vv-header__drawer-details[open] .vv-header__drawer-summary svg {
+    transform: rotate(180deg);
+  }
+
+  .vv-header__drawer-sublist {
+    margin: 0;
+    padding: var(--vv-space-1) 0 var(--vv-space-2) var(--vv-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 2px solid var(--vv-color-border-subtle);
+  }
+
+  .vv-header__drawer-sublink {
+    display: block;
+    padding: var(--vv-space-2) var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    text-decoration: none;
+    border-radius: var(--vv-radius-sm);
+  }
+
+  .vv-header__drawer-sublink:hover,
+  .vv-header__drawer-sublink:focus-visible {
+    color: var(--vv-color-fg-accent);
+    background-color: var(--vv-color-brand-red-50);
+  }
+
+  .vv-header__drawer-divider {
+    height: 1px;
+    background-color: var(--vv-color-border-subtle);
+    margin-block: var(--vv-space-3);
+    list-style: none;
+  }
+
+  .vv-header__drawer-lang {
+    margin-top: var(--vv-space-3);
+  }
+</style>

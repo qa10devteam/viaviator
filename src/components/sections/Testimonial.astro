@@ -1,0 +1,110 @@
+---
+/**
+ * Testimonial — placeholder na social proof. Po launchu cytaty od klientów
+ * z pełnym imieniem/instytucją (P3 i P4) lub anonimowe (P1).
+ */
+
+import Card from "@components/ui/Card.astro";
+
+interface Props {
+  quote: string;
+  author: string;
+  role?: string;
+  org?: string;
+  /** Akcent koloru segmentu (np. segment.color) — lewy pasek. */
+  accentColor?: string;
+  tone?: "default" | "elevated" | "outlined" | "surface";
+  class?: string;
+}
+
+const {
+  quote,
+  author,
+  role,
+  org,
+  accentColor,
+  tone = "elevated",
+  class: extraClass = "",
+} = Astro.props;
+---
+
+<figure class:list={["vv-testimonial", extraClass]}>
+  <Card tone={tone} accentColor={accentColor} class="vv-testimonial__card">
+    <span class="vv-testimonial__quote-mark" aria-hidden="true">"</span>
+    <blockquote class="vv-testimonial__quote">
+      <p>{quote}</p>
+    </blockquote>
+    <figcaption class="vv-testimonial__author">
+      <span class="vv-testimonial__name">{author}</span>
+      {
+        (role || org) && (
+          <span class="vv-testimonial__meta">
+            {role}
+            {role && org && <span aria-hidden="true">·</span>}
+            {org}
+          </span>
+        )
+      }
+    </figcaption>
+  </Card>
+</figure>
+
+<style>
+  .vv-testimonial {
+    margin: 0;
+  }
+
+  .vv-testimonial__card {
+    gap: var(--vv-space-3);
+    height: 100%;
+    position: relative;
+  }
+
+  .vv-testimonial__quote-mark {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-7xl);
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: 0.6;
+    color: var(--vv-color-brand-red-700);
+    opacity: 0.18;
+    margin-bottom: calc(-1 * var(--vv-space-4));
+  }
+
+  .vv-testimonial__quote {
+    margin: 0;
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-medium);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-testimonial__quote p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .vv-testimonial__author {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: auto;
+    padding-top: var(--vv-space-3);
+    border-top: 1px solid var(--vv-color-border-subtle);
+  }
+
+  .vv-testimonial__name {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-base);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-testimonial__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-2);
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+  }
+</style>

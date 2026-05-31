@@ -1,0 +1,788 @@
+---
+/**
+ * /o-nas — strona „O nas" Via Viator (PL).
+ *
+ * Sekcje (kolejność per spec PM):
+ *  1. Hero          — close-up V logo, eyebrow „Patryk Tomeczek, Adrian Kaszowski i bus".
+ *  2. Po co jesteśmy — Mission (manifest punktualności).
+ *  3. Jak myślimy   — 3 archetypy Brand Book v1.0 (Mędrzec 60 / Opiekun 30 / Odkrywca 10),
+ *                     przepisane bez korpomowy.
+ *  4. Zespół        — Patryk (face of brand) + Adrian (cicha dobroć, bez tytułu „ksiądz").
+ *  5. Gdzie jeździmy — 4 województwa + 3 huby lotniskowe, prawa kolumna = inline SVG PL.
+ *  6. Flota         — tabela company.fleet + eventEquipment + eventEquipmentPlanned.
+ *  7. CTA           — „Zaplanuj z nami kurs/wycieczkę/wynajem" → /kontakt.
+ *
+ * SEO: seoMap.oNas + JSON-LD BreadcrumbList.
+ * A11y: każda sekcja ma `aria-labelledby`, kontrast WCAG AA, mapa SVG ma `role="img"` + `aria-label`.
+ *
+ * Architektura zgodna z `przewozy-rodzinne.astro` (sekcje + tone alternation default↔elevated↔surface).
+ * Wartości tekstowe pochodzą z `dict.about.*` — żadnych hardkodów.
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Card from "@components/ui/Card.astro";
+import Icon from "@components/ui/Icon.astro";
+import Hero from "@components/sections/Hero.astro";
+import CTASection from "@components/sections/CTASection.astro";
+import { getDictionary } from "@i18n/index";
+import { company } from "@data/company";
+import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
+import { breadcrumbForRoute } from "@lib/schema";
+
+const locale = "pl" as const;
+const dict = getDictionary(locale);
+const seo = seoMap.oNas;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("oNas", locale, SITE);
+const alternates = buildAlternates("oNas", SITE);
+
+// JSON-LD: BreadcrumbList — Home → O nas.
+const breadcrumbJsonLd = breadcrumbForRoute("oNas", locale, SITE);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Treść lokalna — sekcje, które nie są w dict (przepisane archetypy + mini-bio)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Manifest pod sekcją „Po co jesteśmy" (dopisek do mission.body z dict).
+const missionManifest =
+  "Punktualność wpisana w nazwę. Cztery województwa, jeden numer telefonu, jedno zobowiązanie: będziesz na czas.";
+
+// Archetypy bez korpomowy — przepisane wprost. Brand Book v1.0: Mędrzec 60% / Opiekun 30% / Odkrywca 10%.
+const archetypes = [
+  {
+    icon: "shield-check" as const,
+    name: "Mędrzec",
+    weight: "60%",
+    body:
+      "Znamy parkingi, bramki, korki. Ekspertyza to nie marketing — to godziny zaoszczędzone w trasie.",
+  },
+  {
+    icon: "users" as const,
+    name: "Opiekun",
+    weight: "30%",
+    body:
+      "Wózek wniesiemy, walizkę też, dziecko zapniemy w foteliku. Drobiazgi, których nikt nie nagradza.",
+  },
+  {
+    icon: "sparkles" as const,
+    name: "Odkrywca",
+    weight: "10%",
+    body:
+      "Wycieczki, pielgrzymki, weekendy z rodziną. Trasa to nie tylko punkt A i B.",
+  },
+];
+
+// Patryk bio — fallback do dict, gdy klient zaktualizuje, dict się posypie automatycznie.
+const patrykBio =
+  dict.about.team.patrykBio ??
+  "Odbiera telefon. Zna lokalne lotniska. Decyzje podejmuje szybko.";
+
+// Adrian — short note bez tytułu „ksiądz" (zasada cichej dobroci z Brand Book v1.0).
+const adrianNote =
+  "Spółka założona we współpracy z Adrianem Kaszowskim. Adrian pozostaje w tle operacji.";
+
+// Inicjały Patryka — placeholder zamiast portretu (klient nie udostępnił zdjęcia).
+const patrykInitials = "PT";
+---
+
+<BaseLayout
+  title={seo.titlePl}
+  description={seo.descriptionPl}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={`${SITE}${seo.ogImage}`}
+  jsonLd={breadcrumbJsonLd}
+  bodyClass="page-about"
+>
+  {/* 1. HERO — close-up V logo, headline z dict.about.h1 */}
+  <Hero
+    eyebrow="Patryk Tomeczek, Adrian Kaszowski i bus"
+    headline={dict.about.h1}
+    subhead={dict.about.intro}
+    image="/images/brand-detail/brand-logo-close.jpg"
+    imageAlt="Logo Via Viator na karoserii Renault Trafic — zbliżenie na literę V."
+    align="left"
+    tone="default"
+    priority={true}
+  />
+
+  {/* 2. „Po co jesteśmy" — mission + manifest */}
+  <Section tone="elevated" ariaLabelledby="about-mission-title">
+    <Container size="default">
+      <div class="vv-about-mission">
+        <h2 id="about-mission-title" class="vv-about-section-title">
+          {dict.about.mission.title}
+        </h2>
+        <p class="vv-about-section-lead">{dict.about.mission.body}</p>
+        <p class="vv-about-mission__manifest">{missionManifest}</p>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 3. „Jak myślimy" — 3 archetypy z wagami */}
+  <Section tone="default" ariaLabelledby="about-archetypes-title">
+    <Container size="default">
+      <header class="vv-about-section-head">
+        <h2 id="about-archetypes-title" class="vv-about-section-title">
+          {dict.about.archetypes.title}
+        </h2>
+        <p class="vv-about-section-lead">{dict.about.archetypes.body}</p>
+      </header>
+
+      <ul class="vv-about-archetypes" role="list">
+        {
+          archetypes.map((a) => (
+            <li>
+              <Card tone="default" class="vv-about-archetype">
+                <div class="vv-about-archetype__head">
+                  <span class="vv-about-archetype__icon" aria-hidden="true">
+                    <Icon name={a.icon} size={22} />
+                  </span>
+                  <span class="vv-about-archetype__weight" aria-label={`udział ${a.weight}`}>
+                    {a.weight}
+                  </span>
+                </div>
+                <h3 class="vv-about-archetype__name">{a.name}</h3>
+                <p class="vv-about-archetype__body">{a.body}</p>
+              </Card>
+            </li>
+          ))
+        }
+      </ul>
+    </Container>
+  </Section>
+
+  {/* 4. Zespół — Patryk + Adrian (bez tytułu, zasada cichej dobroci) */}
+  <Section tone="surface" ariaLabelledby="about-team-title">
+    <Container size="default">
+      <header class="vv-about-section-head">
+        <h2 id="about-team-title" class="vv-about-section-title">
+          {dict.about.team.title}
+        </h2>
+      </header>
+
+      <div class="vv-about-team">
+        {/* Patryk — face of brand, avatar placeholder z inicjałami */}
+        <Card tone="elevated" class="vv-about-team__card">
+          <div class="vv-about-team__avatar" aria-hidden="true">
+            <span class="vv-about-team__initials">{patrykInitials}</span>
+          </div>
+          <div class="vv-about-team__copy">
+            <h3 class="vv-about-team__name">{dict.about.team.patrykName}</h3>
+            <p class="vv-about-team__role">{dict.about.team.patrykRole}</p>
+            <p class="vv-about-team__bio">{patrykBio}</p>
+          </div>
+        </Card>
+
+        {/* Adrian — krótka notka, bez avatara, bez tytułu */}
+        <Card tone="outlined" class="vv-about-team__card vv-about-team__card--note">
+          <p class="vv-about-team__note">{adrianNote}</p>
+        </Card>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 5. „Gdzie jeździmy" — region + huby + mapa SVG */}
+  <Section tone="default" ariaLabelledby="about-region-title">
+    <Container size="default">
+      <header class="vv-about-section-head">
+        <h2 id="about-region-title" class="vv-about-section-title">
+          {dict.about.region.title}
+        </h2>
+        <p class="vv-about-section-lead">{dict.about.region.body}</p>
+      </header>
+
+      <div class="vv-about-region">
+        {/* Lewa kolumna — listy województw i hubów */}
+        <div class="vv-about-region__lists">
+          <div class="vv-about-region__group">
+            <h3 class="vv-about-region__heading">Województwa</h3>
+            <ul class="vv-about-region__list" role="list">
+              {
+                company.region.map((r) => (
+                  <li>
+                    <Icon name="map-pin" size={16} />
+                    <span>{r}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <div class="vv-about-region__group">
+            <h3 class="vv-about-region__heading">Huby lotniskowe</h3>
+            <ul class="vv-about-region__list" role="list">
+              {
+                company.hubs.map((h) => (
+                  <li>
+                    <Icon name="globe" size={16} />
+                    <span>{h}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+
+        {/* Prawa kolumna — uproszczony SVG mapy PL z zaznaczonymi 4 województwami.
+            Inline (brak HTTP), aria-label dla screen readerów. Cztery elipsy
+            symbolizują regiony — to NIE jest geodezyjnie poprawna mapa, tylko
+            wizualizacja zasięgu (decyzja produktowa: prawdziwa mapa = osobny
+            asset designerski, którego klient jeszcze nie dostarczył). */}
+        <figure class="vv-about-region__map">
+          <svg
+            viewBox="0 0 320 280"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Mapa zasięgu Via Viator — śląskie, opolskie, małopolskie, świętokrzyskie"
+            class="vv-about-region__map-svg"
+          >
+            {/* Tło — kontur uproszczony Polski (placeholder shape) */}
+            <path
+              d="M40 60 Q80 30 130 35 Q190 40 250 50 Q285 90 280 140 Q275 200 240 230 Q180 250 110 240 Q60 230 35 180 Q25 130 40 60 Z"
+              fill="var(--vv-color-bg-surface)"
+              stroke="var(--vv-color-border-subtle)"
+              stroke-width="1.5"
+            />
+            {/* Strefa operacyjna — południowa Polska, czerwony fill z transparency */}
+            <path
+              d="M60 150 Q120 145 200 155 Q260 165 270 200 Q250 230 180 235 Q100 235 55 215 Q40 185 60 150 Z"
+              fill="color-mix(in srgb, var(--vv-color-brand-red) 18%, transparent)"
+              stroke="var(--vv-color-brand-red)"
+              stroke-width="2"
+              stroke-dasharray="6 4"
+            />
+            {/* 4 województwa — koliste markery z labelem */}
+            <g class="vv-about-region__marker">
+              {/* śląskie (centrum operacyjne, większa kropka) */}
+              <circle cx="155" cy="185" r="9" fill="var(--vv-color-brand-red)" />
+              <text x="155" y="208" text-anchor="middle" fill="var(--vv-color-fg-primary)" font-size="11" font-weight="600">Śląskie</text>
+              {/* opolskie */}
+              <circle cx="110" cy="180" r="6" fill="var(--vv-color-brand-red)" />
+              <text x="105" y="170" text-anchor="middle" fill="var(--vv-color-fg-primary)" font-size="10">Opolskie</text>
+              {/* małopolskie */}
+              <circle cx="205" cy="200" r="6" fill="var(--vv-color-brand-red)" />
+              <text x="220" y="222" text-anchor="middle" fill="var(--vv-color-fg-primary)" font-size="10">Małopolskie</text>
+              {/* świętokrzyskie */}
+              <circle cx="225" cy="155" r="6" fill="var(--vv-color-brand-red)" />
+              <text x="230" y="145" text-anchor="middle" fill="var(--vv-color-fg-primary)" font-size="10">Świętokrzyskie</text>
+            </g>
+            {/* Huby lotniskowe — trójkąty */}
+            <g class="vv-about-region__hubs">
+              {/* Pyrzowice (nad Śląskiem) */}
+              <polygon points="155,165 161,175 149,175" fill="var(--vv-color-fg-primary)" />
+              {/* Balice (Kraków) */}
+              <polygon points="195,185 201,195 189,195" fill="var(--vv-color-fg-primary)" />
+              {/* Wrocław */}
+              <polygon points="85,155 91,165 79,165" fill="var(--vv-color-fg-primary)" />
+            </g>
+          </svg>
+          <figcaption class="vv-about-region__map-caption">
+            Zasięg operacyjny — 4 województwa, 3 huby lotniskowe.
+            Wizualizacja schematyczna.
+          </figcaption>
+        </figure>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 6. Flota — tabela company.fleet + event equipment */}
+  <Section tone="elevated" ariaLabelledby="about-fleet-title">
+    <Container size="default">
+      <header class="vv-about-section-head">
+        <h2 id="about-fleet-title" class="vv-about-section-title">
+          {dict.about.fleet.title}
+        </h2>
+        <p class="vv-about-section-lead">{dict.about.fleet.body}</p>
+      </header>
+
+      {/* Tabela floty — wszystkie pojazdy z company.fleet, z typem/miejscami/brandingiem */}
+      <div class="vv-about-fleet__table-wrap">
+        <table class="vv-about-fleet__table">
+          <caption class="visually-hidden">
+            Lista pojazdów Via Viator wraz z typem, liczbą miejsc i statusem brandingu.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Model</th>
+              <th scope="col">Typ</th>
+              <th scope="col">Miejsca</th>
+              <th scope="col">Branding</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              company.fleet.map((v) => (
+                <tr>
+                  <th scope="row" class="vv-about-fleet__model">
+                    {v.model}
+                  </th>
+                  <td>{v.type}</td>
+                  <td>{v.seats}</td>
+                  <td>
+                    {v.branded ? (
+                      <span class="vv-about-fleet__check" aria-label="Branding tak">
+                        <Icon name="check" size={16} />
+                      </span>
+                    ) : (
+                      <span class="vv-about-fleet__dash" aria-label="Brak brandingu">
+                        —
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      {/* Sprzęt eventowy — krótki blok pod tabelą */}
+      <aside class="vv-about-fleet__events">
+        <h3 class="vv-about-fleet__events-title">Plus: sprzęt eventowy</h3>
+        <ul class="vv-about-fleet__events-list" role="list">
+          {
+            company.eventEquipment.map((eq) => (
+              <li>
+                <Icon name="check" size={16} />
+                <span>{eq}</span>
+              </li>
+            ))
+          }
+        </ul>
+        {company.eventEquipmentPlanned.length > 0 && (
+          <p class="vv-about-fleet__events-planned">
+            Jesienią 2026 dochodzą:{" "}
+            <strong>{company.eventEquipmentPlanned.join(", ")}</strong>.
+          </p>
+        )}
+      </aside>
+    </Container>
+  </Section>
+
+  {/* 7. CTA finalna — do /kontakt z mini-presetem */}
+  <CTASection
+    tone="brand"
+    title="Zaplanuj z nami kurs, wycieczkę lub wynajem"
+    body="Krótki brief: skąd, dokąd, kiedy, ile osób. Odpiszemy najszybciej, jak nasza obietnica pozwala."
+    primaryCta={{
+      label: dict.cta.sendBrief,
+      href: "/kontakt",
+      ariaLabel: "Przejdź do formularza kontaktowego",
+    }}
+    secondaryCta={{
+      label: `Zadzwoń: ${company.phoneDisplay}`,
+      href: company.phoneHref,
+      ariaLabel: `Zadzwoń: ${company.phoneDisplay}`,
+    }}
+    align="center"
+  />
+</BaseLayout>
+
+<style>
+  /* ── Wspólne nagłówki sekcji ───────────────────────────────────────── */
+  .vv-about-section-head {
+    margin: 0 0 var(--vv-space-10) 0;
+    max-width: 64ch;
+  }
+
+  .vv-about-section-title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 3.5vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-3) 0;
+    text-wrap: balance;
+  }
+
+  .vv-about-section-lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ── Mission ──────────────────────────────────────────────────────── */
+  .vv-about-mission {
+    max-width: 65ch;
+  }
+
+  .vv-about-mission__manifest {
+    margin: var(--vv-space-6) 0 0 0;
+    padding: var(--vv-space-5) var(--vv-space-6);
+    background-color: var(--vv-color-bg-page);
+    border-left: 4px solid var(--vv-color-brand-red);
+    border-radius: var(--vv-radius-md);
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+    line-height: var(--vv-typography-line-height-snug);
+    text-wrap: balance;
+  }
+
+  /* ── Archetypy ────────────────────────────────────────────────────── */
+  .vv-about-archetypes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 768px) {
+    .vv-about-archetypes {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .vv-about-archetype {
+    height: 100%;
+  }
+
+  .vv-about-archetype__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-about-archetype__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--vv-radius-md);
+    background-color: var(--vv-color-brand-red-50);
+    color: var(--vv-color-brand-red-700);
+  }
+
+  .vv-about-archetype__weight {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-sm);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-brand-red-700);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+  }
+
+  .vv-about-archetype__name {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-about-archetype__body {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0;
+  }
+
+  /* ── Zespół ───────────────────────────────────────────────────────── */
+  .vv-about-team {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 768px) {
+    .vv-about-team {
+      grid-template-columns: 1.4fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .vv-about-team__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 640px) {
+    .vv-about-team__card:not(.vv-about-team__card--note) {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .vv-about-team__card--note {
+    justify-content: center;
+  }
+
+  .vv-about-team__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(
+      135deg,
+      var(--vv-color-brand-red) 0%,
+      var(--vv-color-brand-red-700) 100%
+    );
+    box-shadow: var(--vv-shadow-md);
+  }
+
+  .vv-about-team__initials {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-3xl);
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    color: var(--vv-color-brand-white);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+  }
+
+  .vv-about-team__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+  }
+
+  .vv-about-team__name {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-2xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-about-team__role {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    color: var(--vv-color-brand-red-700);
+    margin: 0;
+  }
+
+  .vv-about-team__bio {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+  }
+
+  .vv-about-team__note {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* ── Region ───────────────────────────────────────────────────────── */
+  .vv-about-region {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-8);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-about-region {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--vv-space-12);
+      align-items: start;
+    }
+  }
+
+  .vv-about-region__lists {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-6);
+  }
+
+  .vv-about-region__group {
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    padding: var(--vv-space-6);
+  }
+
+  .vv-about-region__heading {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-4) 0;
+  }
+
+  .vv-about-region__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-about-region__list li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-2);
+    padding: var(--vv-space-2) var(--vv-space-4);
+    background-color: var(--vv-color-bg-surface);
+    border-radius: var(--vv-radius-full);
+    font-size: var(--vv-typography-font-size-sm);
+    font-weight: var(--vv-typography-font-weight-medium);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-about-region__list li :global(.vv-icon) {
+    color: var(--vv-color-brand-red-700);
+    flex-shrink: 0;
+  }
+
+  .vv-about-region__map {
+    margin: 0;
+    background-color: var(--vv-color-bg-elevated);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    padding: var(--vv-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-about-region__map-svg {
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    margin-inline: auto;
+    display: block;
+  }
+
+  .vv-about-region__map-caption {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    text-align: center;
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  /* ── Flota ────────────────────────────────────────────────────────── */
+  .vv-about-fleet__table-wrap {
+    overflow-x: auto;
+    border-radius: var(--vv-radius-lg);
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    margin: 0 0 var(--vv-space-8) 0;
+  }
+
+  .vv-about-fleet__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--vv-typography-font-size-base);
+  }
+
+  .vv-about-fleet__table thead th {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xs);
+    font-weight: var(--vv-typography-font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    color: var(--vv-color-fg-muted);
+    text-align: left;
+    padding: var(--vv-space-4) var(--vv-space-5);
+    background-color: var(--vv-color-bg-surface);
+    border-bottom: 1px solid var(--vv-color-border-subtle);
+  }
+
+  .vv-about-fleet__table tbody td,
+  .vv-about-fleet__table tbody th {
+    padding: var(--vv-space-4) var(--vv-space-5);
+    border-bottom: 1px solid var(--vv-color-border-subtle);
+    text-align: left;
+    color: var(--vv-color-fg-primary);
+    vertical-align: middle;
+  }
+
+  .vv-about-fleet__table tbody tr:last-child td,
+  .vv-about-fleet__table tbody tr:last-child th {
+    border-bottom: 0;
+  }
+
+  .vv-about-fleet__model {
+    font-family: var(--vv-typography-font-family-display);
+    font-weight: var(--vv-typography-font-weight-bold);
+  }
+
+  .vv-about-fleet__check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: color-mix(in srgb, var(--vv-color-state-success) 15%, transparent);
+    color: var(--vv-color-state-success);
+  }
+
+  .vv-about-fleet__dash {
+    color: var(--vv-color-fg-muted);
+    font-weight: var(--vv-typography-font-weight-bold);
+  }
+
+  .vv-about-fleet__events {
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-left: 4px solid var(--vv-color-brand-red);
+    border-radius: var(--vv-radius-md);
+    padding: var(--vv-space-6);
+  }
+
+  .vv-about-fleet__events-title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-4) 0;
+  }
+
+  .vv-about-fleet__events-list {
+    list-style: none;
+    margin: 0 0 var(--vv-space-4) 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+  }
+
+  .vv-about-fleet__events-list li {
+    display: flex;
+    align-items: center;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-about-fleet__events-list li :global(.vv-icon) {
+    color: var(--vv-color-brand-red-700);
+    flex-shrink: 0;
+  }
+
+  .vv-about-fleet__events-planned {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-about-fleet__events-planned strong {
+    color: var(--vv-color-fg-primary);
+  }
+</style>

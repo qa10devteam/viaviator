@@ -1,0 +1,119 @@
+---
+/**
+ * FeatureGrid — grid kart z ikoną + title + body.
+ * Konfigurowalna liczba kolumn (2/3/4) i tone (default/elevated).
+ */
+
+import Card from "@components/ui/Card.astro";
+import Icon from "@components/ui/Icon.astro";
+import type { IconName } from "@components/ui/Icon.astro";
+
+interface FeatureItem {
+  icon?: IconName;
+  title: string;
+  body: string;
+  href?: string;
+  ariaLabel?: string;
+  accentColor?: string;
+}
+
+interface Props {
+  items: FeatureItem[];
+  columns?: 2 | 3 | 4;
+  tone?: "default" | "elevated" | "outlined" | "surface";
+  class?: string;
+}
+
+const {
+  items,
+  columns = 3,
+  tone = "default",
+  class: extraClass = "",
+} = Astro.props;
+---
+
+<ul
+  class:list={["vv-features", `vv-features--cols-${columns}`, extraClass]}
+  role="list"
+>
+  {
+    items.map((item) => (
+      <li>
+        <Card
+          tone={tone}
+          href={item.href}
+          interactive={!!item.href}
+          accentColor={item.accentColor}
+          ariaLabel={item.ariaLabel}
+          class="vv-features__card"
+        >
+          {item.icon && (
+            <span class="vv-features__icon" aria-hidden="true">
+              <Icon name={item.icon} size={24} />
+            </span>
+          )}
+          <h3 class="vv-features__title">{item.title}</h3>
+          <p class="vv-features__body">{item.body}</p>
+        </Card>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .vv-features {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 640px) {
+    .vv-features--cols-2,
+    .vv-features--cols-3,
+    .vv-features--cols-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-features--cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .vv-features--cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .vv-features__card {
+    height: 100%;
+  }
+
+  .vv-features__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background-color: var(--vv-color-brand-red-50);
+    color: var(--vv-color-brand-red-700);
+    border-radius: var(--vv-radius-md);
+  }
+
+  .vv-features__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+  }
+
+  .vv-features__body {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+  }
+</style>

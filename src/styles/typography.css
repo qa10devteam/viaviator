@@ -1,0 +1,155 @@
+/* ------------------------------------------------------------------ */
+/* Via Viator — Typography                                            */
+/* Bricolage Grotesque dla display + body; mono dla code.             */
+/* Heading scale dopasowany do brandbook v1.0.                        */
+/* ------------------------------------------------------------------ */
+
+html {
+  font-family: var(--vv-typography-font-family-body);
+  font-size: var(--vv-typography-font-size-base);
+  line-height: var(--vv-typography-line-height-normal);
+  color: var(--vv-color-fg-primary);
+  background: var(--vv-color-bg-page);
+  font-feature-settings: "ss01", "cv11", "kern";
+}
+
+body {
+  font-weight: var(--vv-typography-font-weight-regular);
+  letter-spacing: var(--vv-typography-letter-spacing-normal);
+}
+
+/* ---------- Headings — class-based so we can semantically nest ----- */
+
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--vv-typography-font-family-display);
+  font-weight: var(--vv-typography-font-weight-bold);
+  line-height: var(--vv-typography-line-height-tight);
+  letter-spacing: var(--vv-typography-letter-spacing-tight);
+  color: var(--vv-color-fg-primary);
+  text-wrap: balance;
+}
+
+.h1 {
+  font-size: var(--vv-typography-font-size-6xl);
+  font-weight: var(--vv-typography-font-weight-extrabold);
+}
+
+.h2 {
+  font-size: var(--vv-typography-font-size-5xl);
+  font-weight: var(--vv-typography-font-weight-bold);
+}
+
+.h3 {
+  font-size: var(--vv-typography-font-size-4xl);
+  font-weight: var(--vv-typography-font-weight-bold);
+}
+
+.h4 {
+  font-size: var(--vv-typography-font-size-3xl);
+  font-weight: var(--vv-typography-font-weight-semibold);
+  line-height: var(--vv-typography-line-height-snug);
+}
+
+.h5 {
+  font-size: var(--vv-typography-font-size-2xl);
+  font-weight: var(--vv-typography-font-weight-semibold);
+  line-height: var(--vv-typography-line-height-snug);
+  letter-spacing: var(--vv-typography-letter-spacing-normal);
+}
+
+.h6 {
+  font-size: var(--vv-typography-font-size-xl);
+  font-weight: var(--vv-typography-font-weight-semibold);
+  line-height: var(--vv-typography-line-height-snug);
+  letter-spacing: var(--vv-typography-letter-spacing-normal);
+}
+
+/* Display variant — dla hero/tagline „Zawsze na miejscu" */
+.display {
+  font-family: var(--vv-typography-font-family-display);
+  font-size: var(--vv-typography-font-size-8xl);
+  font-weight: var(--vv-typography-font-weight-extrabold);
+  line-height: var(--vv-typography-line-height-tight);
+  letter-spacing: var(--vv-typography-letter-spacing-tight);
+  text-wrap: balance;
+}
+
+.eyebrow {
+  font-family: var(--vv-typography-font-family-display);
+  font-size: var(--vv-typography-font-size-sm);
+  font-weight: var(--vv-typography-font-weight-semibold);
+  letter-spacing: var(--vv-typography-letter-spacing-wider);
+  text-transform: uppercase;
+  /* WCAG 1.4.3 AA: #F13223 na białym = 4.42:1 (fail dla normal text 14px semibold).
+     #C2261A (brand-red-700) = 6.45:1 — AA OK. Patrz Audit Report 2026-05-31. */
+  color: var(--vv-color-brand-red-700);
+}
+
+/* ---------- Body text ---------------------------------------------- */
+
+.lede {
+  font-size: var(--vv-typography-font-size-xl);
+  line-height: var(--vv-typography-line-height-relaxed);
+  color: var(--vv-color-fg-secondary);
+  text-wrap: pretty;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* ---------- Inline ------------------------------------------------- */
+
+strong, b {
+  font-weight: var(--vv-typography-font-weight-semibold);
+  color: var(--vv-color-fg-primary);
+}
+
+em, i {
+  font-style: italic;
+}
+
+small {
+  font-size: var(--vv-typography-font-size-sm);
+  color: var(--vv-color-fg-muted);
+}
+
+code, kbd, samp, pre {
+  font-family: var(--vv-typography-font-family-mono);
+  font-size: 0.95em;
+}
+
+/* ---------- Links -------------------------------------------------- */
+
+/* WCAG 1.4.3 AA: dla linków treściowych używamy brand-red-700 (#C2261A → 6.45:1
+   na białym), nie brand-red (#F13223 → 4.42:1 < 4.5:1).
+   Komponenty z linkami na non-white tłach mogą nadpisywać color lokalnie. */
+a {
+  color: var(--vv-color-brand-red-700);
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.16em;
+  transition: color var(--vv-motion-duration-fast) var(--vv-motion-easing-standard);
+}
+
+a:hover {
+  color: var(--vv-color-brand-red);
+}
+
+/* ---------- Responsive scaling ------------------------------------- */
+/* Mobile-first scaling — duże nagłówki krzyczą na małym ekranie       */
+
+@media (max-width: 768px) {
+  .display { font-size: var(--vv-typography-font-size-6xl); }
+  .h1      { font-size: var(--vv-typography-font-size-5xl); }
+  .h2      { font-size: var(--vv-typography-font-size-4xl); }
+  .h3      { font-size: var(--vv-typography-font-size-3xl); }
+  .h4      { font-size: var(--vv-typography-font-size-2xl); }
+  .lede    { font-size: var(--vv-typography-font-size-lg); }
+}
+
+@media (max-width: 480px) {
+  .display { font-size: var(--vv-typography-font-size-5xl); }
+  .h1      { font-size: var(--vv-typography-font-size-4xl); }
+  .h2      { font-size: var(--vv-typography-font-size-3xl); }
+}

@@ -1,0 +1,11 @@
+/* ------------------------------------------------------------------ */
+/* Via Viator — Global stylesheet (entry point)                       */
+/* ------------------------------------------------------------------ */
+/* Bricolage Grotesque jest dostarczany przez @fontsource-variable     */
+/* (self-hosted woff2). Critical wght-axis latin-ext jest preloaded    */
+/* w BaseLayout.astro. Brak @import do Google Fonts (render-blocking   */
+/* + duplicate + CSP font-src 'self' by go zablokował).                */
+@import "./reset.css";
+@import "./tokens.generated.css";
+@import "./typography.css";
+@import "./utilities.css";

@@ -1,0 +1,278 @@
+---
+/**
+ * /en/cookies-policy — Via Viator Cookie Policy (EN).
+ *
+ * Renders content collection entry `legal/cookies-en.md` in BaseLayout.
+ *
+ * URL note: filename is `cookies-policy.astro` (plural "cookies") to match
+ *  `data/nav.ts` which links footer to `/en/cookies-policy`. The brief
+ *  text references `cookie-policy.astro` (singular) — minor brief typo;
+ *  we follow the nav/footer URL (single source of truth for routing).
+ *
+ * SEO:
+ *  - meta from dict.meta.cookies (EN dictionary)
+ *  - canonical `/en/cookies-policy`
+ *  - hreflang alternates: pl ↔ en (paired with `/polityka-cookies`)
+ *  - JSON-LD BreadcrumbList (Home → Cookie Policy)
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import { getEntry, render } from "astro:content";
+import { getDictionary } from "@i18n/index";
+
+const locale = "en" as const;
+const dict = getDictionary(locale);
+const meta = dict.meta.cookies;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = `${SITE}/en/cookies-policy`;
+const alternates = [
+  { lang: "pl", href: `${SITE}/polityka-cookies` },
+  { lang: "en", href: canonical },
+];
+
+const entry = await getEntry("legal", "cookies-en");
+if (!entry) {
+  throw new Error(
+    "Missing content entry: legal/cookies.en. Check src/content/legal/cookies-en.md"
+  );
+}
+const { Content } = await render(entry);
+const fm = entry.data;
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: `${SITE}/en/`,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: fm.title,
+      item: canonical,
+    },
+  ],
+};
+
+const webPageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: fm.title,
+  description: fm.summary ?? meta.description,
+  url: canonical,
+  inLanguage: "en",
+  isPartOf: { "@type": "WebSite", url: SITE, name: "Via Viator" },
+  datePublished: fm.publishedAt,
+  dateModified: fm.publishedAt,
+};
+---
+
+<BaseLayout
+  title={meta.title}
+  description={meta.description}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  jsonLd={[breadcrumbJsonLd, webPageJsonLd]}
+  bodyClass="page-legal page-cookies"
+>
+  <Section tone="default" ariaLabelledby="legal-title">
+    <Container size="prose">
+      <article class="vv-legal" aria-labelledby="legal-title">
+        <header class="vv-legal__header">
+          <p class="vv-legal__eyebrow">Legal</p>
+          <h1 id="legal-title" class="vv-legal__title">{fm.title}</h1>
+          <dl class="vv-legal__meta">
+            <div class="vv-legal__meta-row">
+              <dt>Version:</dt>
+              <dd>{fm.version}</dd>
+            </div>
+            <div class="vv-legal__meta-row">
+              <dt>Effective date:</dt>
+              <dd>
+                <time datetime={fm.publishedAt}>{fm.publishedAt}</time>
+              </dd>
+            </div>
+          </dl>
+          {fm.summary && <p class="vv-legal__summary">{fm.summary}</p>}
+        </header>
+
+        <div class="vv-legal__body">
+          <Content />
+        </div>
+      </article>
+    </Container>
+  </Section>
+</BaseLayout>
+
+<style>
+  .vv-legal__header {
+    padding-block: var(--vv-space-10) var(--vv-space-8);
+    border-bottom: 1px solid var(--vv-color-border-subtle);
+    margin-bottom: var(--vv-space-10);
+  }
+
+  .vv-legal__eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    color: var(--vv-color-brand-red-700);
+    margin: 0 0 var(--vv-space-3);
+  }
+
+  .vv-legal__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(2rem, 4.5vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-6);
+  }
+
+  .vv-legal__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-4) var(--vv-space-6);
+    margin: 0 0 var(--vv-space-4);
+    font-size: var(--vv-typography-font-size-sm);
+  }
+
+  .vv-legal__meta-row {
+    display: inline-flex;
+    gap: var(--vv-space-2);
+    align-items: baseline;
+  }
+
+  .vv-legal__meta dt {
+    color: var(--vv-color-fg-muted);
+    margin: 0;
+    font-weight: var(--vv-typography-font-weight-medium);
+  }
+
+  .vv-legal__meta dd {
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    font-weight: var(--vv-typography-font-weight-semibold);
+  }
+
+  .vv-legal__summary {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .vv-legal__body :global(h2) {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.5rem, 3vw, var(--vv-typography-font-size-2xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+    margin: var(--vv-space-12) 0 var(--vv-space-4);
+    color: var(--vv-color-fg-primary);
+    scroll-margin-top: var(--vv-space-8);
+  }
+
+  .vv-legal__body :global(h3) {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    line-height: var(--vv-typography-line-height-snug);
+    margin: var(--vv-space-8) 0 var(--vv-space-3);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-legal__body :global(p) {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0 0 var(--vv-space-4);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-legal__body :global(ul),
+  .vv-legal__body :global(ol) {
+    margin: 0 0 var(--vv-space-4);
+    padding-inline-start: var(--vv-space-6);
+  }
+
+  .vv-legal__body :global(li) {
+    margin-bottom: var(--vv-space-2);
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-legal__body :global(strong) {
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-legal__body :global(a) {
+    color: var(--vv-color-brand-red-700);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .vv-legal__body :global(a:hover),
+  .vv-legal__body :global(a:focus-visible) {
+    text-decoration-thickness: 2px;
+  }
+
+  .vv-legal__body :global(code) {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 0.9em;
+    background: var(--vv-color-bg-surface);
+    padding: 2px 6px;
+    border-radius: var(--vv-radius-sm);
+  }
+
+  .vv-legal__body :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--vv-color-border-subtle);
+    margin: var(--vv-space-10) 0;
+  }
+
+  .vv-legal__body :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--vv-space-6) 0;
+    font-size: var(--vv-typography-font-size-sm);
+  }
+
+  .vv-legal__body :global(th),
+  .vv-legal__body :global(td) {
+    padding: var(--vv-space-3) var(--vv-space-4);
+    text-align: start;
+    border-bottom: 1px solid var(--vv-color-border-subtle);
+    vertical-align: top;
+  }
+
+  .vv-legal__body :global(th) {
+    background-color: var(--vv-color-bg-elevated);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+  }
+
+  @media (max-width: 640px) {
+    .vv-legal__body :global(table) {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .vv-legal__body :global(table th),
+    .vv-legal__body :global(table td) {
+      white-space: normal;
+      min-width: 12ch;
+    }
+  }
+</style>

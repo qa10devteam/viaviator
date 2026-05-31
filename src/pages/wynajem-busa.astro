@@ -1,0 +1,603 @@
+---
+/**
+ * /wynajem-busa — P5 Wynajem Mastera (PL).
+ *
+ * Buyer persona: ktoś, kto potrzebuje cargo na dobę — przeprowadzka,
+ * meble z marketu, sprzęt na imprezę. Kluczowy sygnał per brief klienta:
+ * „cennik bez gwiazdek" — żadnego „od", żadnego „cena na zapytanie"
+ * dla wymiarów, które da się podać deterministycznie.
+ *
+ * UWAGA o cenach: brief nie zawiera finalnych stawek (klient negocjuje
+ * model rozliczeń). Pola są PLACEHOLDERAMI z explicit komentarzem TODO
+ * w copy, żeby ten brak był widoczny dla klienta przy review, a nie
+ * został „przeklepany" do produkcji bez świadomej decyzji.
+ *
+ * Sekcje:
+ *   1. Hero          – image=fleet-master-front + Q-CTA „Sprawdź dostępność".
+ *   2. Cennik        – 4-kolumnowy Stat panel (doba, km, kaucja, odbiór).
+ *   3. W cenie       – co dostajesz (6 punktów z dict.what).
+ *   4. NIE w cenie   – uczciwa lista NIE (dopłaty międzynarodowe, generalka).
+ *   5. Master        – co przewieziesz (Renault Master L2H2 spec).
+ *   6. Procedura     – 4 kroki z numeracją (Stat value="01"...).
+ *   7. FAQ           – dict.wynajem.faq.
+ *   8. CTA           – „Sprawdź dostępność".
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Card from "@components/ui/Card.astro";
+import Badge from "@components/ui/Badge.astro";
+import Icon from "@components/ui/Icon.astro";
+import Hero from "@components/sections/Hero.astro";
+import Stat from "@components/sections/Stat.astro";
+import FAQAccordion from "@components/sections/FAQAccordion.astro";
+import CTASection from "@components/sections/CTASection.astro";
+import { getDictionary } from "@i18n/index";
+import {
+  buildCanonical,
+  buildAlternates,
+  seoMap,
+} from "@lib/seo";
+import {
+  serviceForSegment,
+  breadcrumbForRoute,
+  faqSchema,
+} from "@lib/schema";
+import { company } from "@data/company";
+
+const locale = "pl" as const;
+const dict = getDictionary(locale);
+const seg = dict.segments.wynajem;
+const seo = seoMap.wynajem;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("wynajem", locale, SITE);
+const alternates = buildAlternates("wynajem", SITE);
+
+const phoneHref = company.phoneHref;
+// Sprawdzenie dostępności → formularz kontaktowy z prefiltrem segmentu.
+const checkAvailabilityHref = "/kontakt?segment=wynajem";
+
+/**
+ * TODO(klient): podać finalne wartości cennikowe (etap przed launchem).
+ * Tymczasem podajemy realistyczne placeholdery dla Mastera w PL —
+ * widoczne dla klienta przy review, oznaczone w UI „Cennik aktualizowany".
+ */
+const PRICING_PLACEHOLDER_NOTE = true;
+
+// Cennik — 4 kolumny faktów. Placeholdery do potwierdzenia przez klienta.
+const pricingStats = [
+  {
+    value: "od 350 zł",
+    label: "Doba",
+    description: "Stawka bazowa za 24 godziny — od poniedziałku do piątku.",
+  },
+  {
+    value: "300 km",
+    label: "Limit km",
+    description: "W cenie doby. Powyżej — stawka publiczna w cenniku.",
+  },
+  {
+    value: "500 zł",
+    label: "Kaucja",
+    description: "Zwrotna na konto do 48 godzin po oddaniu auta.",
+  },
+  {
+    value: "Bytom · Opole",
+    label: "Odbiór",
+    description: "Dwa punkty bazowe w południowej Polsce. Wybierasz w briefie.",
+  },
+];
+
+// Master spec — sprawdzalne dane Renault Master L2H2 (FWD).
+// Źródło: Renault Master fact sheet (publiczne specyfikacje).
+const masterSpec = [
+  { label: "Pojemność ładunku", value: "~10–13 m³ (L2H2 / L3H2)" },
+  { label: "Ładowność", value: "1 200–1 500 kg" },
+  { label: "Długość przestrzeni", value: "ok. 3,1 m (L2)" },
+  { label: "Wysokość przestrzeni", value: "ok. 1,9 m (H2)" },
+  { label: "Drzwi", value: "Boczne przesuwne + tylne dwuskrzydłowe" },
+  { label: "Prawo jazdy", value: "Kat. B (DMC do 3,5 t)" },
+];
+
+// 4 kroki procedury wynajmu.
+const procedure = [
+  {
+    ord: "01",
+    title: "Kontakt",
+    body:
+      "Telefon, formularz albo Messenger. Sprawdzamy dostępność tego samego dnia w godzinach pracy.",
+  },
+  {
+    ord: "02",
+    title: "Potwierdzenie",
+    body:
+      "Mailem albo PDF-em — termin, stawka, limity, dane do umowy. Bez ukrytych warunków.",
+  },
+  {
+    ord: "03",
+    title: "Odbiór",
+    body:
+      "W naszej bazie. Pełny bak, opis stanu auta na protokole, podpis. Kaucja w gotówce albo przelewem.",
+  },
+  {
+    ord: "04",
+    title: "Zwrot",
+    body:
+      "W umówionym terminie, pełny bak. Krótki przegląd, podpis protokołu zwrotu, kaucja wraca w 48 godzin.",
+  },
+];
+
+// Schema.org payload.
+const serviceJsonLd = serviceForSegment("wynajem", locale, SITE);
+const breadcrumbJsonLd = breadcrumbForRoute("wynajem", locale, SITE);
+const faqJsonLd = faqSchema([...seg.faq.items]);
+---
+
+<BaseLayout
+  title={seo.titlePl}
+  description={seo.descriptionPl}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={seo.ogImage}
+  jsonLd={[serviceJsonLd, breadcrumbJsonLd, faqJsonLd]}
+  bodyClass="page-segment page-wynajem"
+>
+  {/* 1. HERO — Master frontalny */}
+  <Hero
+    eyebrow={seg.name}
+    headline={seg.heroHeadline}
+    subhead={seg.heroSubhead}
+    image="/images/fleet/fleet-master-front.jpg"
+    imageAlt="Renault Master Via Viator — widok z przodu, gotowy do wynajęcia."
+    primaryCta={{
+      label: "Sprawdź dostępność",
+      href: checkAvailabilityHref,
+      ariaLabel: "Sprawdź dostępność Mastera — formularz kontaktowy",
+    }}
+    secondaryCta={{
+      label: `Zadzwoń: ${company.phoneDisplay}`,
+      href: phoneHref,
+      ariaLabel: `Zadzwoń: ${company.phoneDisplay}`,
+    }}
+    microcopy={'Sprawdzimy w 30 minut w godzinach pracy. Bez „skontaktujemy się jutro”.'}
+  />
+
+  {/* Time-to-quote pasek */}
+  <Section tone="surface" tight ariaLabel="Czas odpowiedzi i kontakt">
+    <Container size="default">
+      <div class="vv-wynajem-meta">
+        <Badge tone="brand">
+          <Icon name="clock" size={14} />
+          <span>30 minut — średni czas odpowiedzi w godzinach pracy</span>
+        </Badge>
+        <Badge tone="neutral">
+          <Icon name="phone" size={14} />
+          <span>{company.phoneDisplay}</span>
+        </Badge>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 2. CENNIK BEZ GWIAZDEK — KLUCZOWA sekcja per buyer persona */}
+  <Section tone="default" ariaLabelledby="wynajem-pricing-title">
+    <Container size="default">
+      <header class="vv-wynajem-section-head">
+        <p class="vv-wynajem-eyebrow">Cennik</p>
+        <h2 id="wynajem-pricing-title" class="vv-wynajem-section-title">
+          Cennik bez gwiazdek
+        </h2>
+        <p class="vv-wynajem-section-lead">
+          Cztery liczby, które chcesz znać zanim podniesiesz słuchawkę.
+          Bez „od", bez „cena na zapytanie" dla rzeczy, które są stałe.
+        </p>
+      </header>
+
+      <Card tone="elevated" class="vv-wynajem-pricing">
+        <div class="vv-wynajem-pricing__grid">
+          {pricingStats.map((stat) => (
+            <div class="vv-wynajem-pricing__cell">
+              <Stat
+                value={stat.value}
+                label={stat.label}
+                description={stat.description}
+                tone="brand"
+              />
+            </div>
+          ))}
+        </div>
+
+        {PRICING_PLACEHOLDER_NOTE && (
+          <p class="vv-wynajem-pricing__note">
+            <Icon name="info" size={16} />
+            <span>
+              <strong>Cennik aktualizowany.</strong>{" "}
+              Stawki powyżej to robocza propozycja — finalne ceny potwierdzimy
+              w odpowiedzi na zapytanie (30 minut w godzinach pracy). Cennik
+              definitywny pojawi się tu po decyzji operacyjnej, najpóźniej
+              z chwilą uruchomienia rezerwacji online.
+            </span>
+          </p>
+        )}
+      </Card>
+    </Container>
+  </Section>
+
+  {/* 3. CO JEST W CENIE */}
+  <Section tone="elevated" ariaLabelledby="wynajem-inclusive-title">
+    <Container size="default">
+      <div class="vv-wynajem-incl-grid">
+        <div class="vv-wynajem-incl-col">
+          <h2 id="wynajem-inclusive-title" class="vv-wynajem-section-title">
+            Co jest w cenie
+          </h2>
+          <ul class="vv-wynajem-list vv-wynajem-list--check" role="list">
+            <li><Icon name="check" size={18} /><span>Limit 300 km w cenie doby. Powyżej — stawka publiczna z cennika.</span></li>
+            <li><Icon name="check" size={18} /><span>Ubezpieczenie OC w cenie. AC standardowe — pakiet opcjonalny.</span></li>
+            <li><Icon name="check" size={18} /><span>Pełny bak przy wydaniu — oddajesz pełny, bez doliczania paliwa.</span></li>
+            <li><Icon name="check" size={18} /><span>Brak dopłat weekendowych dla najmu 2+ doby.</span></li>
+            <li><Icon name="check" size={18} /><span>Faktura VAT 23% dla firmy albo paragon imienny dla osoby prywatnej.</span></li>
+            <li><Icon name="check" size={18} /><span>Stałe punkty odbioru — Bytom albo Opole, decyzja po Twojej stronie.</span></li>
+          </ul>
+        </div>
+
+        {/* 4. CO NIE jest w cenie — uczciwie */}
+        <div class="vv-wynajem-incl-col">
+          <h2 class="vv-wynajem-section-title">Co NIE jest w cenie</h2>
+          <ul class="vv-wynajem-list vv-wynajem-list--cross" role="list">
+            <li><Icon name="close" size={18} /><span>Paliwo zużyte — oddajesz pełny bak, inaczej dopłata po stawce hurtowej.</span></li>
+            <li><Icon name="close" size={18} /><span>Mycie generalne po przeprowadzce (osobna stawka, transparentna).</span></li>
+            <li><Icon name="close" size={18} /><span>Palenie w środku — kaucja przepada w całości, bez negocjacji.</span></li>
+            <li><Icon name="close" size={18} /><span>Zniszczenia mechaniczne i blacharskie — wycena u serwisanta, kaucja jako depozyt.</span></li>
+            <li><Icon name="close" size={18} /><span>Przejazd międzynarodowy poza CZ/SK/DE — uzgadniany osobno, dopłata uczciwa.</span></li>
+            <li><Icon name="close" size={18} /><span>Mandaty, opłaty drogowe i parkingowe — po stronie najemcy (przekażemy wezwania).</span></li>
+          </ul>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 5. MASTER — co przewieziesz */}
+  <Section tone="default" ariaLabelledby="wynajem-master-title">
+    <Container size="default">
+      <header class="vv-wynajem-section-head">
+        <p class="vv-wynajem-eyebrow">Pojazd</p>
+        <h2 id="wynajem-master-title" class="vv-wynajem-section-title">
+          Renault Master — co przewieziesz
+        </h2>
+        <p class="vv-wynajem-section-lead">
+          Wersja L2H2 (lub L3H2 w zależności od dostępności) — czyli przeprowadzka
+          z 2-pokojowego mieszkania, kanapa narożna z marketu, sprzęt eventowy
+          na festyn. Prawo jazdy kat. B wystarcza.
+        </p>
+      </header>
+
+      <Card tone="surface" class="vv-wynajem-master">
+        <dl class="vv-wynajem-master__specs">
+          {masterSpec.map((spec) => (
+            <div class="vv-wynajem-master__row">
+              <dt>{spec.label}</dt>
+              <dd>{spec.value}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="vv-wynajem-master__note">
+          Wymiary zależą od konkretnego egzemplarza (L2/L3, H2). Dokładne
+          parametry auta, które dostaniesz, podamy w potwierdzeniu rezerwacji —
+          razem z numerem rejestracyjnym i rocznikiem.
+        </p>
+      </Card>
+    </Container>
+  </Section>
+
+  {/* 6. PROCEDURA — 4 kroki z numeracją */}
+  <Section tone="elevated" ariaLabelledby="wynajem-procedure-title">
+    <Container size="default">
+      <header class="vv-wynajem-section-head">
+        <p class="vv-wynajem-eyebrow">Procedura</p>
+        <h2 id="wynajem-procedure-title" class="vv-wynajem-section-title">
+          Cztery kroki od zapytania do oddania kluczy
+        </h2>
+      </header>
+
+      <ol class="vv-wynajem-steps" role="list">
+        {procedure.map((step) => (
+          <li class="vv-wynajem-step">
+            <div class="vv-wynajem-step__ord" aria-hidden="true">{step.ord}</div>
+            <h3 class="vv-wynajem-step__title">{step.title}</h3>
+            <p class="vv-wynajem-step__body">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+    </Container>
+  </Section>
+
+  {/* 7. FAQ */}
+  <Section tone="default" ariaLabelledby="wynajem-faq-title">
+    <Container size="default">
+      <header class="vv-wynajem-section-head">
+        <h2 id="wynajem-faq-title" class="vv-wynajem-section-title">
+          {seg.faq.title}
+        </h2>
+      </header>
+      <FAQAccordion items={[...seg.faq.items]} defaultOpenFirst={true} />
+    </Container>
+  </Section>
+
+  {/* 8. CTA — Sprawdź dostępność */}
+  <CTASection
+    title="Sprawdź dostępność Mastera"
+    body={'Wycena w 30 minut w godzinach pracy. Bez ukrytych dopłat, bez „od” w cenniku, bez gier.'}
+    primaryCta={{
+      label: "Sprawdź dostępność",
+      href: checkAvailabilityHref,
+      ariaLabel: "Sprawdź dostępność Mastera — formularz",
+    }}
+    secondaryCta={{
+      label: `Zadzwoń: ${company.phoneDisplay}`,
+      href: phoneHref,
+      ariaLabel: `Zadzwoń: ${company.phoneDisplay}`,
+    }}
+    tone="brand"
+  />
+</BaseLayout>
+
+<style>
+  /* ── Wspólne nagłówki ────────────────────────────────────────────── */
+  .vv-wynajem-section-head {
+    margin: 0 0 var(--vv-space-10) 0;
+    max-width: 64ch;
+  }
+
+  .vv-wynajem-eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    color: var(--vv-color-brand-red-700);
+    margin: 0 0 var(--vv-space-3) 0;
+  }
+
+  .vv-wynajem-section-title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 3.5vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-3) 0;
+    text-wrap: balance;
+  }
+
+  .vv-wynajem-section-lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .vv-wynajem-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+    align-items: center;
+  }
+
+  /* ── Cennik (Card elevated, 4-grid) ──────────────────────────────── */
+  .vv-wynajem-pricing {
+    padding: var(--vv-space-8) var(--vv-space-6);
+  }
+
+  .vv-wynajem-pricing__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-6);
+  }
+
+  @media (min-width: 640px) {
+    .vv-wynajem-pricing__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-wynajem-pricing__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--vv-space-8);
+    }
+  }
+
+  .vv-wynajem-pricing__cell {
+    border-left: 3px solid var(--vv-color-brand-red);
+    padding-left: var(--vv-space-5);
+  }
+
+  @media (max-width: 1023px) {
+    .vv-wynajem-pricing__cell:not(:first-child) {
+      padding-top: var(--vv-space-4);
+    }
+  }
+
+  .vv-wynajem-pricing__note {
+    margin: var(--vv-space-8) 0 0 0;
+    padding: var(--vv-space-4) var(--vv-space-5);
+    background-color: color-mix(in srgb, var(--vv-color-state-info) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--vv-color-state-info) 20%, transparent);
+    border-radius: var(--vv-radius-md);
+    display: flex;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-sm);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+    align-items: flex-start;
+  }
+
+  .vv-wynajem-pricing__note :global(.vv-icon) {
+    flex-shrink: 0;
+    color: var(--vv-color-state-info);
+    margin-top: 2px;
+  }
+
+  /* ── „W cenie / Nie w cenie" — dwukolumnowy grid ─────────────────── */
+  .vv-wynajem-incl-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-10);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-wynajem-incl-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--vv-space-12);
+    }
+  }
+
+  .vv-wynajem-list {
+    list-style: none;
+    margin: var(--vv-space-6) 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-4);
+  }
+
+  .vv-wynajem-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-wynajem-list :global(.vv-icon) {
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .vv-wynajem-list--check li :global(.vv-icon) {
+    color: var(--vv-color-state-success);
+  }
+
+  .vv-wynajem-list--cross li :global(.vv-icon) {
+    color: var(--vv-color-brand-red-700);
+  }
+
+  /* ── Master spec — Card z dl ────────────────────────────────────── */
+  .vv-wynajem-master {
+    padding: var(--vv-space-8) var(--vv-space-6);
+  }
+
+  .vv-wynajem-master__specs {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  @media (min-width: 768px) {
+    .vv-wynajem-master__specs {
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: var(--vv-space-12);
+    }
+  }
+
+  .vv-wynajem-master__row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--vv-space-4);
+    padding: var(--vv-space-3) 0;
+    border-bottom: 1px solid var(--vv-color-border-subtle);
+  }
+
+  .vv-wynajem-master__row:last-child {
+    border-bottom: none;
+  }
+
+  .vv-wynajem-master__row dt {
+    font-family: var(--vv-typography-font-family-display);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-secondary);
+    font-size: var(--vv-typography-font-size-sm);
+  }
+
+  .vv-wynajem-master__row dd {
+    margin: 0;
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+    font-size: var(--vv-typography-font-size-base);
+    text-align: right;
+  }
+
+  .vv-wynajem-master__note {
+    margin: var(--vv-space-6) 0 0 0;
+    font-size: var(--vv-typography-font-size-sm);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-muted);
+    max-width: 60ch;
+  }
+
+  /* ── Procedura — 4 kroki ─────────────────────────────────────────── */
+  .vv-wynajem-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 640px) {
+    .vv-wynajem-steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-wynajem-steps {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .vv-wynajem-step {
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    padding: var(--vv-space-6);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+  }
+
+  .vv-wynajem-step__ord {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-3xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-brand-red-700);
+    line-height: 1;
+    margin-bottom: var(--vv-space-2);
+  }
+
+  .vv-wynajem-step__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-wynajem-step__body {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+  }
+</style>

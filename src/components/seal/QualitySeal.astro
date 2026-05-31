@@ -1,0 +1,176 @@
+---
+/**
+ * QualitySeal — komponent pieczęci QA10.
+ *
+ * Wariant „mini" — domyślny, do stopki: tylko mark „QA10" w okręgu.
+ * Wariant „full" — duża wersja z tekstem obwódkowym i 10 markerami.
+ *
+ * Pieczęć dziedziczy kolor po `currentColor`, ale ponieważ `<img>` nie
+ * dziedziczy CSS color do SVG, wariant „full" jest inline'owany przez
+ * `set:html` (build-time read) — dzięki temu na stronie /jakosc seal
+ * przyjmie kolor sekcji (red, biały, czarny).
+ *
+ * Link prowadzi do strony /jakosc (PL) lub /en/quality (EN), gdzie opisane
+ * są wszystkie 10 wymiarów weryfikowanych przez pieczęć.
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+
+interface Props {
+  variant?: "mini" | "full";
+  locale: "pl" | "en";
+  size?: number;
+  showLabel?: boolean;
+  class?: string;
+}
+
+const {
+  variant = "mini",
+  locale,
+  size = 40,
+  showLabel = true,
+  class: extraClass = "",
+} = Astro.props;
+
+const href = locale === "pl" ? "/jakosc" : "/en/quality";
+
+const ariaLabel =
+  locale === "pl"
+    ? "QA10 Quality Seal v1.0 — kliknij, aby zobaczyć kryteria jakości"
+    : "QA10 Quality Seal v1.0 — click to view quality criteria";
+
+const labelTop = "QA10";
+const labelBottom = "Quality Seal v1.0";
+
+// Inline SVG dla wariantu „full" — żeby currentColor zadziałał.
+// `<img>` izoluje SVG i nie dziedziczy color z rodzica HTML.
+let inlineSvg: string | null = null;
+if (variant === "full") {
+  const filePath = path.join(
+    process.cwd(),
+    "public",
+    "brand",
+    "qa10-seal.svg",
+  );
+  try {
+    inlineSvg = fs.readFileSync(filePath, "utf-8");
+    // Wymuszamy responsywność: bez stałych width/height, z width=size jeśli podany.
+    inlineSvg = inlineSvg.replace(
+      "<svg ",
+      `<svg width="${size}" height="${size}" `,
+    );
+  } catch {
+    inlineSvg = null;
+  }
+}
+
+const miniSrc = "/brand/qa10-seal-mini.svg";
+---
+
+<a
+  href={href}
+  class:list={["vv-seal", `vv-seal--${variant}`, extraClass]}
+  aria-label={ariaLabel}
+  data-variant={variant}
+>
+  {variant === "full" && inlineSvg ? (
+    <span class="vv-seal__mark vv-seal__mark--inline" set:html={inlineSvg} />
+  ) : (
+    <img
+      src={miniSrc}
+      width={size}
+      height={size}
+      alt=""
+      decoding="async"
+      loading="lazy"
+      class="vv-seal__mark"
+    />
+  )}
+  {showLabel && (
+    <span class="vv-seal__label">
+      <strong>{labelTop}</strong>
+      <span>{labelBottom}</span>
+    </span>
+  )}
+</a>
+
+<style>
+  .vv-seal {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-2);
+    color: var(--vv-color-fg-secondary);
+    text-decoration: none;
+    padding: var(--vv-space-2) var(--vv-space-3);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-md);
+    background: transparent;
+    transition:
+      color var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+      border-color var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+      transform var(--vv-motion-duration-base) var(--vv-motion-easing-standard);
+  }
+
+  .vv-seal:hover,
+  .vv-seal:focus-visible {
+    color: var(--vv-color-brand-red-700);
+    border-color: var(--vv-color-brand-red);
+    transform: translateY(-1px);
+  }
+
+  .vv-seal:focus-visible {
+    outline: 2px solid var(--vv-color-brand-red);
+    outline-offset: 2px;
+  }
+
+  /* Wariant „full" — bez ramki, tylko sama pieczęć (np. na stronie /jakosc). */
+  .vv-seal--full {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+  }
+
+  .vv-seal--full:hover,
+  .vv-seal--full:focus-visible {
+    border-color: transparent;
+    transform: none;
+    color: inherit;
+  }
+
+  .vv-seal__label {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.1;
+    font-size: var(--vv-typography-font-size-xs);
+  }
+
+  .vv-seal__label strong {
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .vv-seal__mark {
+    display: block;
+    color: currentColor;
+  }
+
+  /* Inline SVG — dziedziczy CSS color przez currentColor wewnątrz markup. */
+  .vv-seal__mark--inline :global(svg) {
+    display: block;
+    color: currentColor;
+  }
+
+  /* Reduce motion — wyłącz transformy. */
+  @media (prefers-reduced-motion: reduce) {
+    .vv-seal {
+      transition: none;
+    }
+    .vv-seal:hover,
+    .vv-seal:focus-visible {
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+/**
+ * PageLayout — wrapper dla sub-pages (segment landings, o-nas, kontakt, jakosc).
+ * Dziedziczy z BaseLayout, dodaje opcjonalny page header (eyebrow + h1 + intro)
+ * i wrapper `.vv-page-shell` z padding-block dla treści.
+ *
+ * Home używa BaseLayout bezpośrednio (z full-bleed Hero), nie tego.
+ */
+
+import BaseLayout from "./BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import type { Locale } from "@i18n/index";
+
+interface Alternate {
+  lang: string;
+  href: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  canonical?: string;
+  alternates?: Alternate[];
+  ogImage?: string;
+  ogType?: "website" | "article" | "profile";
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  bodyClass?: string;
+  includeOrganizationSchema?: boolean;
+  /** Optional page header (renders before slot). */
+  pageHeading?: {
+    eyebrow?: string;
+    h1: string;
+    intro?: string;
+  };
+  containerSize?: "narrow" | "default" | "wide" | "prose";
+}
+
+const {
+  title,
+  description,
+  locale,
+  canonical,
+  alternates,
+  ogImage,
+  ogType,
+  jsonLd,
+  bodyClass,
+  includeOrganizationSchema = false,
+  pageHeading,
+  containerSize = "default",
+} = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={ogImage}
+  ogType={ogType}
+  jsonLd={jsonLd}
+  bodyClass={`vv-page ${bodyClass ?? ""}`}
+  includeOrganizationSchema={includeOrganizationSchema}
+>
+  <div class="vv-page-shell">
+    {
+      pageHeading && (
+        <header class="vv-page-header">
+          <Container size={containerSize}>
+            {pageHeading.eyebrow && (
+              <p class="vv-page-header__eyebrow eyebrow">
+                {pageHeading.eyebrow}
+              </p>
+            )}
+            <h1 class="vv-page-header__h1 h1">{pageHeading.h1}</h1>
+            {pageHeading.intro && (
+              <p class="vv-page-header__intro lede">{pageHeading.intro}</p>
+            )}
+          </Container>
+        </header>
+      )
+    }
+    <slot />
+  </div>
+
+  <style>
+    .vv-page-shell {
+      padding-block: 0 var(--vv-space-12);
+    }
+    .vv-page-header {
+      padding-block: var(--vv-space-16) var(--vv-space-10);
+      background-color: var(--vv-color-bg-elevated);
+      border-bottom: 1px solid var(--vv-color-border-subtle);
+    }
+    @media (max-width: 768px) {
+      .vv-page-header {
+        padding-block: var(--vv-space-10) var(--vv-space-6);
+      }
+    }
+    .vv-page-header__eyebrow {
+      margin: 0 0 var(--vv-space-3);
+    }
+    .vv-page-header__h1 {
+      margin: 0;
+    }
+    .vv-page-header__intro {
+      margin: var(--vv-space-4) 0 0;
+      max-width: 60ch;
+    }
+  </style>
+</BaseLayout>

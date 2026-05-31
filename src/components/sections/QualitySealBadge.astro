@@ -1,0 +1,122 @@
+---
+/**
+ * QualitySealBadge — badge w stopce.
+ * Inline SVG mark + tekst „QA10 Quality Seal · v1.0".
+ * Link prowadzi do wewnętrznej strony jakości (`/jakosc` PL / `/en/quality` EN).
+ *
+ * A11y: aria-label z `footer.qa10SealAria`.
+ * Style: outline, hover lift, focus ring.
+ */
+
+import { getDictionary } from "@i18n/index";
+import type { Locale } from "@i18n/index";
+
+interface Props {
+  locale: Locale;
+  class?: string;
+}
+
+const { locale, class: extraClass = "" } = Astro.props;
+
+const dict = getDictionary(locale);
+const href = locale === "pl" ? "/jakosc" : "/en/quality";
+const ariaLabel = dict.footer.qa10SealAria;
+const badgeText = dict.footer.qa10Seal.badge;
+---
+
+<a
+  href={href}
+  class:list={["vv-seal", extraClass]}
+  aria-label={ariaLabel}
+  data-qa10-seal-version="1.0"
+>
+  <svg
+    viewBox="0 0 40 40"
+    width="40"
+    height="40"
+    aria-hidden="true"
+    class="vv-seal__mark"
+  >
+    <circle
+      cx="20"
+      cy="20"
+      r="19"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+    />
+    <text
+      x="20"
+      y="18"
+      text-anchor="middle"
+      font-family="var(--vv-typography-font-family-display)"
+      font-size="9"
+      font-weight="700"
+      fill="currentColor"
+    >
+      QA
+    </text>
+    <text
+      x="20"
+      y="29"
+      text-anchor="middle"
+      font-family="var(--vv-typography-font-family-display)"
+      font-size="11"
+      font-weight="800"
+      fill="currentColor"
+    >
+      10
+    </text>
+  </svg>
+  <span class="vv-seal__text">{badgeText}</span>
+</a>
+
+<style>
+  .vv-seal {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-3);
+    padding: var(--vv-space-2) var(--vv-space-4) var(--vv-space-2)
+      var(--vv-space-2);
+    background-color: transparent;
+    color: inherit;
+    border: 1px solid currentColor;
+    border-radius: var(--vv-radius-full);
+    text-decoration: none;
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xs);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    letter-spacing: var(--vv-typography-letter-spacing-wide);
+    opacity: 0.8;
+    transition:
+      opacity var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      transform var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      box-shadow var(--vv-motion-duration-fast) var(--vv-motion-easing-standard);
+  }
+
+  .vv-seal:hover,
+  .vv-seal:focus-visible {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 1px currentColor inset;
+  }
+
+  .vv-seal__mark {
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .vv-seal__text {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 480px) {
+    .vv-seal__text {
+      display: none;
+    }
+    .vv-seal {
+      padding: var(--vv-space-1);
+      border-radius: var(--vv-radius-full);
+    }
+  }
+</style>

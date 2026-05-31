@@ -1,0 +1,36 @@
+# build artifacts
+dist/
+.astro/
+.vercel/
+node_modules/
+
+# generated token outputs (style-dictionary regenerates them)
+src/styles/tokens.generated.css
+src/lib/tokens.generated.ts
+
+# env + secrets
+.env
+.env.*
+!.env.example
+
+# editor
+.vscode/
+.idea/
+.DS_Store
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# misc
+*.tsbuildinfo
+coverage/
+
+# _brief — materiały od klienta
+# Logo source + docs (PDF brief, persona, emails) commitujemy jako provenance.
+# Master raw DNG i traffic JPG-i są zbyt duże dla repo (300MB+).
+# Optymalizowane wersje są w public/images/.
+_brief/images-source/

@@ -1,0 +1,615 @@
+---
+/**
+ * /imprezy — P6 Sprzęt eventowy (PL).
+ *
+ * Buyer persona: parafia/gmina/organizator imprezy rodzinnej. Klient
+ * EKSPLICYTNIE prosił o świadomą transparentność: oferta eventowa jest
+ * młoda i rozwojowa, mamy 3 sprzęty dziś, więcej dochodzi jesienią 2026.
+ * Nie udajemy katalogu — przedstawiamy stan faktyczny + roadmapę.
+ *
+ * Sekcje:
+ *   1. Hero          – image=service-events-tile, headline + transparency note.
+ *   2. Co mamy DZIŚ  – 3 karty (namiot, popcorn, wata cukrowa).
+ *   3. Jesień 2026   – brand Card z dochodzącym sprzętem (stoły, ławki).
+ *   4. Do jakich     – FeatureGrid columns=3 (typy imprez: parafialne,
+ *                      dożynki, firmowe, urodziny, jubileusze).
+ *   5. Dlaczego u nas – „jedna umowa, jeden transport, jedna faktura".
+ *   6. Decision      – dict.eventy.decisionList.
+ *   7. FAQ           – dict.eventy.faq.
+ *   8. CTA brand     – „Zapytaj o ofertę eventową".
+ *
+ * SEO: seoMap.eventy, serviceSchema + breadcrumb + faq.
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Card from "@components/ui/Card.astro";
+import Badge from "@components/ui/Badge.astro";
+import Icon from "@components/ui/Icon.astro";
+import Hero from "@components/sections/Hero.astro";
+import FeatureGrid from "@components/sections/FeatureGrid.astro";
+import FAQAccordion from "@components/sections/FAQAccordion.astro";
+import CTASection from "@components/sections/CTASection.astro";
+import { getDictionary } from "@i18n/index";
+import {
+  buildCanonical,
+  buildAlternates,
+  seoMap,
+} from "@lib/seo";
+import {
+  serviceForSegment,
+  breadcrumbForRoute,
+  faqSchema,
+} from "@lib/schema";
+import { company } from "@data/company";
+
+const locale = "pl" as const;
+const dict = getDictionary(locale);
+const seg = dict.segments.eventy;
+const seo = seoMap.eventy;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("eventy", locale, SITE);
+const alternates = buildAlternates("eventy", SITE);
+
+const phoneHref = company.phoneHref;
+const askForOfferHref = "/kontakt?segment=eventy";
+
+// Co mamy DZIŚ — 3 sprzęty z briefu klienta.
+const equipmentToday = [
+  {
+    icon: "tent" as const,
+    title: "Namiot eventowy",
+    body:
+      "Rozmiar dobieramy do liczby gości (30 osób → 5×10 m, 50 osób → 6×12 m). Montaż w cenie. Transport własną Master cargo, na działkę albo plac kościelny.",
+  },
+  {
+    icon: "sparkles" as const,
+    title: "Maszyna do popcornu",
+    body:
+      "Wystarcza na grupę 50–80 osób. Gniazdko 230 V, instrukcja na żywo przy odbiorze. Cukier i kukurydza po stronie zamawiającego albo w komplecie — zaznaczasz w briefie.",
+  },
+  {
+    icon: "sparkles" as const,
+    title: "Maszyna do waty cukrowej",
+    body:
+      "Grupa 50–80 osób przy odpowiednim zapasie cukru (worek 1 kg ≈ 40 porcji). Pokażemy obsługę na miejscu — wata to nie atom, ale ma swoje patenty.",
+  },
+];
+
+// Typy imprez (FeatureGrid columns=3).
+const eventTypes = [
+  {
+    icon: "church" as const,
+    title: "Festyny parafialne",
+    body:
+      "Plac kościelny, stoły dla wolontariuszy, popcorn dla dzieci po mszy. Współpracujemy z organizatorami z śląskiego i opolskiego.",
+  },
+  {
+    icon: "sparkles" as const,
+    title: "Dożynki gminne",
+    body:
+      "Namiot dla wójta i orkiestry, stoiska z popcornem i watą dla rodzin. Faktura na gminę, dane do zamówienia bierzemy w briefie.",
+  },
+  {
+    icon: "briefcase" as const,
+    title: "Imprezy firmowe",
+    body:
+      "Piknik integracyjny, dzień dziecka pracownika, otwarcie nowej hali. Faktura VAT, sprzęt na cały weekend, montaż w piątek — odbiór w poniedziałek.",
+  },
+  {
+    icon: "users" as const,
+    title: "Urodziny domowe",
+    body:
+      "Ogród, taras, działka rekreacyjna. Wata cukrowa dla dzieci, namiot na wypadek deszczu. Dowieziemy w obrębie 100 km od bazy.",
+  },
+  {
+    icon: "candle" as const,
+    title: "Komunie i jubileusze",
+    body:
+      "Po mszy do domu — namiot ogrodowy zamiast restauracji, popcorn i wata jako niespodzianka. Cena za weekend (Pt 16:00 → Nd 20:00).",
+  },
+  {
+    icon: "sparkles" as const,
+    title: "Festyn szkolny",
+    body:
+      "Dzień dziecka, koniec roku, festyn rodzinny. Faktura na radę rodziców albo szkołę. Dowóz w obrębie 100 km, dalej — uzgadniamy.",
+  },
+];
+
+// Korzyści wielo-segmentowego dostawcy.
+const advantages = [
+  {
+    icon: "shield-check" as const,
+    title: "Jedna umowa",
+    body:
+      "Namiot, popcorn, wata, dowóz, montaż — wszystko w jednym dokumencie. Bez koordynacji trzech podwykonawców w przeddzień.",
+  },
+  {
+    icon: "truck" as const,
+    title: "Jeden transport",
+    body:
+      "Cały sprzęt przyjeżdża jednym kursem Mastera. Bez „kierowca popcornu utknął w korku, kierowca namiotu jeszcze nie wyjechał”.",
+  },
+  {
+    icon: "briefcase" as const,
+    title: "Jedna faktura",
+    body:
+      "Faktura VAT 23% dla firmy, gminy, parafii albo paragon dla osoby prywatnej. Jedna pozycja księgowa, nie trzy.",
+  },
+  {
+    icon: "phone" as const,
+    title: "Jeden numer",
+    // Placeholder body — body w renderze nadpisywany dynamicznym tekstem
+    // z `company.phoneDisplay` (warunek na `adv.title === "Jeden numer"`).
+    body: "Awaryjny telefon odbieramy bez infolinii — Patryk albo ktoś, kogo Patryk zna z imienia.",
+  },
+];
+
+const serviceJsonLd = serviceForSegment("eventy", locale, SITE);
+const breadcrumbJsonLd = breadcrumbForRoute("eventy", locale, SITE);
+const faqJsonLd = faqSchema([...seg.faq.items]);
+---
+
+<BaseLayout
+  title={seo.titlePl}
+  description={seo.descriptionPl}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={seo.ogImage}
+  jsonLd={[serviceJsonLd, breadcrumbJsonLd, faqJsonLd]}
+  bodyClass="page-segment page-eventy"
+>
+  {/* 1. HERO — transparentność oferty młodej */}
+  <Hero
+    eyebrow={seg.name}
+    headline={seg.heroHeadline}
+    subhead="Trzy sprzęty dziś, więcej dochodzi jesienią 2026. Mówimy wprost, co już mamy i czego jeszcze nie, żebyś nie planował imprezy w oparciu o obietnice."
+    image="/images/services/service-events-tile.jpg"
+    imageAlt="Festyn rodzinny z namiotem eventowym i maszyną do popcornu."
+    primaryCta={{
+      label: "Zapytaj o ofertę eventową",
+      href: askForOfferHref,
+      ariaLabel: "Zapytaj o ofertę eventową — formularz",
+    }}
+    secondaryCta={{
+      label: `Zadzwoń: ${company.phoneDisplay}`,
+      href: phoneHref,
+      ariaLabel: `Zadzwoń: ${company.phoneDisplay}`,
+    }}
+    microcopy="Wycena tego samego dnia w godzinach pracy. Sezon maj–wrzesień — rezerwuj 3–4 tygodnie wcześniej."
+  />
+
+  {/* Time-to-quote pasek */}
+  <Section tone="surface" tight ariaLabel="Czas wyceny i kontakt">
+    <Container size="default">
+      <div class="vv-eventy-meta">
+        <Badge tone="brand">
+          <Icon name="clock" size={14} />
+          <span>24 godziny — wycena tego samego dnia w godzinach pracy</span>
+        </Badge>
+        <Badge tone="neutral">
+          <Icon name="phone" size={14} />
+          <span>{company.phoneDisplay}</span>
+        </Badge>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 2. CO MAMY DZIŚ — 3 sprzęty */}
+  <Section tone="default" ariaLabelledby="eventy-today-title">
+    <Container size="default">
+      <header class="vv-eventy-section-head">
+        <p class="vv-eventy-eyebrow">Stan na dziś</p>
+        <h2 id="eventy-today-title" class="vv-eventy-section-title">
+          Co mamy dziś
+        </h2>
+        <p class="vv-eventy-section-lead">
+          Trzy sprzęty, które dowieziemy, postawimy i pokażemy obsługę.
+          Wszystko sprawne, przeglądane przed sezonem, transportowane naszym
+          Masterem.
+        </p>
+      </header>
+
+      <ul class="vv-eventy-equipment" role="list">
+        {equipmentToday.map((item) => (
+          <li>
+            <Card tone="default" class="vv-eventy-equipment__card">
+              <span class="vv-eventy-equipment__icon" aria-hidden="true">
+                <Icon name={item.icon} size={28} />
+              </span>
+              <h3 class="vv-eventy-equipment__title">{item.title}</h3>
+              <p class="vv-eventy-equipment__body">{item.body}</p>
+            </Card>
+          </li>
+        ))}
+      </ul>
+    </Container>
+  </Section>
+
+  {/* 3. JESIEŃ 2026 — roadmapa, brand Card */}
+  <Section tone="default" ariaLabelledby="eventy-roadmap-title">
+    <Container size="default">
+      <Card tone="brand" class="vv-eventy-roadmap">
+        <div class="vv-eventy-roadmap__head">
+          <Badge tone="brand">Roadmapa · jesień 2026</Badge>
+          <h2 id="eventy-roadmap-title" class="vv-eventy-roadmap__title">
+            Co przygotowujemy na jesień 2026
+          </h2>
+        </div>
+        <ul class="vv-eventy-roadmap__list" role="list">
+          <li>
+            <Icon name="check" size={18} />
+            <span><strong>Stoły biesiadne</strong> — komplet 10 sztuk, składane, na transporcie Master.</span>
+          </li>
+          <li>
+            <Icon name="check" size={18} />
+            <span><strong>Ławki biesiadne</strong> — komplet 20 sztuk, dopasowane do stołów.</span>
+          </li>
+        </ul>
+        <p class="vv-eventy-roadmap__note">
+          Sprzęt eventowy rozbudowujemy świadomie — kupujemy to, co kupujemy
+          też dla naszych własnych imprez. Jeśli planujesz wesele albo dożynki
+          <strong> po wrześniu 2026</strong> — odezwij się wcześniej, podpowiemy,
+          co już mamy w terminie, a co pojawi się tuż przed.
+        </p>
+      </Card>
+    </Container>
+  </Section>
+
+  {/* 4. DO JAKICH IMPREZ — FeatureGrid columns=3 */}
+  <Section tone="elevated" ariaLabelledby="eventy-types-title">
+    <Container size="default">
+      <header class="vv-eventy-section-head">
+        <p class="vv-eventy-eyebrow">Konteksty</p>
+        <h2 id="eventy-types-title" class="vv-eventy-section-title">
+          Do jakich imprez
+        </h2>
+        <p class="vv-eventy-section-lead">
+          Sześć typów imprez, dla których nasz sprzęt sprawdza się najlepiej.
+          Jeśli organizujesz coś, czego tu nie ma — opisz w briefie, ocenimy
+          uczciwie.
+        </p>
+      </header>
+      <FeatureGrid items={eventTypes} columns={3} tone="default" />
+    </Container>
+  </Section>
+
+  {/* 5. DLACZEGO U NAS — „jedna umowa, jeden transport..." */}
+  <Section tone="default" ariaLabelledby="eventy-advantages-title">
+    <Container size="default">
+      <header class="vv-eventy-section-head">
+        <p class="vv-eventy-eyebrow">Dlaczego u nas</p>
+        <h2 id="eventy-advantages-title" class="vv-eventy-section-title">
+          Dlaczego u nas — a nie u trzech osobnych dostawców
+        </h2>
+        <p class="vv-eventy-section-lead">
+          Imprezowy stres bierze się z koordynacji. Trzech podwykonawców,
+          trzy umowy, trzy telefony, trzy faktury. U nas — jeden łańcuch.
+        </p>
+      </header>
+      <ul class="vv-eventy-advantages" role="list">
+        {advantages.map((adv) => (
+          <li class="vv-eventy-advantage">
+            <span class="vv-eventy-advantage__icon" aria-hidden="true">
+              <Icon name={adv.icon} size={22} />
+            </span>
+            <div class="vv-eventy-advantage__copy">
+              <h3 class="vv-eventy-advantage__title">{adv.title}</h3>
+              <p class="vv-eventy-advantage__body">
+                {adv.title === "Jeden numer"
+                  ? `Awaryjny telefon to ${company.phoneDisplay} — odbiera Patryk albo ktoś, kogo Patryk zna z imienia. Bez infolinii, bez „przekażę dalej”.`
+                  : adv.body}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Container>
+  </Section>
+
+  {/* 6. DECISION CRITERIA */}
+  <Section tone="surface" ariaLabelledby="eventy-decision-title">
+    <Container size="default">
+      <header class="vv-eventy-section-head">
+        <h2 id="eventy-decision-title" class="vv-eventy-section-title">
+          {seg.decisionList.title}
+        </h2>
+        <p class="vv-eventy-section-lead">{seg.decisionList.body}</p>
+      </header>
+      <ul class="vv-eventy-decision" role="list">
+        {seg.decisionList.items.map((item) => (
+          <li class="vv-eventy-decision__item">
+            <p class="vv-eventy-decision__q">{item.q}</p>
+            <p class="vv-eventy-decision__a">{item.a}</p>
+          </li>
+        ))}
+      </ul>
+    </Container>
+  </Section>
+
+  {/* 7. FAQ */}
+  <Section tone="default" ariaLabelledby="eventy-faq-title">
+    <Container size="default">
+      <header class="vv-eventy-section-head">
+        <h2 id="eventy-faq-title" class="vv-eventy-section-title">
+          {seg.faq.title}
+        </h2>
+      </header>
+      <FAQAccordion items={[...seg.faq.items]} defaultOpenFirst={true} />
+    </Container>
+  </Section>
+
+  {/* 8. CTA brand */}
+  <CTASection
+    title="Zapytaj o ofertę eventową"
+    body="Powiedz datę, miejsce, ilu gości, jaki sprzęt — odsyłamy ofertę tego samego dnia. Sezon maj–wrzesień rezerwuj 3–4 tygodnie wcześniej."
+    primaryCta={{
+      label: "Zapytaj o ofertę eventową",
+      href: askForOfferHref,
+      ariaLabel: "Zapytaj o ofertę eventową — formularz",
+    }}
+    secondaryCta={{
+      label: `Zadzwoń: ${company.phoneDisplay}`,
+      href: phoneHref,
+      ariaLabel: `Zadzwoń: ${company.phoneDisplay}`,
+    }}
+    tone="brand"
+  />
+</BaseLayout>
+
+<style>
+  .vv-eventy-section-head {
+    margin: 0 0 var(--vv-space-10) 0;
+    max-width: 64ch;
+  }
+
+  .vv-eventy-eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    color: var(--vv-color-brand-red-700);
+    margin: 0 0 var(--vv-space-3) 0;
+  }
+
+  .vv-eventy-section-title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 3.5vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-3) 0;
+    text-wrap: balance;
+  }
+
+  .vv-eventy-section-lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .vv-eventy-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+    align-items: center;
+  }
+
+  /* ── Equipment 3-grid ────────────────────────────────────────────── */
+  .vv-eventy-equipment {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 640px) {
+    .vv-eventy-equipment {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-eventy-equipment {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .vv-eventy-equipment__card {
+    height: 100%;
+  }
+
+  .vv-eventy-equipment__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background-color: var(--vv-color-brand-red-50);
+    color: var(--vv-color-brand-red-700);
+    border-radius: var(--vv-radius-lg);
+  }
+
+  .vv-eventy-equipment__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-eventy-equipment__body {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0;
+  }
+
+  /* ── Roadmap (brand Card) ───────────────────────────────────────── */
+  .vv-eventy-roadmap {
+    padding: var(--vv-space-8) var(--vv-space-8);
+  }
+
+  .vv-eventy-roadmap__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-3);
+    margin-bottom: var(--vv-space-6);
+    align-items: flex-start;
+  }
+
+  .vv-eventy-roadmap__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.5rem, 3vw, var(--vv-typography-font-size-3xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-tight);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+  }
+
+  .vv-eventy-roadmap__list {
+    list-style: none;
+    margin: 0 0 var(--vv-space-6) 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-eventy-roadmap__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-eventy-roadmap__list :global(.vv-icon) {
+    color: var(--vv-color-brand-red-700);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .vv-eventy-roadmap__note {
+    margin: 0;
+    padding: var(--vv-space-4) 0 0 0;
+    border-top: 1px solid var(--vv-color-brand-red-100);
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+    text-wrap: pretty;
+  }
+
+  /* ── Advantages — 2x2 grid z ikoną z lewej ──────────────────────── */
+  .vv-eventy-advantages {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 768px) {
+    .vv-eventy-advantages {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--vv-space-6);
+    }
+  }
+
+  .vv-eventy-advantage {
+    display: flex;
+    gap: var(--vv-space-4);
+    align-items: flex-start;
+    padding: var(--vv-space-5);
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+  }
+
+  .vv-eventy-advantage__icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--vv-color-brand-red-50);
+    color: var(--vv-color-brand-red-700);
+    border-radius: var(--vv-radius-md);
+  }
+
+  .vv-eventy-advantage__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+  }
+
+  .vv-eventy-advantage__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-eventy-advantage__body {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0;
+  }
+
+  /* ── Decision criteria ──────────────────────────────────────────── */
+  .vv-eventy-decision {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 768px) {
+    .vv-eventy-decision {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .vv-eventy-decision__item {
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    padding: var(--vv-space-6);
+  }
+
+  .vv-eventy-decision__q {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-2) 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-eventy-decision__a {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0;
+  }
+</style>

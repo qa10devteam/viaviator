@@ -1,0 +1,393 @@
+---
+/**
+ * /en/quality — EN mirror of /jakosc.
+ *
+ * Same structure, copy from dict.quality (EN locale).
+ * SEO: hreflang back to PL via dict.meta.jakosc on PL locale.
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import QualitySeal from "@components/seal/QualitySeal.astro";
+import { getDictionary } from "@i18n/index";
+
+const locale = "en" as const;
+const dict = getDictionary(locale);
+const meta = dict.meta.jakosc;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = `${SITE}/en/quality`;
+const alternates = [
+  { lang: "en", href: canonical },
+  { lang: "pl", href: `${SITE}/jakosc` },
+];
+
+const sealVersion = "1.0";
+const sealIssued = "2026-05-31";
+const sealPublicUrl = "https://qa10.io/seal/viaviator";
+
+const dimensions = dict.quality.dimensions;
+
+const numbered = dimensions.map((d, i) => ({
+  ...d,
+  ordinal: String(i + 1).padStart(2, "0"),
+}));
+---
+
+<BaseLayout
+  title={meta.title}
+  description={meta.description}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  bodyClass="page-quality"
+>
+  {/* HERO */}
+  <Section tone="default" ariaLabelledby="quality-hero-title">
+    <Container size="default">
+      <div class="vv-quality-hero">
+        <div class="vv-quality-hero__copy">
+          <p class="vv-quality-hero__eyebrow">QA10 Quality Seal · v{sealVersion}</p>
+          <h1 id="quality-hero-title" class="vv-quality-hero__title">
+            {dict.quality.h1}
+          </h1>
+          <p class="vv-quality-hero__intro">{dict.quality.intro}</p>
+          <p class="vv-quality-hero__meta">
+            <span><strong>{dict.quality.versionLabel}:</strong> {sealVersion}</span>
+            <span aria-hidden="true">·</span>
+            <span><strong>{dict.quality.issuedLabel}:</strong> {sealIssued}</span>
+          </p>
+        </div>
+        <div class="vv-quality-hero__seal" aria-hidden="false">
+          <QualitySeal
+            variant="full"
+            locale={locale}
+            size={240}
+            showLabel={false}
+          />
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 10 DIMENSIONS */}
+  <Section tone="elevated" ariaLabelledby="quality-dimensions-title">
+    <Container size="default">
+      <h2 id="quality-dimensions-title" class="vv-quality-dims__title">
+        Ten dimensions verified by the seal
+      </h2>
+      <p class="vv-quality-dims__lead">
+        Each dimension has a definition, a measurement criterion and a
+        toolchain — full details in the repo docs
+        (<code>docs/07-quality-seal.md</code>).
+      </p>
+
+      <ol class="vv-quality-dims" role="list">
+        {numbered.map((dim) => (
+          <li class="vv-quality-dim">
+            <div class="vv-quality-dim__ord" aria-hidden="true">{dim.ordinal}</div>
+            <h3 class="vv-quality-dim__name">{dim.name}</h3>
+            <p class="vv-quality-dim__body">{dim.body}</p>
+          </li>
+        ))}
+      </ol>
+    </Container>
+  </Section>
+
+  {/* CONTRACTOR (brand) */}
+  <Section tone="brand" ariaLabelledby="quality-contractor-title">
+    <Container size="default">
+      <div class="vv-quality-contractor">
+        <h2 id="quality-contractor-title" class="vv-quality-contractor__title">
+          {dict.quality.contractor}
+        </h2>
+        <p class="vv-quality-contractor__body">
+          QA10 is a Polish State Machine Engineering agency — we design and
+          ship client websites against a verifiable quality standard. The
+          seal in the footer isn't decoration; it's a signature against 10
+          dimensions we test and measure before every deployment.
+        </p>
+        <p class="vv-quality-contractor__cta">
+          <a class="vv-quality-contractor__link" href="https://qa10.io" rel="noopener external">
+            {dict.quality.ctaContractor}
+          </a>
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  {/* VERIFY CTA */}
+  <Section tone="default" tight ariaLabelledby="quality-verify-title">
+    <Container size="narrow">
+      <div class="vv-quality-verify">
+        <h2 id="quality-verify-title" class="vv-quality-verify__title">
+          Verify the seal at source
+        </h2>
+        <p class="vv-quality-verify__body">
+          The seal status for the Via Viator site is publicly verifiable on
+          the QA10 website. You can see when the last audit ran and which
+          dimensions passed.
+        </p>
+        <p class="vv-quality-verify__cta">
+          <a
+            class="vv-quality-verify__link"
+            href={sealPublicUrl}
+            rel="noopener external"
+          >
+            Verify seal on qa10.io
+          </a>
+        </p>
+      </div>
+    </Container>
+  </Section>
+</BaseLayout>
+
+<style>
+  /* HERO */
+  .vv-quality-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-10);
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .vv-quality-hero {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--vv-space-12);
+    }
+  }
+
+  .vv-quality-hero__eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    color: var(--vv-color-brand-red-700);
+    margin: 0 0 var(--vv-space-3) 0;
+  }
+
+  .vv-quality-hero__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(2rem, 5vw, var(--vv-typography-font-size-5xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    margin: 0 0 var(--vv-space-5) 0;
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-quality-hero__intro {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0 0 var(--vv-space-6) 0;
+    max-width: 60ch;
+  }
+
+  .vv-quality-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    margin: 0;
+  }
+
+  .vv-quality-hero__meta strong {
+    color: var(--vv-color-fg-primary);
+    font-weight: var(--vv-typography-font-weight-semibold);
+  }
+
+  .vv-quality-hero__seal {
+    display: flex;
+    justify-content: center;
+    color: var(--vv-color-brand-red-700);
+  }
+
+  /* DIMENSIONS GRID */
+  .vv-quality-dims__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.5rem, 3.5vw, var(--vv-typography-font-size-3xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+    margin: 0 0 var(--vv-space-3) 0;
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-quality-dims__lead {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    margin: 0 0 var(--vv-space-10) 0;
+    max-width: 60ch;
+  }
+
+  .vv-quality-dims__lead code {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 0.9em;
+    background: var(--vv-color-bg-surface);
+    padding: 2px 6px;
+    border-radius: var(--vv-radius-sm);
+  }
+
+  .vv-quality-dims {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--vv-space-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .vv-quality-dims {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-quality-dims {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .vv-quality-dim {
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    padding: var(--vv-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vv-quality-dim__ord {
+    position: absolute;
+    top: var(--vv-space-4);
+    right: var(--vv-space-5);
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-2xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-brand-red-100);
+    line-height: 1;
+  }
+
+  .vv-quality-dim__name {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-tight);
+    margin: 0;
+    color: var(--vv-color-fg-primary);
+    padding-right: 3rem;
+  }
+
+  .vv-quality-dim__body {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+  }
+
+  /* CONTRACTOR (brand) */
+  .vv-quality-contractor {
+    max-width: 65ch;
+  }
+
+  .vv-quality-contractor__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.5rem, 3vw, var(--vv-typography-font-size-3xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+    margin: 0 0 var(--vv-space-5) 0;
+  }
+
+  .vv-quality-contractor__body {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0 0 var(--vv-space-6) 0;
+  }
+
+  .vv-quality-contractor__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-2);
+    padding: var(--vv-space-3) var(--vv-space-6);
+    background: var(--vv-color-brand-white);
+    color: var(--vv-color-brand-red-700);
+    font-weight: var(--vv-typography-font-weight-bold);
+    text-decoration: none;
+    border-radius: var(--vv-radius-md);
+    transition: transform var(--vv-motion-duration-base) var(--vv-motion-easing-standard);
+  }
+
+  .vv-quality-contractor__link:hover,
+  .vv-quality-contractor__link:focus-visible {
+    transform: translateY(-1px);
+    outline: 2px solid var(--vv-color-brand-white);
+    outline-offset: 2px;
+  }
+
+  /* VERIFY CTA */
+  .vv-quality-verify {
+    text-align: center;
+  }
+
+  .vv-quality-verify__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-2xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    margin: 0 0 var(--vv-space-4) 0;
+  }
+
+  .vv-quality-verify__body {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0 0 var(--vv-space-6) 0;
+  }
+
+  /* WCAG AA: brand-red-700 vs white = 6.45:1. */
+  .vv-quality-verify__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-2);
+    padding: var(--vv-space-3) var(--vv-space-6);
+    background: var(--vv-color-brand-red-700);
+    color: var(--vv-color-brand-white);
+    font-weight: var(--vv-typography-font-weight-bold);
+    text-decoration: none;
+    border-radius: var(--vv-radius-md);
+    transition:
+      background var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+      transform var(--vv-motion-duration-base) var(--vv-motion-easing-standard);
+  }
+
+  .vv-quality-verify__link:hover,
+  .vv-quality-verify__link:focus-visible {
+    background: var(--vv-color-brand-red-700);
+    transform: translateY(-1px);
+  }
+
+  .vv-quality-verify__link:focus-visible {
+    outline: 2px solid var(--vv-color-brand-red);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vv-quality-contractor__link,
+    .vv-quality-verify__link {
+      transition: none;
+    }
+    .vv-quality-contractor__link:hover,
+    .vv-quality-verify__link:hover {
+      transform: none;
+    }
+  }
+</style>

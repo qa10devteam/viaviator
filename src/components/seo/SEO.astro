@@ -1,0 +1,99 @@
+---
+/**
+ * SEO — wszystkie meta tagi w jednym komponencie. Importowany w BaseLayout.
+ *
+ * Zasada:
+ *  - canonical: zawsze absolutny URL (build site URL z env)
+ *  - alternates: hreflang dla PL+EN (każda strona ma parę)
+ *  - JSON-LD: serializowany przez `<script type="application/ld+json">`, set:html
+ *  - OG/Twitter image: zawsze konkretny URL absolutny
+ */
+
+import type { Locale } from "@i18n/index";
+
+interface Alternate {
+  /** np. "pl", "en", "x-default" */
+  lang: string;
+  href: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  canonical: string;
+  alternates?: Alternate[];
+  ogImage?: string;
+  ogType?: "website" | "article" | "profile";
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  siteName?: string;
+}
+
+const {
+  title,
+  description,
+  locale,
+  canonical,
+  alternates = [],
+  ogImage = "/brand/og-logo.png",
+  ogType = "website",
+  jsonLd,
+  siteName = "Via Viator",
+} = Astro.props;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const absoluteOg = ogImage.startsWith("http") ? ogImage : `${SITE}${ogImage}`;
+
+const ogLocale = locale === "pl" ? "pl_PL" : "en_US";
+const ogLocaleAlternate = locale === "pl" ? "en_US" : "pl_PL";
+
+const jsonLdArray = jsonLd
+  ? Array.isArray(jsonLd)
+    ? jsonLd
+    : [jsonLd]
+  : [];
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+{
+  alternates.map((alt) => (
+    <link rel="alternate" hreflang={alt.lang} href={alt.href} />
+  ))
+}
+{
+  alternates.length > 0 && alternates[0] && (
+    <link rel="alternate" hreflang="x-default" href={alternates[0].href} />
+  )
+}
+
+{/* Open Graph */}
+<meta property="og:type" content={ogType} />
+<meta property="og:locale" content={ogLocale} />
+<meta property="og:locale:alternate" content={ogLocaleAlternate} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={absoluteOg} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={siteName} />
+
+{/* Twitter / X */}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={absoluteOg} />
+
+{/* JSON-LD */}
+{
+  jsonLdArray.map((entry) => (
+    <script type="application/ld+json" set:html={JSON.stringify(entry)} />
+  ))
+}

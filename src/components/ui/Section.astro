@@ -1,0 +1,77 @@
+---
+/**
+ * Section — semantic <section> wrapper z padding-block i opcjonalnym tonem tła.
+ * Tone „brand" zarezerwowany dla CTA / breakerów (czerwone tło, biały tekst).
+ */
+
+interface Props {
+  tone?: "default" | "elevated" | "inverse" | "brand" | "surface";
+  tight?: boolean;
+  as?: string;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaLabelledby?: string;
+}
+
+const {
+  tone = "default",
+  tight = false,
+  as: Tag = "section",
+  class: extraClass = "",
+  id,
+  ariaLabel,
+  ariaLabelledby,
+} = Astro.props;
+
+const padding = tight ? "section-tight" : "section";
+---
+
+<Tag
+  class:list={["vv-section", padding, `vv-section--${tone}`, extraClass]}
+  id={id}
+  aria-label={ariaLabel}
+  aria-labelledby={ariaLabelledby}
+>
+  <slot />
+</Tag>
+
+<style>
+  .vv-section {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .vv-section--default {
+    background-color: var(--vv-color-bg-page);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-section--elevated {
+    background-color: var(--vv-color-bg-elevated);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-section--surface {
+    background-color: var(--vv-color-bg-surface);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-section--inverse {
+    background-color: var(--vv-color-bg-inverse);
+    color: var(--vv-color-fg-inverse);
+  }
+
+  /* WCAG 1.4.3 AA: brand-red-700 (#C2261A) vs white = 6.45:1
+     (brand-red #F13223 vs white = 4.42:1 — fail dla normal text). */
+  .vv-section--brand {
+    background-color: var(--vv-color-brand-red-700);
+    color: var(--vv-color-brand-white);
+  }
+
+  /* Linkery w inverse i brand zachowują kontrast */
+  .vv-section--inverse :global(a),
+  .vv-section--brand :global(a) {
+    color: inherit;
+  }
+</style>

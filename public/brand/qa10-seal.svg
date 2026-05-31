@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-labelledby="qa10-seal-title qa10-seal-desc" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+  <title id="qa10-seal-title">QA10 Quality Seal v1.0</title>
+  <desc id="qa10-seal-desc">10-dimension verified quality mark by QA10</desc>
+
+  <defs>
+    <!-- Path obeganty przez tekst rim. Promień 108 — wewnętrznie wkrąg dwóch okręgów obwódkowych. -->
+    <path id="qa10-seal-rim-path" d="M 120,120 m -108,0 a 108,108 0 1,1 216,0 a 108,108 0 1,1 -216,0" />
+  </defs>
+
+  <g aria-hidden="true">
+    <!-- Dwa cienkie okręgi tworzące obwódkę pieczęci (medieval guild seal vibe). -->
+    <circle cx="120" cy="120" r="118" stroke-width="1" opacity="0.55" />
+    <circle cx="120" cy="120" r="100" stroke-width="1" opacity="0.55" />
+
+    <!-- 10 mikrosegmentów — krótkie radialne dashe co 36° w pierścieniu między r=100 a r=118. -->
+    <g stroke-width="1.4">
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(0 120 120)" />
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(36 120 120)" />
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(72 120 120)" />
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(108 120 120)" />
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(144 120 120)" />
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(180 120 120)" />
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(216 120 120)" />
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(252 120 120)" />
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(288 120 120)" />
+      <line x1="120" y1="2"   x2="120" y2="20"   transform="rotate(324 120 120)" />
+    </g>
+
+    <!-- Tekst obwódkowy: "QA10 QUALITY SEAL · VERIFIED · v1.0" obiegający koło. -->
+    <text font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="3" fill="currentColor" stroke="none">
+      <textPath href="#qa10-seal-rim-path" startOffset="0%">QA10 QUALITY SEAL · VERIFIED · v1.0 · QA10 QUALITY SEAL · VERIFIED · v1.0 · </textPath>
+    </text>
+
+    <!-- Wewnętrzny okrąg dla marka — środek z tożsamością "QA" + "10". -->
+    <circle cx="120" cy="120" r="74" stroke-width="1.2" opacity="0.7" />
+
+    <!-- Cienka diagonalna kreska — odniesienie do logo Via Viator (slash w "V"). -->
+    <line x1="74" y1="158" x2="166" y2="82" stroke-width="0.8" opacity="0.35" />
+
+    <!-- Główny znak: "QA" w górnej połowie, "10" w dolnej, dzieli je cienka linia. -->
+    <text x="120" y="116" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="44" font-weight="800" letter-spacing="-1" fill="currentColor" stroke="none">QA</text>
+    <line x1="78" y1="128" x2="162" y2="128" stroke-width="1.4" />
+    <text x="120" y="166" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="36" font-weight="800" letter-spacing="-0.5" fill="currentColor" stroke="none">10</text>
+
+    <!-- Podpis pod 10: "v1.0" oznacza wersję pieczęci. -->
+    <text x="120" y="190" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="8" font-weight="600" letter-spacing="2" fill="currentColor" stroke="none" opacity="0.7">SEAL v1.0</text>
+  </g>
+</svg>

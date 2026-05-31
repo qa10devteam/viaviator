@@ -1,0 +1,107 @@
+---
+/**
+ * Badge — inline pill, do time-to-quote, segment color accents, statusów.
+ */
+
+interface Props {
+  tone?: "default" | "brand" | "success" | "warning" | "info" | "neutral";
+  size?: "sm" | "md";
+  as?: string;
+  class?: string;
+  /** Custom accent color (override) — używane przez SegmentGrid dla per-segment color. */
+  accentColor?: string;
+}
+
+const {
+  tone = "default",
+  size = "md",
+  as: Tag = "span",
+  class: extraClass = "",
+  accentColor,
+} = Astro.props;
+
+const styleVar = accentColor ? `--vv-badge-accent:${accentColor}` : undefined;
+---
+
+<Tag
+  class:list={["vv-badge", `vv-badge--${tone}`, `vv-badge--size-${size}`, accentColor ? "vv-badge--custom" : null, extraClass]}
+  style={styleVar}
+>
+  <slot />
+</Tag>
+
+<style>
+  .vv-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--vv-space-1);
+    font-family: var(--vv-typography-font-family-display);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    letter-spacing: var(--vv-typography-letter-spacing-wide);
+    text-transform: uppercase;
+    border-radius: var(--vv-radius-full);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .vv-badge--size-sm {
+    font-size: 11px;
+    padding: 3px var(--vv-space-2);
+  }
+
+  .vv-badge--size-md {
+    font-size: var(--vv-typography-font-size-xs);
+    padding: 5px var(--vv-space-3);
+  }
+
+  .vv-badge--default {
+    background-color: var(--vv-color-bg-surface);
+    color: var(--vv-color-fg-secondary);
+    border-color: var(--vv-color-border-subtle);
+  }
+
+  .vv-badge--neutral {
+    background-color: var(--vv-color-bg-elevated);
+    color: var(--vv-color-fg-muted);
+    border-color: var(--vv-color-border-subtle);
+  }
+
+  .vv-badge--brand {
+    background-color: var(--vv-color-brand-red-50);
+    color: var(--vv-color-brand-red-700);
+    border-color: var(--vv-color-brand-red-100);
+  }
+
+  .vv-badge--success {
+    background-color: color-mix(in srgb, var(--vv-color-state-success) 10%, transparent);
+    color: var(--vv-color-state-success);
+    border-color: color-mix(in srgb, var(--vv-color-state-success) 25%, transparent);
+  }
+
+  /* WCAG: warning (#B4530A) na ~white = 4.36:1 — fail dla normal text.
+     Darken przez color-mix do ok 5:1+. */
+  .vv-badge--warning {
+    background-color: color-mix(in srgb, var(--vv-color-state-warning) 10%, transparent);
+    color: color-mix(in srgb, var(--vv-color-state-warning) 80%, #000);
+    border-color: color-mix(in srgb, var(--vv-color-state-warning) 25%, transparent);
+  }
+
+  .vv-badge--info {
+    background-color: color-mix(in srgb, var(--vv-color-state-info) 10%, transparent);
+    color: var(--vv-color-state-info);
+    border-color: color-mix(in srgb, var(--vv-color-state-info) 25%, transparent);
+  }
+
+  /* Custom accent (segment colors).
+     WCAG 1.4.3 AA: dla 11-12px uppercase semibold na ~white tle
+     wymagamy 4.5:1. Segmenty rodzinne (#D97706 → 3.18:1) i eventy
+     (#F13223 → 4.42:1) failują surowy color, więc darkenujemy color-mix
+     z 25% black → wszystkie segmenty mają ≥5:1.
+     Tło zostaje jasne (12% tint) — kontrast 4.5:1+ zachowany. */
+  .vv-badge--custom {
+    background-color: color-mix(in srgb, var(--vv-badge-accent) 12%, transparent);
+    color: color-mix(in srgb, var(--vv-badge-accent) 75%, #000);
+    border-color: color-mix(in srgb, var(--vv-badge-accent) 30%, transparent);
+  }
+</style>

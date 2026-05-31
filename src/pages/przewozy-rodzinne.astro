@@ -1,0 +1,509 @@
+---
+/**
+ * /przewozy-rodzinne — P4 Przewozy rodzinne (PL).
+ *
+ * Buyer persona: rodzina (4–8 osób) jadąca na lotnisko, wesele,
+ * komunię. Kluczowe sygnały zaufania:
+ *   1. „Galeria wnętrza pojazdu" — zdjęcia auta, którym faktycznie pojadą.
+ *   2. Cena za trasę (nie za km) — przewidywalność dla rodziny.
+ *   3. Fotelik dla dziecka w cenie.
+ *   4. Płatność przelewem albo gotówką — wybór po stronie klienta.
+ *   5. Q-CTA Messenger — bo rodziny piszą Messengerem, nie maile.
+ *
+ * Sekcje:
+ *   1. Hero          – image=service-airport-mobile + Q-CTA Messenger + tel.
+ *   2. Galeria       – 3-grid: brand-logo-close, brand-rear-cta, fleet-trafic-front.
+ *   3. Co dostajesz  – rodzinne.what.points (6 punktów).
+ *   4. 3 trasy       – FeatureGrid columns=3 (Lotnisko, Wesele, Komunia).
+ *   5. Decision      – rodzinne.decisionList (5 pytań przed wyborem).
+ *   6. Social proof  – placeholder 4.8/5 (Google reviews — do podłączenia).
+ *   7. FAQ           – rodzinne.faq.
+ *   8. CTA brand     – Q-CTA Messenger + tel.
+ *
+ * SEO: seoMap.rodzinne (title/desc/canonical), serviceSchema + breadcrumb.
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Card from "@components/ui/Card.astro";
+import Badge from "@components/ui/Badge.astro";
+import Icon from "@components/ui/Icon.astro";
+import Hero from "@components/sections/Hero.astro";
+import FeatureGrid from "@components/sections/FeatureGrid.astro";
+import FAQAccordion from "@components/sections/FAQAccordion.astro";
+import CTASection from "@components/sections/CTASection.astro";
+import { getDictionary } from "@i18n/index";
+import {
+  buildCanonical,
+  buildAlternates,
+  seoMap,
+} from "@lib/seo";
+import {
+  serviceForSegment,
+  breadcrumbForRoute,
+  faqSchema,
+} from "@lib/schema";
+import { company } from "@data/company";
+
+const locale = "pl" as const;
+const dict = getDictionary(locale);
+const seg = dict.segments.rodzinne;
+const seo = seoMap.rodzinne;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("rodzinne", locale, SITE);
+const alternates = buildAlternates("rodzinne", SITE);
+
+// Q-CTA: Messenger (placeholder do podmiany, gdy klient poda profil) +
+// telefoniczny fallback (zawsze działający).
+const messengerHref = "https://m.me/viaviatorpl";
+const phoneHref = company.phoneHref;
+
+// Trzy typowe trasy rodzinne — zewnętrzne wobec dict, bo są strukturalne
+// (slug → seoMap), ale opisy konstruujemy lokalnie. Klient potwierdził tę
+// triadę: lotnisko / wesele / komunia w mailu z 2026-05-19.
+const routes = [
+  {
+    icon: "truck" as const,
+    title: "Lotnisko",
+    body:
+      "Pyrzowice, Kraków-Balice, Wrocław — z domu, na halę, w jednym kursie. Fotelik dla dziecka, miejsce na wszystkie walizki, śledzenie lotu w razie opóźnienia.",
+  },
+  {
+    icon: "users" as const,
+    title: "Wesele",
+    body:
+      "Sala → hotel → dom o 3 w nocy. Bez parkowania u znajomych, bez łapania taksówek. Bus 8-osobowy mieści bliską rodzinę z bagażem ślubnym.",
+  },
+  {
+    icon: "sparkles" as const,
+    title: "Komunia i urodziny",
+    body:
+      "Kościół → sala → dom. Dziadkowie, ciotki, rodzice chrzestni — wszyscy razem. Pudełka z prezentami i tort wracają z nami bez problemu.",
+  },
+];
+
+// Schema.org payload: Service + Breadcrumb + FAQ.
+const serviceJsonLd = serviceForSegment("rodzinne", locale, SITE);
+const breadcrumbJsonLd = breadcrumbForRoute("rodzinne", locale, SITE);
+const faqJsonLd = faqSchema([...seg.faq.items]);
+---
+
+<BaseLayout
+  title={seo.titlePl}
+  description={seo.descriptionPl}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={seo.ogImage}
+  jsonLd={[serviceJsonLd, breadcrumbJsonLd, faqJsonLd]}
+  bodyClass="page-segment page-rodzinne"
+>
+  {/* 1. HERO — Q-CTA Messenger + tel, time-to-quote 2h */}
+  <Hero
+    eyebrow={seg.name}
+    headline={seg.heroHeadline}
+    subhead={seg.heroSubhead}
+    image="/images/services/service-airport-mobile.jpg"
+    imageAlt="Rodzina z bagażami przy busie Via Viator — transfer na lotnisko."
+    primaryCta={{
+      label: "Napisz na Messengerze — odpowiemy w 2 godziny",
+      href: messengerHref,
+      external: true,
+      ariaLabel: "Napisz do Via Viator na Messengerze",
+    }}
+    secondaryCta={{
+      label: "Zadzwoń teraz",
+      href: phoneHref,
+      ariaLabel: `Zadzwoń: ${company.phoneDisplay}`,
+    }}
+    microcopy="Telefon odbieramy. Messenger czytamy. Bus widzisz na zdjęciach poniżej — to ten, który po Ciebie przyjedzie."
+  />
+
+  {/* Time-to-quote badge — pasek pod Hero, kontekst zaufania */}
+  <Section tone="surface" tight ariaLabel="Czas wyceny i kontakt awaryjny">
+    <Container size="default">
+      <div class="vv-rodzinne-meta">
+        <Badge tone="brand">
+          <Icon name="clock" size={14} />
+          <span>2 godziny — średni czas odpowiedzi w godzinach pracy</span>
+        </Badge>
+        <Badge tone="neutral">
+          <Icon name="phone" size={14} />
+          <span>{company.phoneDisplay}</span>
+        </Badge>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 2. GALERIA WNĘTRZA POJAZDU — KLUCZOWA sekcja per buyer persona */}
+  <Section tone="default" ariaLabelledby="rodzinne-gallery-title">
+    <Container size="default">
+      <header class="vv-rodzinne-section-head">
+        <h2 id="rodzinne-gallery-title" class="vv-rodzinne-section-title">
+          Galeria wnętrza pojazdu
+        </h2>
+        <p class="vv-rodzinne-section-lead">
+          Zanim wsiądziesz — zobacz, w co wsiądziesz. To jest bus, który
+          przyjedzie po Twoją rodzinę. Bez stockowych zdjęć, bez „idealnej
+          aranżacji" z internetu.
+        </p>
+      </header>
+
+      <ul class="vv-rodzinne-gallery" role="list">
+        <li class="vv-rodzinne-gallery__item">
+          <figure>
+            <img
+              src="/images/brand-detail/brand-logo-close.jpg"
+              alt="Logo Via Viator na karoserii Renault Trafic — zbliżenie."
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Logo Via Viator — czytelne, branded, nasz bus.</figcaption>
+          </figure>
+        </li>
+        <li class="vv-rodzinne-gallery__item">
+          <figure>
+            <img
+              src="/images/brand-detail/brand-rear-cta.jpg"
+              alt="Tylna część busa Via Viator z napisem kontaktowym, gotowa na bagaże."
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Bagażnik tylny — walizki na lotnisko, pudełka z komunii.</figcaption>
+          </figure>
+        </li>
+        <li class="vv-rodzinne-gallery__item">
+          <figure>
+            <img
+              src="/images/fleet/fleet-trafic-front.jpg"
+              alt="Renault Trafic 8-osobowy Via Viator od przodu — bus przed wyjazdem."
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>Bus przed wyjazdem — południowa Polska, codzienna trasa.</figcaption>
+          </figure>
+        </li>
+      </ul>
+
+      {/* Fallback: jeśli klient nie ma jeszcze zdjęć wnętrza (siedzenia/kabina),
+          mówimy o tym wprost. Persona rodzinna ufa transparentności,
+          nie marketingowej iluzji. */}
+      <aside class="vv-rodzinne-gallery-note">
+        <p>
+          <strong>Zdjęcia wnętrza siedzeń — w trakcie sesji zdjęciowej.</strong>
+          {" "}Jeśli chcesz zobaczyć kabinę przed wyjazdem — zadzwoń, opowiemy,
+          a w przypadku stałych tras pokażemy auto na miejscu.
+        </p>
+      </aside>
+    </Container>
+  </Section>
+
+  {/* 3. CO DOSTAJESZ — punkty z dict.what */}
+  <Section tone="elevated" ariaLabelledby="rodzinne-what-title">
+    <Container size="default">
+      <div class="vv-rodzinne-what">
+        <div class="vv-rodzinne-what__copy">
+          <h2 id="rodzinne-what-title" class="vv-rodzinne-section-title">
+            {seg.what.title} — w przewozie rodzinnym
+          </h2>
+          <p class="vv-rodzinne-section-lead">{seg.what.body}</p>
+        </div>
+        <ul class="vv-rodzinne-what__list" role="list">
+          {seg.what.points.map((point) => (
+            <li class="vv-rodzinne-what__item">
+              <Icon name="check" size={18} />
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 4. TRZY TYPOWE TRASY — FeatureGrid columns=3 */}
+  <Section tone="default" ariaLabelledby="rodzinne-routes-title">
+    <Container size="default">
+      <header class="vv-rodzinne-section-head">
+        <h2 id="rodzinne-routes-title" class="vv-rodzinne-section-title">
+          Trzy typowe trasy
+        </h2>
+        <p class="vv-rodzinne-section-lead">
+          90% naszych kursów rodzinnych to jedna z tych trzech historii.
+          Pozostałe 10% — opisz w briefie, też pojedziemy.
+        </p>
+      </header>
+      <FeatureGrid items={routes} columns={3} tone="default" />
+    </Container>
+  </Section>
+
+  {/* 5. DECISION CRITERIA — rodzinne.decisionList */}
+  <Section tone="surface" ariaLabelledby="rodzinne-decision-title">
+    <Container size="default">
+      <header class="vv-rodzinne-section-head">
+        <h2 id="rodzinne-decision-title" class="vv-rodzinne-section-title">
+          {seg.decisionList.title}
+        </h2>
+        <p class="vv-rodzinne-section-lead">{seg.decisionList.body}</p>
+      </header>
+      <ul class="vv-rodzinne-decision" role="list">
+        {seg.decisionList.items.map((item) => (
+          <li class="vv-rodzinne-decision__item">
+            <p class="vv-rodzinne-decision__q">{item.q}</p>
+            <p class="vv-rodzinne-decision__a">{item.a}</p>
+          </li>
+        ))}
+      </ul>
+    </Container>
+  </Section>
+
+  {/* 6. SOCIAL PROOF — placeholder Google reviews */}
+  <Section tone="default" tight ariaLabelledby="rodzinne-social-title">
+    <Container size="narrow">
+      <Card tone="brand" class="vv-rodzinne-social">
+        <p class="vv-rodzinne-social__eyebrow">Co mówią pasażerowie</p>
+        <p class="vv-rodzinne-social__quote">
+          „Średnia ocena <strong>4.8 / 5</strong> z opinii kierowców i pasażerów."
+        </p>
+        <p class="vv-rodzinne-social__note">
+          Pełny widget Google reviews dołączymy po podłączeniu profilu
+          Google Business — pracujemy nad tym. Tymczasem: jeśli chcesz
+          referencji, podamy 3 kontakty od rodzin, dla których ostatnio
+          jeździliśmy. Wystarczy zapytać.
+        </p>
+      </Card>
+    </Container>
+  </Section>
+
+  {/* 7. FAQ */}
+  <Section tone="default" ariaLabelledby="rodzinne-faq-title">
+    <Container size="default">
+      <header class="vv-rodzinne-section-head">
+        <h2 id="rodzinne-faq-title" class="vv-rodzinne-section-title">
+          {seg.faq.title}
+        </h2>
+      </header>
+      <FAQAccordion items={[...seg.faq.items]} defaultOpenFirst={true} />
+    </Container>
+  </Section>
+
+  {/* 8. CTA FINALNA — brand, Q-CTA Messenger */}
+  <CTASection
+    title="Napisz, zadzwoń, zaplanuj"
+    body="Krótki brief, jedna cena za trasę, fotelik dla dziecka w cenie. Najszybciej trafia do nas Messenger — odpowiadamy w 2 godziny w godzinach pracy."
+    primaryCta={{
+      label: "Napisz na Messengerze",
+      href: messengerHref,
+      external: true,
+      ariaLabel: "Napisz do Via Viator na Messengerze",
+    }}
+    secondaryCta={{
+      label: `Zadzwoń: ${company.phoneDisplay}`,
+      href: phoneHref,
+      ariaLabel: `Zadzwoń: ${company.phoneDisplay}`,
+    }}
+    tone="brand"
+  />
+</BaseLayout>
+
+<style>
+  /* ── Wspólne nagłówki sekcji ───────────────────────────────────────── */
+  .vv-rodzinne-section-head {
+    margin: 0 0 var(--vv-space-10) 0;
+    max-width: 64ch;
+  }
+
+  .vv-rodzinne-section-title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 3.5vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-3) 0;
+    text-wrap: balance;
+  }
+
+  .vv-rodzinne-section-lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ── Meta pasek (czas odpowiedzi + telefon) ───────────────────────── */
+  .vv-rodzinne-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+    align-items: center;
+  }
+
+  /* ── Galeria wnętrza ──────────────────────────────────────────────── */
+  .vv-rodzinne-gallery {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 768px) {
+    .vv-rodzinne-gallery {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .vv-rodzinne-gallery__item figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-rodzinne-gallery__item img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--vv-radius-lg);
+    background-color: var(--vv-color-bg-surface);
+    box-shadow: var(--vv-shadow-md);
+  }
+
+  .vv-rodzinne-gallery__item figcaption {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-rodzinne-gallery-note {
+    margin: var(--vv-space-8) 0 0 0;
+    padding: var(--vv-space-5) var(--vv-space-6);
+    background-color: var(--vv-color-bg-surface);
+    border-left: 4px solid var(--vv-color-brand-red);
+    border-radius: var(--vv-radius-md);
+  }
+
+  .vv-rodzinne-gallery-note p {
+    margin: 0;
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  /* ── „Co dostajesz" — dwukolumnowy layout copy + punkty ──────────── */
+  .vv-rodzinne-what {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-8);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-rodzinne-what {
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--vv-space-12);
+      align-items: start;
+    }
+  }
+
+  .vv-rodzinne-what__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-4);
+  }
+
+  .vv-rodzinne-what__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-rodzinne-what__item :global(.vv-icon) {
+    color: var(--vv-color-brand-red-700);
+    margin-top: 4px;
+  }
+
+  /* ── Decision criteria ────────────────────────────────────────────── */
+  .vv-rodzinne-decision {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 768px) {
+    .vv-rodzinne-decision {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .vv-rodzinne-decision__item {
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    padding: var(--vv-space-6);
+  }
+
+  .vv-rodzinne-decision__q {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-lg);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-2) 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-rodzinne-decision__a {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0;
+  }
+
+  /* ── Social proof (Card brand) ────────────────────────────────────── */
+  .vv-rodzinne-social {
+    text-align: center;
+    align-items: center;
+  }
+
+  .vv-rodzinne-social__eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    /* WCAG AA: brand-red-700 vs brand-red-50 = 5.91:1 (OK). */
+    color: var(--vv-color-brand-red-700);
+    margin: 0;
+  }
+
+  .vv-rodzinne-social__quote {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-2xl);
+    line-height: var(--vv-typography-line-height-snug);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .vv-rodzinne-social__note {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    max-width: 56ch;
+    margin: 0;
+  }
+</style>

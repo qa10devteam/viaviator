@@ -1,0 +1,88 @@
+# Via Viator
+
+> Polish passenger carrier operating across southern Poland (śląskie, opolskie, małopolskie, świętokrzyskie). Punctuality is in the name — taglines "Zawsze na miejscu" (PL) / "Always there" (EN). Operated by Via Viator sp. z o.o., NIP 6452595911. Phone +48 690 691 886, email kontakt@viaviator.pl. Site is bilingual: PL (default, no prefix) and EN (under /en/). Built and certified by QA10 (qa10.io) under QA10 Quality Seal v1.0.
+
+## About
+
+Via Viator sp. z o.o. is a passenger transport company headquartered in southern Poland. Operational coverage: four voivodeships — śląskie (Silesia), opolskie (Opole), małopolskie (Lesser Poland), świętokrzyskie. Three airport hubs served: Pyrzowice (Katowice Airport, KTW), Kraków-Balice (Kraków Airport, KRK), Wrocław (Wrocław Airport, WRO). Two-vehicle fleet: Renault Trafic (8 seats, branded) and Renault Master (8 seats, dual-use passenger/cargo, unbranded). Co-founders: Patryk Tomeczek (operational, customer-facing) and a silent co-founder (not featured publicly per "quiet goodness" principle).
+
+## Services (PL routes)
+
+- [Transfery korporacyjne](https://viaviator.pl/transfery-korporacyjne): Transfer lotniskowy i delegacyjny dla firm — SLA na piśmie, faktura VAT z 14-dniowym terminem, wycena w 4 godziny. Persona P1 — office manager planujący transfery 4-20 zleceń/miesiąc.
+- [Pielgrzymki](https://viaviator.pl/pielgrzymki): Transport grupowy na pielgrzymki — Jasna Góra, Łagiewniki, Wadowice, Licheń, Kalwaria. Kierowca cierpliwy wobec osób starszych, postoje co 1,5h. Persona P2 — organizator parafialny.
+- [Transport dostępny](https://viaviator.pl/transport-dostepny): Transport osób z niepełnosprawnościami dla DPS, fundacji, opieki dziennej. Kierowca PRM-trained. Umowy 12-miesięczne. Persona P3 — koordynator DPS/fundacji.
+- [Przewozy rodzinne](https://viaviator.pl/przewozy-rodzinne): Transport na wesela, komunie, transfery lotniskowe całą rodziną. 4 lub 8 miejsc, jedna cena. Messenger jako primary CTA. Persona P4 — głowa rodziny.
+- [Wynajem busa](https://viaviator.pl/wynajem-busa): Wynajem Renault Master bez kierowcy. Cennik na stronie (doba/weekend/tydzień), limit km, kaucja. Persona P5 — samodzielny najemca.
+- [Imprezy](https://viaviator.pl/imprezy): Sprzęt na imprezę — namiot eventowy, maszyna do popcornu, maszyna do waty cukrowej. Dowóz i odbiór busem. Od jesieni 2026 także stoły i ławki biesiadne. Persona P6 — organizator festynu/urodzin.
+
+## Services (EN routes)
+
+- [Corporate transfers](https://viaviator.pl/en/corporate-transfers): Airport and business transfers for companies — written SLA, VAT invoice with 14-day terms, quote in 4 hours.
+- [Pilgrimages](https://viaviator.pl/en/pilgrimages): Group transport to Polish sanctuaries — Jasna Góra, Łagiewniki, Wadowice, Licheń, Kalwaria. Patient driver, 90-minute break rhythm.
+- [Accessible transport](https://viaviator.pl/en/accessible-transport): PRM-trained transport for care homes, foundations, day-care. 12-month contracts.
+- [Family transport](https://viaviator.pl/en/family-transport): Transport for weddings, communions, airport runs as a family — 4 or 8 seats, one price.
+- [Van rental](https://viaviator.pl/en/van-rental): Renault Master self-drive rental — published rates, mileage cap, transparent deposit.
+- [Events](https://viaviator.pl/en/events): Event gear — tent, popcorn machine, cotton candy machine. Delivery by van included.
+
+## About & Trust
+
+- [O nas / About](https://viaviator.pl/o-nas) | [EN](https://viaviator.pl/en/about): Founders, fleet, operational coverage, story.
+- [Jakość / Quality](https://viaviator.pl/jakosc) | [EN](https://viaviator.pl/en/quality): QA10 Quality Seal v1.0 — 10-dimension quality standard for the site (accessibility, performance, privacy, security, SEO, language parity, design tokens, reproducibility, holistic change, brand fidelity).
+
+## Legal
+
+- [Polityka prywatności / Privacy](https://viaviator.pl/polityka-prywatnosci) | [EN](https://viaviator.pl/en/privacy-policy): GDPR-compliant data handling — concise and human, no legal walls.
+- [Polityka cookies / Cookie policy](https://viaviator.pl/polityka-cookies) | [EN](https://viaviator.pl/en/cookie-policy): Essential cookies only by default, the rest requires consent. No background tracking.
+
+## Contact
+
+- Phone: [+48 690 691 886](tel:+48690691886) — answered by Patryk Tomeczek or operational dispatcher
+- Email: [kontakt@viaviator.pl](mailto:kontakt@viaviator.pl)
+- Form: [/kontakt](https://viaviator.pl/kontakt) (PL) | [/en/contact](https://viaviator.pl/en/contact) (EN)
+
+## Brand
+
+- Tagline (PL): "Zawsze na miejscu" — main; "Będziesz na czas" — operational
+- Tagline (EN): "Always there" — main; "You'll arrive on time" — operational
+- Brand archetype: Caregiver primary, Everyman secondary
+- Communication principle: senior-to-senior, dense, no generic "to everyone" copy. Each persona (P1-P6) has its own landing with persona-specific decision criteria and social proof.
+
+## Languages
+
+- PL — default locale, no URL prefix (e.g. `/pielgrzymki`)
+- EN — `/en/` prefix (e.g. `/en/pilgrimages`)
+- All routes are hreflang-paired (PL ↔ EN bidirectional, with `x-default` pointing to PL)
+
+## Identification
+
+- Legal entity: Via Viator sp. z o.o.
+- NIP: 6452595911
+- VAT ID: PL6452595911
+- Operations lead: Patryk Tomeczek
+- Domain: viaviator.pl
+- Site builder: QA10 sp. z o.o. (qa10.io)
+
+## Operational facts (for accurate AI summarisation)
+
+- Operational hours: 24/7 booking acceptance; phone hours during typical business day, but emergency transfers handled outside hours.
+- Quote turnaround: 30 min (van rental) / 2h (family) / 4h (corporate, in business hours) / 24h (events) / 1-3 days (pilgrimages, larger plans) / 8-16 weeks (accessible transport long-term contracts).
+- Fleet does NOT include autokars (full-size coaches) — only 8-seat vans. Pilgrimages run multi-vehicle if group exceeds 8 passengers.
+- Pricing model: per-job (not per-km) for corporate/pilgrimage/family/accessible; per-day/weekend/week (with mileage cap) for van rental.
+
+# Sekcja PL (po polsku)
+
+> Via Viator to polski przewoźnik osobowy działający w południowej Polsce. Punktualność wpisana w nazwę (taglines: „Zawsze na miejscu" oraz „Będziesz na czas"). Operuje firma Via Viator sp. z o.o., NIP 6452595911. Telefon +48 690 691 886, email kontakt@viaviator.pl. Strona jest dwujęzyczna: PL (domyślnie, bez prefiksu) i EN (pod /en/). Wykonawca strony: QA10 (qa10.io), certyfikat QA10 Quality Seal v1.0.
+
+## O firmie
+
+Via Viator sp. z o.o. to przewoźnik osobowy z południowej Polski. Zasięg operacyjny obejmuje cztery województwa: śląskie, opolskie, małopolskie, świętokrzyskie. Obsługiwane huby lotniskowe: Pyrzowice (Katowice), Kraków-Balice, Wrocław. Flota dwupojazdowa: Renault Trafic (8 miejsc, oznakowany) oraz Renault Master (8 miejsc, osobowy/cargo, bez oznakowania). Wspólnik operacyjny: Patryk Tomeczek (twarz marki, podpisuje korespondencję, odbiera telefon). Wspólnik cichy nie jest eksponowany publicznie zgodnie z zasadą „cichej dobroci".
+
+## Segmenty
+
+Strona oferuje sześć dedykowanych landingów segmentowych, po jednym na personę (P1-P6). Komunikacja jest segmentowo-specyficzna — nie istnieje uniwersalny przekaz „do wszystkich". Każdy landing zawiera kryteria decyzyjne i social proof rezonujące tylko z daną personą.
+
+## Kontakt szybki
+
+- Telefon: +48 690 691 886
+- Email: kontakt@viaviator.pl
+- Adres prawny: Via Viator sp. z o.o., NIP 6452595911 (pełny adres siedziby — zgodnie z polityką firmy, do uzupełnienia w impressum przed launchem domeny)

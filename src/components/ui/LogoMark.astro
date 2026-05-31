@@ -1,0 +1,60 @@
+---
+/**
+ * LogoMark — pojedyncze miejsce do renderowania logo Via Viator.
+ * Trzy warianty: primary (kolor + sygnet), mono (jednolity kolor, np. dark backgrounds),
+ * vertical (sygnet + tagline pod spodem).
+ *
+ * NOTE: pliki są SVG-ami w /public/brand/. Używamy <img> żeby uniknąć inline'owania
+ * dużej geometrii do HTML-a (logo-primary ma 14kB). Dla mono variant (954 B) można
+ * by inline'ować, ale pozostajemy konsekwentni.
+ */
+
+import { getDictionary } from "@i18n/index";
+import type { Locale } from "@i18n/index";
+
+interface Props {
+  variant?: "primary" | "mono" | "vertical";
+  /** Wysokość w pikselach (szerokość proporcjonalna). */
+  height?: number;
+  locale?: Locale;
+  class?: string;
+  /** Czy to logo w headerze (loading=eager) czy w treści (loading=lazy). */
+  priority?: boolean;
+}
+
+const {
+  variant = "primary",
+  height = 40,
+  locale = "pl",
+  class: extraClass = "",
+  priority = true,
+} = Astro.props;
+
+const dict = getDictionary(locale);
+const alt = dict.brand.logoAlt;
+
+const src = {
+  primary: "/brand/logo-primary.svg",
+  mono: "/brand/logo-mono.svg",
+  vertical: "/brand/logo-vertical.svg",
+}[variant];
+---
+
+<img
+  src={src}
+  alt={alt}
+  height={height}
+  class:list={["vv-logo", `vv-logo--${variant}`, extraClass]}
+  loading={priority ? "eager" : "lazy"}
+  decoding="async"
+  fetchpriority={priority ? "high" : "auto"}
+/>
+
+<style>
+  .vv-logo {
+    display: inline-block;
+    width: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+</style>

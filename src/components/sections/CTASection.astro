@@ -1,0 +1,194 @@
+---
+/**
+ * CTASection — pełnoszerokościowa sekcja CTA z headline + body + primary/secondary.
+ * Tone „brand" — czerwone tło, biały tekst. Tone „inverse" — czarne tło.
+ */
+
+import Container from "@components/ui/Container.astro";
+import Button from "@components/ui/Button.astro";
+import Icon from "@components/ui/Icon.astro";
+
+interface CtaProps {
+  label: string;
+  href: string;
+  ariaLabel?: string;
+  external?: boolean;
+}
+
+interface Props {
+  title: string;
+  body?: string;
+  eyebrow?: string;
+  primaryCta: CtaProps;
+  secondaryCta?: CtaProps;
+  tone?: "default" | "brand" | "inverse" | "elevated";
+  align?: "left" | "center";
+}
+
+const {
+  title,
+  body,
+  eyebrow,
+  primaryCta,
+  secondaryCta,
+  tone = "brand",
+  align = "center",
+} = Astro.props;
+---
+
+<section
+  class:list={[
+    "vv-cta",
+    `vv-cta--${tone}`,
+    `vv-cta--align-${align}`,
+  ]}
+>
+  <Container size="default" class="vv-cta__inner">
+    <div class="vv-cta__content">
+      {eyebrow && <p class="vv-cta__eyebrow eyebrow">{eyebrow}</p>}
+      <h2 class="vv-cta__title">{title}</h2>
+      {body && <p class="vv-cta__body lede">{body}</p>}
+      <div class="vv-cta__buttons">
+        <Button
+          variant={tone === "brand" || tone === "inverse" ? "secondary" : "primary"}
+          size="lg"
+          href={primaryCta.href}
+          external={primaryCta.external}
+          ariaLabel={primaryCta.ariaLabel}
+          class={tone === "brand" || tone === "inverse" ? "vv-cta__btn-on-dark" : ""}
+        >
+          <span>{primaryCta.label}</span>
+          <Icon name="arrow-right" size={18} />
+        </Button>
+        {
+          secondaryCta && (
+            <Button
+              variant="ghost"
+              size="lg"
+              href={secondaryCta.href}
+              external={secondaryCta.external}
+              ariaLabel={secondaryCta.ariaLabel}
+              class={tone === "brand" || tone === "inverse" ? "vv-cta__btn-on-dark" : ""}
+            >
+              {secondaryCta.label}
+            </Button>
+          )
+        }
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .vv-cta {
+    padding-block: var(--vv-space-20);
+    position: relative;
+    isolation: isolate;
+  }
+
+  @media (max-width: 768px) {
+    .vv-cta {
+      padding-block: var(--vv-space-12);
+    }
+  }
+
+  .vv-cta--default {
+    background-color: var(--vv-color-bg-page);
+  }
+
+  .vv-cta--elevated {
+    background-color: var(--vv-color-bg-elevated);
+  }
+
+  /* WCAG 1.4.3 AA: bg=brand-red (#F13223) vs white text = 4.42:1 (fail dla normal),
+     brand-red-700 (#C2261A) vs white = 6.45:1 → wszystkie rozmiary tekstu OK,
+     w tym eyebrow 14px semibold i body lede 20px medium z opacity 0.85+. */
+  .vv-cta--brand {
+    background-color: var(--vv-color-brand-red-700);
+    color: var(--vv-color-brand-white);
+  }
+
+  .vv-cta--inverse {
+    background-color: var(--vv-color-bg-inverse);
+    color: var(--vv-color-fg-inverse);
+  }
+
+  .vv-cta__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-5);
+    max-width: 720px;
+  }
+
+  .vv-cta--align-center .vv-cta__content {
+    margin-inline: auto;
+    align-items: center;
+    text-align: center;
+  }
+
+  .vv-cta__eyebrow {
+    margin: 0;
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  .vv-cta__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-5xl);
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: inherit;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  @media (max-width: 768px) {
+    .vv-cta__title {
+      font-size: var(--vv-typography-font-size-4xl);
+    }
+  }
+
+  .vv-cta__body {
+    margin: 0;
+    color: inherit;
+    opacity: 0.95;
+    max-width: 56ch;
+  }
+
+  .vv-cta__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+    margin-top: var(--vv-space-2);
+  }
+
+  /* Override Button na ciemnym tle — secondary → white outline, ghost → white text */
+  .vv-cta--brand :global(.vv-cta__btn-on-dark.vv-btn--secondary),
+  .vv-cta--inverse :global(.vv-cta__btn-on-dark.vv-btn--secondary) {
+    background-color: var(--vv-color-fg-inverse);
+    color: var(--vv-color-bg-inverse);
+    border-color: var(--vv-color-fg-inverse);
+  }
+
+  .vv-cta--brand :global(.vv-cta__btn-on-dark.vv-btn--secondary:hover),
+  .vv-cta--brand :global(.vv-cta__btn-on-dark.vv-btn--secondary:focus-visible),
+  .vv-cta--inverse :global(.vv-cta__btn-on-dark.vv-btn--secondary:hover),
+  .vv-cta--inverse :global(.vv-cta__btn-on-dark.vv-btn--secondary:focus-visible) {
+    background-color: transparent;
+    color: var(--vv-color-fg-inverse);
+  }
+
+  .vv-cta--brand :global(.vv-cta__btn-on-dark.vv-btn--ghost),
+  .vv-cta--inverse :global(.vv-cta__btn-on-dark.vv-btn--ghost) {
+    color: var(--vv-color-fg-inverse);
+    border-color: color-mix(in srgb, var(--vv-color-fg-inverse) 30%, transparent);
+  }
+
+  .vv-cta--brand :global(.vv-cta__btn-on-dark.vv-btn--ghost:hover),
+  .vv-cta--brand :global(.vv-cta__btn-on-dark.vv-btn--ghost:focus-visible),
+  .vv-cta--inverse :global(.vv-cta__btn-on-dark.vv-btn--ghost:hover),
+  .vv-cta--inverse :global(.vv-cta__btn-on-dark.vv-btn--ghost:focus-visible) {
+    background-color: color-mix(in srgb, var(--vv-color-fg-inverse) 10%, transparent);
+  }
+</style>

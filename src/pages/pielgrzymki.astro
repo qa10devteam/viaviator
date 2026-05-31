@@ -1,0 +1,343 @@
+---
+/**
+ * /pielgrzymki — P2 Pielgrzymki (PL).
+ *
+ * Sekcje:
+ *  1. Hero — image hero-01-lichen-trafic.jpg
+ *  2. „Sanktuaria, do których jeździmy" — FeatureGrid 6 lokalizacji (map-pin)
+ *  3. „Co dostajesz na wyjeździe" — what.title + what.body + lista punktów
+ *  4. „Decision Criteria" — FAQAccordion z decisionList.items
+ *  5. Social proof — placeholder
+ *  6. FAQ — FAQAccordion z faq.items
+ *  7. CTA finalna — CTASection tone="brand"
+ *
+ * SEO: seoMap.pielgrzymki, JSON-LD: service + breadcrumb + faq.
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Badge from "@components/ui/Badge.astro";
+import Icon from "@components/ui/Icon.astro";
+import Hero from "@components/sections/Hero.astro";
+import FeatureGrid from "@components/sections/FeatureGrid.astro";
+import FAQAccordion from "@components/sections/FAQAccordion.astro";
+import CTASection from "@components/sections/CTASection.astro";
+import { getDictionary } from "@i18n/index";
+import { company } from "@data/company";
+import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
+import { serviceForSegment, breadcrumbForRoute, faqSchema } from "@lib/schema";
+
+const locale = "pl" as const;
+const dict = getDictionary(locale);
+const seg = dict.segments.pielgrzymki;
+const seo = seoMap.pielgrzymki;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("pielgrzymki", locale, SITE);
+const alternates = buildAlternates("pielgrzymki", SITE);
+
+const jsonLd: Record<string, unknown>[] = [
+  serviceForSegment("pielgrzymki", locale, SITE),
+  breadcrumbForRoute("pielgrzymki", locale, SITE),
+  faqSchema([...seg.faq.items]),
+];
+
+const heroImage = "/images/hero/hero-01-lichen-trafic.jpg";
+const heroImageAlt =
+  "Renault Trafic Via Viator przed bazyliką w Licheniu — pielgrzymka.";
+
+// Sanktuaria — kompetencja domenowa (zgodnie z briefem: prawdziwe nazwy, realistyczne opisy)
+const sanctuaries = [
+  {
+    icon: "map-pin" as const,
+    title: "Częstochowa — Jasna Góra",
+    body:
+      "Wjazd autokarowy od strony parkingu pod Bramą Lubomirską. Wiemy, gdzie podstawić bus pod halą hostessek i którędy najszybciej do Kaplicy Cudownego Obrazu.",
+  },
+  {
+    icon: "map-pin" as const,
+    title: "Licheń Stary",
+    body:
+      "Parking przy Bazylice Mniejszej, podjazd od strony Złotej Bramy. Bus mieści się w pętli, nie trzeba zostawiać grupy w połowie alei.",
+  },
+  {
+    icon: "map-pin" as const,
+    title: "Kalwaria Zebrzydowska",
+    body:
+      "Wąskie podjazdy w okolicy klasztoru — wiemy, gdzie zaparkować, żeby starsi pasażerowie nie wspinali się stromizną.",
+  },
+  {
+    icon: "map-pin" as const,
+    title: "Niepokalanów",
+    body:
+      "Parking pod sanktuarium o. Maksymiliana Kolbe. Podjazd autokarowy oznakowany, ale w sezonie pielgrzymkowym warto być wcześnie.",
+  },
+  {
+    icon: "map-pin" as const,
+    title: "Kraków — Łagiewniki",
+    body:
+      "Sanktuarium Bożego Miłosierdzia. Parking podziemny lub górny — w zależności od dnia tygodnia i wydarzeń w bazylice. Znamy oba podjazdy.",
+  },
+  {
+    icon: "map-pin" as const,
+    title: "Wadowice",
+    body:
+      "Bazylika Mniejsza przy domu rodzinnym Jana Pawła II. Centrum miasta — podjazd uzgadniamy z koordynatorem, zwykle krótki postój pod placem św. Anny.",
+  },
+];
+
+const decisionItems = [...seg.decisionList.items];
+const faqItems = [...seg.faq.items];
+---
+
+<BaseLayout
+  title={seo.titlePl}
+  description={seo.descriptionPl}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={`${SITE}${heroImage}`}
+  jsonLd={jsonLd}
+  bodyClass="page-segment page-segment--pielgrzymki"
+>
+  {/* 1. HERO */}
+  <Hero
+    headline={seg.heroHeadline}
+    subhead={seg.heroSubhead}
+    image={heroImage}
+    imageAlt={heroImageAlt}
+    primaryCta={{
+      label: seg.cta,
+      href: "/kontakt?segment=pielgrzymki#wycena",
+    }}
+    secondaryCta={{
+      label: seg.ctaSecondary,
+      href: company.phoneHref,
+    }}
+    align="left"
+    tone="default"
+    priority={true}
+  />
+
+  {/* Meta */}
+  <Section tone="default" tight ariaLabel="Czas wyceny">
+    <Container size="wide">
+      <div class="vv-seg-meta">
+        <Badge tone="brand" size="md">
+          <Icon name="clock" size={12} />
+          <span>{seg.timeToQuote}</span>
+        </Badge>
+        <span class="vv-seg-meta__hint">
+          Sezon: maj–październik. Rezerwacja idealnie 2–3 tygodnie wcześniej.
+        </span>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 2. Sanktuaria */}
+  <Section tone="default" ariaLabelledby="seg-sanctuaries-title">
+    <Container size="default">
+      <div class="vv-seg-block">
+        <h2 id="seg-sanctuaries-title" class="vv-seg-block__title">
+          Sanktuaria, do których jeździmy
+        </h2>
+        <p class="vv-seg-block__lead">
+          To są miejsca, które obsługujemy regularnie — znamy podjazdy,
+          parkingi, godziny mszy i miejsca, gdzie kierowca może zaczekać bez
+          blokowania ruchu autokarowego.
+        </p>
+      </div>
+      <FeatureGrid items={sanctuaries} columns={3} tone="default" />
+    </Container>
+  </Section>
+
+  {/* 3. Co dostajesz */}
+  <Section tone="elevated" ariaLabelledby="seg-what-title">
+    <Container size="default">
+      <div class="vv-seg-block">
+        <h2 id="seg-what-title" class="vv-seg-block__title">
+          {seg.what.title}
+        </h2>
+        <p class="vv-seg-block__lead">{seg.what.body}</p>
+        <ul class="vv-seg-list" role="list">
+          {
+            seg.what.points.map((p) => (
+              <li class="vv-seg-list__item">
+                <span class="vv-seg-list__icon" aria-hidden="true">
+                  <Icon name="check" size={18} />
+                </span>
+                <span class="vv-seg-list__text">{p}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 4. Decision Criteria */}
+  <Section tone="default" ariaLabelledby="seg-decision-title">
+    <Container size="default">
+      <div class="vv-seg-block">
+        <h2 id="seg-decision-title" class="vv-seg-block__title">
+          {seg.decisionList.title}
+        </h2>
+        <p class="vv-seg-block__lead">{seg.decisionList.body}</p>
+      </div>
+      <FAQAccordion items={decisionItems} defaultOpenFirst={true} />
+    </Container>
+  </Section>
+
+  {/* 5. Social proof — placeholder */}
+  <Section tone="elevated" tight ariaLabelledby="seg-trust-title">
+    <Container size="narrow">
+      <div class="vv-seg-trust">
+        <h2 id="seg-trust-title" class="vv-seg-trust__title">
+          Z kim pracujemy
+        </h2>
+        <p class="vv-seg-trust__body">
+          Współpracujemy z parafiami i organizatorami pielgrzymek z południowej
+          Polski — od jednoautokarowych wyjazdów weekendowych po cykliczne
+          peregrynacje wielodniowe. Lista referencji rośnie z każdym sezonem;
+          konkretne kontakty wysyłamy na życzenie po pierwszym briefie.
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 6. FAQ */}
+  <Section tone="default" ariaLabelledby="seg-faq-title">
+    <Container size="default">
+      <h2 id="seg-faq-title" class="vv-seg-block__title">
+        {seg.faq.title}
+      </h2>
+      <FAQAccordion items={faqItems} />
+    </Container>
+  </Section>
+
+  {/* 7. CTA finalna */}
+  <CTASection
+    tone="brand"
+    title={seg.cta}
+    body={seg.heroSubhead}
+    primaryCta={{
+      label: dict.cta.requestQuote,
+      href: "/kontakt?segment=pielgrzymki#wycena",
+    }}
+    secondaryCta={{
+      label: dict.cta.callNow,
+      href: company.phoneHref,
+    }}
+    align="center"
+  />
+</BaseLayout>
+
+<style>
+  .vv-seg-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--vv-space-4);
+    padding-block: var(--vv-space-2);
+    border-block: 1px solid var(--vv-color-border-subtle);
+  }
+
+  .vv-seg-meta__hint {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-seg-block {
+    max-width: 72ch;
+    margin: 0 0 var(--vv-space-8) 0;
+  }
+
+  .vv-seg-block__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 4vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    margin: 0 0 var(--vv-space-4) 0;
+    color: var(--vv-color-fg-primary);
+    text-wrap: balance;
+  }
+
+  .vv-seg-block__lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .vv-seg-list {
+    list-style: none;
+    margin: var(--vv-space-6) 0 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--vv-space-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .vv-seg-list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--vv-space-5) var(--vv-space-8);
+    }
+  }
+
+  .vv-seg-list__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--vv-space-3);
+    align-items: start;
+  }
+
+  .vv-seg-list__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--vv-radius-full);
+    background-color: var(--vv-color-brand-red-50);
+    color: var(--vv-color-brand-red-700);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .vv-seg-list__text {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-seg-trust {
+    text-align: center;
+    max-width: 65ch;
+    margin-inline: auto;
+  }
+
+  .vv-seg-trust__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-2xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+    margin: 0 0 var(--vv-space-4) 0;
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-seg-trust__body {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+</style>

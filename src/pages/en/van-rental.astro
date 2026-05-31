@@ -1,0 +1,570 @@
+---
+/**
+ * /en/van-rental — P5 Master rental (EN mirror).
+ *
+ * Mirrors /wynajem-busa — same „no asterisks pricing" centerpiece,
+ * EN copy from dict.segments.wynajem.
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Card from "@components/ui/Card.astro";
+import Badge from "@components/ui/Badge.astro";
+import Icon from "@components/ui/Icon.astro";
+import Hero from "@components/sections/Hero.astro";
+import Stat from "@components/sections/Stat.astro";
+import FAQAccordion from "@components/sections/FAQAccordion.astro";
+import CTASection from "@components/sections/CTASection.astro";
+import { getDictionary } from "@i18n/index";
+import {
+  buildCanonical,
+  buildAlternates,
+  seoMap,
+} from "@lib/seo";
+import {
+  serviceForSegment,
+  breadcrumbForRoute,
+  faqSchema,
+} from "@lib/schema";
+import { company } from "@data/company";
+
+const locale = "en" as const;
+const dict = getDictionary(locale);
+const seg = dict.segments.wynajem;
+const seo = seoMap.wynajem;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("wynajem", locale, SITE);
+const alternates = buildAlternates("wynajem", SITE);
+
+const phoneHref = company.phoneHref;
+const checkAvailabilityHref = "/en/contact?segment=wynajem";
+
+const PRICING_PLACEHOLDER_NOTE = true;
+
+const pricingStats = [
+  {
+    value: "from PLN 350",
+    label: "Per day",
+    description: "Base 24-hour rate — Monday to Friday.",
+  },
+  {
+    value: "300 km",
+    label: "Mileage",
+    description: "Included per day. Above — public surcharge rate.",
+  },
+  {
+    value: "PLN 500",
+    label: "Deposit",
+    description: "Refunded to your account within 48 hours of return.",
+  },
+  {
+    value: "Bytom · Opole",
+    label: "Pickup",
+    description: "Two base points in southern Poland. You choose in the brief.",
+  },
+];
+
+const masterSpec = [
+  { label: "Cargo volume", value: "~10–13 m³ (L2H2 / L3H2)" },
+  { label: "Payload", value: "1,200–1,500 kg" },
+  { label: "Cargo length", value: "approx. 3.1 m (L2)" },
+  { label: "Cargo height", value: "approx. 1.9 m (H2)" },
+  { label: "Doors", value: "Sliding side + twin rear" },
+  { label: "Driving licence", value: "Category B (up to 3.5 t GVWR)" },
+];
+
+const procedure = [
+  {
+    ord: "01",
+    title: "Contact",
+    body:
+      "Phone, form, or Messenger. We check availability the same day during business hours.",
+  },
+  {
+    ord: "02",
+    title: "Confirmation",
+    body:
+      "By e-mail or PDF — date, rate, limits, contract details. No hidden clauses.",
+  },
+  {
+    ord: "03",
+    title: "Pickup",
+    body:
+      "At our base. Full tank, condition report, signature. Deposit in cash or transfer.",
+  },
+  {
+    ord: "04",
+    title: "Return",
+    body:
+      "On the agreed date, full tank. Short inspection, return protocol signed, deposit back in 48 hours.",
+  },
+];
+
+const serviceJsonLd = serviceForSegment("wynajem", locale, SITE);
+const breadcrumbJsonLd = breadcrumbForRoute("wynajem", locale, SITE);
+const faqJsonLd = faqSchema([...seg.faq.items]);
+---
+
+<BaseLayout
+  title={seo.titleEn}
+  description={seo.descriptionEn}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={seo.ogImage}
+  jsonLd={[serviceJsonLd, breadcrumbJsonLd, faqJsonLd]}
+  bodyClass="page-segment page-wynajem"
+>
+  {/* 1. HERO */}
+  <Hero
+    eyebrow={seg.name}
+    headline={seg.heroHeadline}
+    subhead={seg.heroSubhead}
+    image="/images/fleet/fleet-master-front.jpg"
+    imageAlt="Via Viator Renault Master — front view, ready for rental."
+    primaryCta={{
+      label: "Check availability",
+      href: checkAvailabilityHref,
+      ariaLabel: "Check Master availability — contact form",
+    }}
+    secondaryCta={{
+      label: `Call: ${company.phoneDisplay}`,
+      href: phoneHref,
+      ariaLabel: `Call: ${company.phoneDisplay}`,
+    }}
+    microcopy={`We'll check within 30 minutes during business hours. No "we'll call you tomorrow".`}
+  />
+
+  {/* Time-to-quote bar */}
+  <Section tone="surface" tight ariaLabel="Reply time and phone">
+    <Container size="default">
+      <div class="vv-wynajem-meta">
+        <Badge tone="brand">
+          <Icon name="clock" size={14} />
+          <span>30 minutes — average reply time during business hours</span>
+        </Badge>
+        <Badge tone="neutral">
+          <Icon name="phone" size={14} />
+          <span>{company.phoneDisplay}</span>
+        </Badge>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 2. NO-ASTERISKS PRICING */}
+  <Section tone="default" ariaLabelledby="wynajem-pricing-title">
+    <Container size="default">
+      <header class="vv-wynajem-section-head">
+        <p class="vv-wynajem-eyebrow">Pricing</p>
+        <h2 id="wynajem-pricing-title" class="vv-wynajem-section-title">
+          Pricing without asterisks
+        </h2>
+        <p class="vv-wynajem-section-lead">
+          Four numbers you want to know before you pick up the phone.
+          No „from", no „price on request" for things that are fixed.
+        </p>
+      </header>
+
+      <Card tone="elevated" class="vv-wynajem-pricing">
+        <div class="vv-wynajem-pricing__grid">
+          {pricingStats.map((stat) => (
+            <div class="vv-wynajem-pricing__cell">
+              <Stat
+                value={stat.value}
+                label={stat.label}
+                description={stat.description}
+                tone="brand"
+              />
+            </div>
+          ))}
+        </div>
+
+        {PRICING_PLACEHOLDER_NOTE && (
+          <p class="vv-wynajem-pricing__note">
+            <Icon name="info" size={16} />
+            <span>
+              <strong>Pricing being finalised.</strong>{" "}
+              The numbers above are a working proposal — final rates will be
+              confirmed in reply to your enquiry (30 minutes during business
+              hours). The definitive price list will appear here once
+              operational sign-off is complete, at the latest with online
+              booking launch.
+            </span>
+          </p>
+        )}
+      </Card>
+    </Container>
+  </Section>
+
+  {/* 3. WHAT'S INCLUDED + 4. WHAT'S NOT */}
+  <Section tone="elevated" ariaLabelledby="wynajem-inclusive-title">
+    <Container size="default">
+      <div class="vv-wynajem-incl-grid">
+        <div class="vv-wynajem-incl-col">
+          <h2 id="wynajem-inclusive-title" class="vv-wynajem-section-title">
+            What's included
+          </h2>
+          <ul class="vv-wynajem-list vv-wynajem-list--check" role="list">
+            <li><Icon name="check" size={18} /><span>300 km daily allowance. Above — public surcharge rate.</span></li>
+            <li><Icon name="check" size={18} /><span>Third-party liability insurance included. Comprehensive — optional add-on.</span></li>
+            <li><Icon name="check" size={18} /><span>Full tank at pickup — return full, no fuel surcharge.</span></li>
+            <li><Icon name="check" size={18} /><span>No weekend surcharge for rentals of 2+ days.</span></li>
+            <li><Icon name="check" size={18} /><span>23% VAT invoice for companies or named receipt for individuals.</span></li>
+            <li><Icon name="check" size={18} /><span>Fixed pickup points — Bytom or Opole, you choose.</span></li>
+          </ul>
+        </div>
+
+        <div class="vv-wynajem-incl-col">
+          <h2 class="vv-wynajem-section-title">What's NOT included</h2>
+          <ul class="vv-wynajem-list vv-wynajem-list--cross" role="list">
+            <li><Icon name="close" size={18} /><span>Fuel used — return full tank or pay at wholesale rate.</span></li>
+            <li><Icon name="close" size={18} /><span>Deep clean after a house move (separate, transparent rate).</span></li>
+            <li><Icon name="close" size={18} /><span>Smoking inside — full deposit forfeit, no negotiation.</span></li>
+            <li><Icon name="close" size={18} /><span>Mechanical and body damage — service estimate, deposit as collateral.</span></li>
+            <li><Icon name="close" size={18} /><span>International travel beyond CZ/SK/DE — agreed separately, fair surcharge.</span></li>
+            <li><Icon name="close" size={18} /><span>Fines, tolls and parking fees — renter's responsibility (we forward notices).</span></li>
+          </ul>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  {/* 5. MASTER — what it carries */}
+  <Section tone="default" ariaLabelledby="wynajem-master-title">
+    <Container size="default">
+      <header class="vv-wynajem-section-head">
+        <p class="vv-wynajem-eyebrow">Vehicle</p>
+        <h2 id="wynajem-master-title" class="vv-wynajem-section-title">
+          Renault Master — what it carries
+        </h2>
+        <p class="vv-wynajem-section-lead">
+          L2H2 (or L3H2 subject to availability) — that's a 2-bedroom flat
+          move, a sectional sofa from the warehouse, event gear for a fair.
+          A category B licence is enough.
+        </p>
+      </header>
+
+      <Card tone="surface" class="vv-wynajem-master">
+        <dl class="vv-wynajem-master__specs">
+          {masterSpec.map((spec) => (
+            <div class="vv-wynajem-master__row">
+              <dt>{spec.label}</dt>
+              <dd>{spec.value}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="vv-wynajem-master__note">
+          Dimensions vary by specific unit (L2/L3, H2). The exact specs of the
+          vehicle you'll get will be on your booking confirmation — along with
+          the registration number and model year.
+        </p>
+      </Card>
+    </Container>
+  </Section>
+
+  {/* 6. PROCEDURE — 4 numbered steps */}
+  <Section tone="elevated" ariaLabelledby="wynajem-procedure-title">
+    <Container size="default">
+      <header class="vv-wynajem-section-head">
+        <p class="vv-wynajem-eyebrow">Procedure</p>
+        <h2 id="wynajem-procedure-title" class="vv-wynajem-section-title">
+          Four steps from enquiry to handover
+        </h2>
+      </header>
+
+      <ol class="vv-wynajem-steps" role="list">
+        {procedure.map((step) => (
+          <li class="vv-wynajem-step">
+            <div class="vv-wynajem-step__ord" aria-hidden="true">{step.ord}</div>
+            <h3 class="vv-wynajem-step__title">{step.title}</h3>
+            <p class="vv-wynajem-step__body">{step.body}</p>
+          </li>
+        ))}
+      </ol>
+    </Container>
+  </Section>
+
+  {/* 7. FAQ */}
+  <Section tone="default" ariaLabelledby="wynajem-faq-title">
+    <Container size="default">
+      <header class="vv-wynajem-section-head">
+        <h2 id="wynajem-faq-title" class="vv-wynajem-section-title">
+          {seg.faq.title}
+        </h2>
+      </header>
+      <FAQAccordion items={[...seg.faq.items]} defaultOpenFirst={true} />
+    </Container>
+  </Section>
+
+  {/* 8. CTA */}
+  <CTASection
+    title="Check Master availability"
+    body={'Quote in 30 minutes during business hours. No hidden surcharges, no „from” in the price list, no games.'}
+    primaryCta={{
+      label: "Check availability",
+      href: checkAvailabilityHref,
+      ariaLabel: "Check Master availability — form",
+    }}
+    secondaryCta={{
+      label: `Call: ${company.phoneDisplay}`,
+      href: phoneHref,
+      ariaLabel: `Call: ${company.phoneDisplay}`,
+    }}
+    tone="brand"
+  />
+</BaseLayout>
+
+<style>
+  .vv-wynajem-section-head {
+    margin: 0 0 var(--vv-space-10) 0;
+    max-width: 64ch;
+  }
+
+  .vv-wynajem-eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    color: var(--vv-color-brand-red-700);
+    margin: 0 0 var(--vv-space-3) 0;
+  }
+
+  .vv-wynajem-section-title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 3.5vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-3) 0;
+    text-wrap: balance;
+  }
+
+  .vv-wynajem-section-lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .vv-wynajem-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vv-space-3);
+    align-items: center;
+  }
+
+  .vv-wynajem-pricing {
+    padding: var(--vv-space-8) var(--vv-space-6);
+  }
+
+  .vv-wynajem-pricing__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-6);
+  }
+
+  @media (min-width: 640px) {
+    .vv-wynajem-pricing__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-wynajem-pricing__grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--vv-space-8);
+    }
+  }
+
+  .vv-wynajem-pricing__cell {
+    border-left: 3px solid var(--vv-color-brand-red);
+    padding-left: var(--vv-space-5);
+  }
+
+  @media (max-width: 1023px) {
+    .vv-wynajem-pricing__cell:not(:first-child) {
+      padding-top: var(--vv-space-4);
+    }
+  }
+
+  .vv-wynajem-pricing__note {
+    margin: var(--vv-space-8) 0 0 0;
+    padding: var(--vv-space-4) var(--vv-space-5);
+    background-color: color-mix(in srgb, var(--vv-color-state-info) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--vv-color-state-info) 20%, transparent);
+    border-radius: var(--vv-radius-md);
+    display: flex;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-sm);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+    align-items: flex-start;
+  }
+
+  .vv-wynajem-pricing__note :global(.vv-icon) {
+    flex-shrink: 0;
+    color: var(--vv-color-state-info);
+    margin-top: 2px;
+  }
+
+  .vv-wynajem-incl-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-10);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-wynajem-incl-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--vv-space-12);
+    }
+  }
+
+  .vv-wynajem-list {
+    list-style: none;
+    margin: var(--vv-space-6) 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-4);
+  }
+
+  .vv-wynajem-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-wynajem-list :global(.vv-icon) {
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .vv-wynajem-list--check li :global(.vv-icon) {
+    color: var(--vv-color-state-success);
+  }
+
+  .vv-wynajem-list--cross li :global(.vv-icon) {
+    color: var(--vv-color-brand-red-700);
+  }
+
+  .vv-wynajem-master {
+    padding: var(--vv-space-8) var(--vv-space-6);
+  }
+
+  .vv-wynajem-master__specs {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  @media (min-width: 768px) {
+    .vv-wynajem-master__specs {
+      grid-template-columns: repeat(2, 1fr);
+      column-gap: var(--vv-space-12);
+    }
+  }
+
+  .vv-wynajem-master__row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--vv-space-4);
+    padding: var(--vv-space-3) 0;
+    border-bottom: 1px solid var(--vv-color-border-subtle);
+  }
+
+  .vv-wynajem-master__row:last-child {
+    border-bottom: none;
+  }
+
+  .vv-wynajem-master__row dt {
+    font-family: var(--vv-typography-font-family-display);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-secondary);
+    font-size: var(--vv-typography-font-size-sm);
+  }
+
+  .vv-wynajem-master__row dd {
+    margin: 0;
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+    font-size: var(--vv-typography-font-size-base);
+    text-align: right;
+  }
+
+  .vv-wynajem-master__note {
+    margin: var(--vv-space-6) 0 0 0;
+    font-size: var(--vv-typography-font-size-sm);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-muted);
+    max-width: 60ch;
+  }
+
+  .vv-wynajem-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
+  }
+
+  @media (min-width: 640px) {
+    .vv-wynajem-steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-wynajem-steps {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .vv-wynajem-step {
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    padding: var(--vv-space-6);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+  }
+
+  .vv-wynajem-step__ord {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-3xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-brand-red-700);
+    line-height: 1;
+    margin-bottom: var(--vv-space-2);
+  }
+
+  .vv-wynajem-step__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-wynajem-step__body {
+    font-size: var(--vv-typography-font-size-base);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+  }
+</style>

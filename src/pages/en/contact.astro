@@ -1,0 +1,874 @@
+---
+/**
+ * /en/contact — strona kontaktowa Via Viator (EN mirror /kontakt.astro).
+ *
+ * Identyczna struktura + sekcje co PL. Różnice:
+ *   - locale="en", dict z en.ts
+ *   - link do polityki prywatności → /en/privacy-policy
+ *   - script messages w EN
+ *   - SEO: seoMap.kontakt (titleEn/descriptionEn), pathEn
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Container from "@components/ui/Container.astro";
+import Section from "@components/ui/Section.astro";
+import Card from "@components/ui/Card.astro";
+import Icon from "@components/ui/Icon.astro";
+import Button from "@components/ui/Button.astro";
+import Hero from "@components/sections/Hero.astro";
+import ContactInfo from "@components/sections/ContactInfo.astro";
+import { getDictionary } from "@i18n/index";
+import { company } from "@data/company";
+import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
+import { breadcrumbForRoute } from "@lib/schema";
+
+const locale = "en" as const;
+const dict = getDictionary(locale);
+const seo = seoMap.kontakt;
+
+const SITE = (
+  import.meta.env.PUBLIC_SITE_URL ?? "https://viaviator.pl"
+).replace(/\/$/, "");
+
+const canonical = buildCanonical("kontakt", locale, SITE);
+const alternates = buildAlternates("kontakt", SITE);
+
+const ALLOWED_SEGMENTS = [
+  "korpo",
+  "pielgrzymki",
+  "dostepny",
+  "rodzinne",
+  "wynajem",
+  "eventy",
+  "inne",
+] as const;
+
+const rawSegment = Astro.url.searchParams.get("segment") ?? "";
+const presetSegment = ALLOWED_SEGMENTS.includes(
+  rawSegment as (typeof ALLOWED_SEGMENTS)[number],
+)
+  ? rawSegment
+  : "";
+
+const breadcrumbJsonLd = breadcrumbForRoute("kontakt", locale, SITE);
+
+const contactPageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  name: seo.titleEn,
+  description: seo.descriptionEn,
+  url: canonical,
+  inLanguage: "en-US",
+  isPartOf: { "@type": "WebSite", url: SITE, name: company.brand },
+  mainEntity: {
+    "@type": "Organization",
+    "@id": `${SITE}/#organization`,
+    name: company.legalName,
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: `+${company.phone.replace(/\D/g, "")}`,
+      email: company.emailContact,
+      contactType: "customer service",
+      areaServed: "PL",
+      availableLanguage: ["pl", "en"],
+    },
+  },
+};
+---
+
+<BaseLayout
+  title={seo.titleEn}
+  description={seo.descriptionEn}
+  locale={locale}
+  canonical={canonical}
+  alternates={alternates}
+  ogImage={`${SITE}${seo.ogImage}`}
+  jsonLd={[breadcrumbJsonLd, contactPageJsonLd]}
+  bodyClass="page-contact"
+>
+  <Hero
+    headline={dict.contact.h1}
+    subhead={dict.contact.intro}
+    align="center"
+    tone="default"
+    priority={true}
+  />
+
+  <Section tone="elevated" ariaLabelledby="contact-grid-title">
+    <Container size="default">
+      <h2 id="contact-grid-title" class="visually-hidden">
+        Contact channels and brief form
+      </h2>
+
+      <div class="vv-contact-grid">
+        <aside class="vv-contact-grid__side" aria-label="Contact details">
+          <ContactInfo locale={locale} />
+
+          <Card tone="brand" class="vv-contact-tagline">
+            <p class="vv-contact-tagline__eyebrow">Always there</p>
+            <p class="vv-contact-tagline__phone">
+              <a
+                href={company.phoneHref}
+                aria-label={`Call: ${company.phoneDisplay}`}
+              >
+                {company.phoneDisplay}
+              </a>
+            </p>
+            <p class="vv-contact-tagline__hours">
+              {dict.contact.phoneHours}
+            </p>
+          </Card>
+        </aside>
+
+        <div class="vv-contact-form-wrap">
+          <header class="vv-contact-form__header">
+            <h3 class="vv-contact-form__title">{dict.contact.form.title}</h3>
+            <p class="vv-contact-form__intro">{dict.contact.form.intro}</p>
+          </header>
+
+          <div
+            class="vv-contact-form__banner"
+            id="contact-banner"
+            role="status"
+            aria-live="polite"
+            hidden
+          >
+            <p class="vv-contact-form__banner-text" id="contact-banner-text"></p>
+          </div>
+
+          <form
+            method="POST"
+            action="/api/contact"
+            id="contact-form"
+            class="vv-contact-form"
+            novalidate
+          >
+            <input type="hidden" name="locale" value={locale} />
+            <input type="hidden" name="segment" value={presetSegment} />
+
+            <div class="visually-hidden" aria-hidden="true">
+              <label for="company_website">
+                {dict.contact.form.honeypot}
+              </label>
+              <input
+                type="text"
+                id="company_website"
+                name="company_website"
+                tabindex="-1"
+                autocomplete="off"
+              />
+            </div>
+
+            <div class="vv-contact-form__field">
+              <label for="cf-name" class="vv-contact-form__label">
+                {dict.contact.form.nameLabel}
+                <span class="vv-contact-form__required" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="text"
+                id="cf-name"
+                name="name"
+                required
+                aria-required="true"
+                minlength="2"
+                maxlength="120"
+                placeholder={dict.contact.form.namePlaceholder}
+                autocomplete="name"
+                class="vv-contact-form__input"
+              />
+            </div>
+
+            <div class="vv-contact-form__field">
+              <label for="cf-email" class="vv-contact-form__label">
+                {dict.contact.form.emailLabel}
+                <span class="vv-contact-form__required" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="email"
+                id="cf-email"
+                name="email"
+                required
+                aria-required="true"
+                maxlength="160"
+                placeholder={dict.contact.form.emailPlaceholder}
+                autocomplete="email"
+                inputmode="email"
+                class="vv-contact-form__input"
+              />
+            </div>
+
+            <div class="vv-contact-form__field">
+              <label for="cf-phone" class="vv-contact-form__label">
+                {dict.contact.form.phoneLabel}
+                <span class="vv-contact-form__required" aria-hidden="true">*</span>
+              </label>
+              <input
+                type="tel"
+                id="cf-phone"
+                name="phone"
+                required
+                aria-required="true"
+                pattern="^[+\d\s\-()]{7,20}$"
+                minlength="7"
+                maxlength="20"
+                placeholder={dict.contact.form.phonePlaceholder}
+                autocomplete="tel"
+                inputmode="tel"
+                class="vv-contact-form__input"
+              />
+            </div>
+
+            <div class="vv-contact-form__field">
+              <label for="cf-segmentSelect" class="vv-contact-form__label">
+                {dict.contact.form.segmentLabel}
+              </label>
+              <select
+                id="cf-segmentSelect"
+                name="segmentSelect"
+                class="vv-contact-form__input vv-contact-form__select"
+              >
+                <option value="" selected={!presetSegment}>
+                  {dict.contact.form.segmentPlaceholder}
+                </option>
+                <option value="korpo" selected={presetSegment === "korpo"}>
+                  {dict.contact.form.segmentOptions.korpo}
+                </option>
+                <option
+                  value="pielgrzymki"
+                  selected={presetSegment === "pielgrzymki"}
+                >
+                  {dict.contact.form.segmentOptions.pielgrzymki}
+                </option>
+                <option
+                  value="dostepny"
+                  selected={presetSegment === "dostepny"}
+                >
+                  {dict.contact.form.segmentOptions.dostepny}
+                </option>
+                <option
+                  value="rodzinne"
+                  selected={presetSegment === "rodzinne"}
+                >
+                  {dict.contact.form.segmentOptions.rodzinne}
+                </option>
+                <option value="wynajem" selected={presetSegment === "wynajem"}>
+                  {dict.contact.form.segmentOptions.wynajem}
+                </option>
+                <option value="eventy" selected={presetSegment === "eventy"}>
+                  {dict.contact.form.segmentOptions.eventy}
+                </option>
+                <option value="inne" selected={presetSegment === "inne"}>
+                  {dict.contact.form.segmentOptions.inne}
+                </option>
+              </select>
+            </div>
+
+            <div class="vv-contact-form__field">
+              <label for="cf-message" class="vv-contact-form__label">
+                {dict.contact.form.messageLabel}
+                <span class="vv-contact-form__required" aria-hidden="true">*</span>
+              </label>
+              <textarea
+                id="cf-message"
+                name="message"
+                required
+                aria-required="true"
+                minlength="20"
+                maxlength="2000"
+                rows="6"
+                placeholder={dict.contact.form.messagePlaceholder}
+                class="vv-contact-form__input vv-contact-form__textarea"
+              ></textarea>
+            </div>
+
+            <div class="vv-contact-form__consent">
+              <input
+                type="checkbox"
+                id="cf-consent"
+                name="consent"
+                required
+                aria-required="true"
+                aria-describedby="cf-consent-help"
+                class="vv-contact-form__checkbox"
+              />
+              <label for="cf-consent" class="vv-contact-form__consent-label">
+                {dict.contact.form.consentLabel}
+                {" "}
+                <a href="/en/privacy-policy" class="vv-contact-form__link">
+                  Privacy policy
+                </a>.
+              </label>
+              <p
+                id="cf-consent-help"
+                class="vv-contact-form__consent-help"
+              >
+                {dict.contact.form.consentRequired}
+              </p>
+            </div>
+
+            <div class="vv-contact-form__actions">
+              <Button
+                variant="primary"
+                size="lg"
+                type="submit"
+                id="cf-submit"
+                fullWidth={false}
+              >
+                <span data-label="default">{dict.contact.form.submit}</span>
+                <span data-label="loading" hidden>
+                  {dict.contact.form.submitting}
+                </span>
+                <Icon name="arrow-right" size={18} />
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Container>
+  </Section>
+
+  <Section tone="default" ariaLabelledby="contact-location-title">
+    <Container size="narrow">
+      <div class="vv-contact-location">
+        <h2 id="contact-location-title" class="vv-contact-location__title">
+          Where to find us
+        </h2>
+        <p class="vv-contact-location__body">
+          Based in southern Poland. Four regions, three airports, one phone
+          number. Full registered address available in the contract brief —
+          no tracking iframes, no third-party map cookies.
+        </p>
+        <p class="vv-contact-location__meta">
+          {dict.about.region.regions.join(" · ")}
+        </p>
+      </div>
+    </Container>
+  </Section>
+
+  <Section tone="surface" tight ariaLabelledby="contact-channels-title">
+    <Container size="default">
+      <h2 id="contact-channels-title" class="vv-contact-channels__title">
+        Other channels
+      </h2>
+      <ul class="vv-contact-channels" role="list">
+        <li class="vv-contact-channel">
+          <Icon name="phone" size={20} />
+          <div>
+            <p class="vv-contact-channel__label">Phone</p>
+            <a href={company.phoneHref} class="vv-contact-channel__value">
+              {company.phoneDisplay}
+            </a>
+          </div>
+        </li>
+        <li class="vv-contact-channel">
+          <Icon name="mail" size={20} />
+          <div>
+            <p class="vv-contact-channel__label">General contact</p>
+            <a
+              href={`mailto:${company.emailContact}`}
+              class="vv-contact-channel__value"
+            >
+              {company.emailContact}
+            </a>
+          </div>
+        </li>
+        <li class="vv-contact-channel">
+          <Icon name="briefcase" size={20} />
+          <div>
+            <p class="vv-contact-channel__label">Management</p>
+            <a
+              href={`mailto:${company.emailBoard}`}
+              class="vv-contact-channel__value"
+            >
+              {company.emailBoard}
+            </a>
+          </div>
+        </li>
+        <li class="vv-contact-channel">
+          <Icon name="sparkles" size={20} />
+          <div>
+            <p class="vv-contact-channel__label">Marketing</p>
+            <a
+              href={`mailto:${company.emailMarketing}`}
+              class="vv-contact-channel__value"
+            >
+              {company.emailMarketing}
+            </a>
+          </div>
+        </li>
+      </ul>
+    </Container>
+  </Section>
+</BaseLayout>
+
+<script>
+  /**
+   * Progressive enhancement (EN locale).
+   * No-JS: form POSTs normally to /api/contact, endpoint returns HTML success page.
+   * With JS: fetch + inline banner, no page reload.
+   */
+  const form = document.getElementById("contact-form") as HTMLFormElement | null;
+  const banner = document.getElementById("contact-banner");
+  const bannerText = document.getElementById("contact-banner-text");
+  const submitBtn = document.getElementById("cf-submit") as HTMLButtonElement | null;
+
+  if (form && banner && bannerText && submitBtn) {
+    const defaultLabel = submitBtn.querySelector(
+      '[data-label="default"]',
+    ) as HTMLElement | null;
+    const loadingLabel = submitBtn.querySelector(
+      '[data-label="loading"]',
+    ) as HTMLElement | null;
+
+    const MESSAGES = {
+      success:
+        "Got it. We'll reply as fast as our promise allows — usually within 4 hours in business hours.",
+      errorGeneric: "Something didn't work. Try the phone: +48 690 691 886.",
+      errorValidation: "Please check the highlighted fields.",
+      errorRateLimit:
+        "Too many briefs from this address. Try in an hour, or call us.",
+    };
+
+    function showBanner(kind: "success" | "error", text: string) {
+      if (!banner || !bannerText) return;
+      banner.dataset.kind = kind;
+      bannerText.textContent = text;
+      banner.hidden = false;
+      banner.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function setLoading(state: boolean) {
+      submitBtn?.toggleAttribute("disabled", state);
+      if (defaultLabel) defaultLabel.hidden = state;
+      if (loadingLabel) loadingLabel.hidden = !state;
+    }
+
+    function clearFieldErrors() {
+      form?.querySelectorAll<HTMLElement>("[aria-invalid]").forEach((el) => {
+        el.removeAttribute("aria-invalid");
+      });
+    }
+
+    function markFieldError(fieldName: string) {
+      const el = form?.querySelector<HTMLElement>(`[name="${fieldName}"]`);
+      if (el) {
+        el.setAttribute("aria-invalid", "true");
+      }
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearFieldErrors();
+
+      const fd = new FormData(form);
+      if (!fd.has("consent")) {
+        fd.set("consent", "");
+      }
+
+      const payload: Record<string, string> = {};
+      for (const [key, value] of fd.entries()) {
+        payload[key] = typeof value === "string" ? value : "";
+      }
+
+      setLoading(true);
+
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            accept: "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (res.ok) {
+          showBanner("success", MESSAGES.success);
+          form.reset();
+          setLoading(false);
+          return;
+        }
+
+        if (res.status === 429) {
+          showBanner("error", MESSAGES.errorRateLimit);
+          setLoading(false);
+          return;
+        }
+
+        if (res.status === 400) {
+          let issuesText = MESSAGES.errorValidation;
+          try {
+            const data = (await res.json()) as {
+              error?: string;
+              issues?: { fieldErrors?: Record<string, string[]> };
+            };
+            if (data.error === "consent_required") {
+              markFieldError("consent");
+              issuesText =
+                "We need consent to the privacy policy to reply.";
+            } else if (data.issues?.fieldErrors) {
+              const errFields = Object.keys(data.issues.fieldErrors);
+              errFields.forEach(markFieldError);
+              const firstErrField = errFields[0];
+              if (firstErrField) {
+                const firstEl =
+                  form.querySelector<HTMLElement>(`[name="${firstErrField}"]`);
+                firstEl?.focus();
+              }
+            }
+          } catch {
+            /* JSON parse fail — generic message */
+          }
+          showBanner("error", issuesText);
+          setLoading(false);
+          return;
+        }
+
+        showBanner("error", MESSAGES.errorGeneric);
+        setLoading(false);
+      } catch {
+        showBanner("error", MESSAGES.errorGeneric);
+        setLoading(false);
+      }
+    });
+  }
+</script>
+
+<style>
+  /* Style identical to /kontakt.astro — language parity przez identyczne CSS. */
+
+  .vv-contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-10);
+  }
+
+  @media (min-width: 1024px) {
+    .vv-contact-grid {
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: var(--vv-space-12);
+      align-items: start;
+    }
+  }
+
+  .vv-contact-grid__side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-8);
+  }
+
+  /* WCAG AA: brand-red-700 vs white = 6.45:1 (brand-red 4.42:1 fail dla normal text). */
+  .vv-contact-tagline {
+    text-align: left;
+    background-color: var(--vv-color-brand-red-700);
+    color: var(--vv-color-brand-white);
+    border-color: var(--vv-color-brand-red-700);
+  }
+
+  .vv-contact-tagline__eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    margin: 0;
+    opacity: 0.92;
+  }
+
+  .vv-contact-tagline__phone {
+    margin: 0;
+  }
+
+  .vv-contact-tagline__phone a {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.5rem, 3.5vw, var(--vv-typography-font-size-3xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    color: var(--vv-color-brand-white);
+    text-decoration: none;
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    line-height: var(--vv-typography-line-height-tight);
+  }
+
+  .vv-contact-tagline__phone a:hover,
+  .vv-contact-tagline__phone a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .vv-contact-tagline__hours {
+    font-size: var(--vv-typography-font-size-sm);
+    margin: 0;
+    opacity: 0.92;
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-contact-form-wrap {
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    padding: var(--vv-space-8);
+  }
+
+  @media (max-width: 640px) {
+    .vv-contact-form-wrap {
+      padding: var(--vv-space-6);
+    }
+  }
+
+  .vv-contact-form__header {
+    margin: 0 0 var(--vv-space-6) 0;
+  }
+
+  .vv-contact-form__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-2xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-2) 0;
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-contact-form__intro {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0;
+  }
+
+  .vv-contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-5);
+  }
+
+  .vv-contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+  }
+
+  .vv-contact-form__label {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-sm);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+  }
+
+  .vv-contact-form__required {
+    color: var(--vv-color-brand-red-700);
+    margin-left: 2px;
+  }
+
+  .vv-contact-form__input {
+    width: 100%;
+    padding: var(--vv-space-3) var(--vv-space-4);
+    font-family: var(--vv-typography-font-family-body);
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-primary);
+    background-color: var(--vv-color-bg-elevated);
+    border: 1.5px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-md);
+    transition:
+      border-color var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      box-shadow var(--vv-motion-duration-fast) var(--vv-motion-easing-standard);
+  }
+
+  .vv-contact-form__input:focus-visible {
+    outline: none;
+    border-color: var(--vv-color-brand-red);
+    box-shadow: 0 0 0 3px var(--vv-color-brand-red-100);
+  }
+
+  .vv-contact-form__input[aria-invalid="true"] {
+    border-color: var(--vv-color-state-danger);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vv-color-state-danger) 18%, transparent);
+  }
+
+  .vv-contact-form__textarea {
+    resize: vertical;
+    min-height: 140px;
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-contact-form__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23525252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right var(--vv-space-3) center;
+    background-size: 18px;
+    padding-right: var(--vv-space-10);
+  }
+
+  .vv-contact-form__consent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--vv-space-3);
+    align-items: start;
+    padding: var(--vv-space-4);
+    background-color: var(--vv-color-bg-surface);
+    border-radius: var(--vv-radius-md);
+  }
+
+  .vv-contact-form__checkbox {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: var(--vv-color-brand-red);
+    cursor: pointer;
+  }
+
+  .vv-contact-form__checkbox[aria-invalid="true"] {
+    outline: 2px solid var(--vv-color-state-danger);
+    outline-offset: 2px;
+  }
+
+  .vv-contact-form__consent-label {
+    font-size: var(--vv-typography-font-size-sm);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-primary);
+    cursor: pointer;
+    grid-column: 2;
+  }
+
+  .vv-contact-form__link {
+    color: var(--vv-color-brand-red-700);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .vv-contact-form__consent-help {
+    grid-column: 2;
+    font-size: var(--vv-typography-font-size-xs);
+    color: var(--vv-color-fg-muted);
+    margin: 0;
+  }
+
+  .vv-contact-form__actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: var(--vv-space-3);
+  }
+
+  .vv-contact-form__banner {
+    padding: var(--vv-space-4) var(--vv-space-5);
+    border-radius: var(--vv-radius-md);
+    margin: 0 0 var(--vv-space-5) 0;
+    border-left: 4px solid var(--vv-color-state-info);
+    background-color: color-mix(in srgb, var(--vv-color-state-info) 8%, var(--vv-color-bg-page));
+  }
+
+  .vv-contact-form__banner[data-kind="success"] {
+    border-left-color: var(--vv-color-state-success);
+    background-color: color-mix(in srgb, var(--vv-color-state-success) 8%, var(--vv-color-bg-page));
+  }
+
+  .vv-contact-form__banner[data-kind="error"] {
+    border-left-color: var(--vv-color-state-danger);
+    background-color: color-mix(in srgb, var(--vv-color-state-danger) 8%, var(--vv-color-bg-page));
+  }
+
+  .vv-contact-form__banner-text {
+    margin: 0;
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-primary);
+    line-height: var(--vv-typography-line-height-relaxed);
+  }
+
+  .vv-contact-location {
+    text-align: center;
+    max-width: 64ch;
+    margin-inline: auto;
+  }
+
+  .vv-contact-location__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.5rem, 3vw, var(--vv-typography-font-size-3xl));
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-4) 0;
+    text-wrap: balance;
+  }
+
+  .vv-contact-location__body {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0 0 var(--vv-space-4) 0;
+  }
+
+  .vv-contact-location__meta {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .vv-contact-channels__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-6) 0;
+  }
+
+  .vv-contact-channels {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-4);
+  }
+
+  @media (min-width: 640px) {
+    .vv-contact-channels {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-contact-channels {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .vv-contact-channel {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--vv-space-3);
+    padding: var(--vv-space-4);
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-md);
+  }
+
+  .vv-contact-channel :global(.vv-icon) {
+    color: var(--vv-color-brand-red-700);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .vv-contact-channel__label {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    color: var(--vv-color-fg-muted);
+    margin: 0 0 var(--vv-space-1) 0;
+  }
+
+  .vv-contact-channel__value {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-base);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-fg-primary);
+    text-decoration: none;
+    word-break: break-word;
+  }
+
+  .vv-contact-channel__value:hover,
+  .vv-contact-channel__value:focus-visible {
+    color: var(--vv-color-brand-red-700);
+  }
+</style>
