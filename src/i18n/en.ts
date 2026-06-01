@@ -831,4 +831,14 @@ export const en: Dictionary = {
     callAria: "Call: +48 690 691 886",
     dismissAria: "Hide phone for 24 hours",
   },
+  fleet: {
+    specs: {
+      seats: "Seats",
+      equip: "Equipment",
+      branded: "Branding",
+      usage: "Mode",
+      km: "Mileage",
+      driver: "Driver",
+    },
+  },
 };

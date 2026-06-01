@@ -15,6 +15,7 @@ import Icon from "@components/ui/Icon.astro";
 import Hero from "@components/sections/Hero.astro";
 import Stat from "@components/sections/Stat.astro";
 import FAQAccordion from "@components/sections/FAQAccordion.astro";
+import FleetCards from "@components/sections/FleetCards.astro";
 import CTASection from "@components/sections/CTASection.astro";
 import { getDictionary } from "@i18n/index";
 import {
@@ -234,7 +235,23 @@ const faqJsonLd = faqSchema([...seg.faq.items]);
     </Container>
   </Section>
 
-  {/* 5. MASTER — what it carries */}
+  {/* 5a. FLEET — M09: FleetCards (Trafic + Master) as intro to Master spec. */}
+  <Section tone="default" ariaLabelledby="wynajem-fleet-title">
+    <Container size="default">
+      <header class="vv-wynajem-section-head">
+        <p class="vv-wynajem-eyebrow">Fleet</p>
+        <h2 id="wynajem-fleet-title" class="vv-wynajem-section-title">
+          Two vans. One base. Red stripe down the side, phone on the back.
+        </h2>
+        <p class="vv-wynajem-section-lead">
+          Renault Master is self-drive. Renault Trafic comes with a driver — airport transfers, pilgrimages, family transport. One owner, one phone number, two services.
+        </p>
+      </header>
+      <FleetCards locale={locale} variant="full" />
+    </Container>
+  </Section>
+
+  {/* 5b. MASTER — what it carries */}
   <Section tone="default" ariaLabelledby="wynajem-master-title">
     <Container size="default">
       <header class="vv-wynajem-section-head">

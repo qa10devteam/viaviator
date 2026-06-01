@@ -1,0 +1,172 @@
+/* ------------------------------------------------------------------ */
+/* Via Viator — Microinteractions polish (M10)                         */
+/* ------------------------------------------------------------------ */
+/* Globalne dopracowania mikro-interakcji nakładane PO scoped Astro     */
+/* style (te dodają data-astro-cid → specyficzność wyższa). Dlatego:    */
+/*  - dla `transition` używamy `transition: ... !important` tam, gdzie  */
+/*    chcemy nadpisać scoped wartość;                                   */
+/*  - dla nowych własności (np. font-variation-settings) — zwykła       */
+/*    deklaracja bez !important wystarczy, bo nie ma kolizji.           */
+/* ------------------------------------------------------------------ */
+
+/* ---------- Buttons: font-weight morph on hover ------------------- */
+/* Bricolage Grotesque jest variable (wght 200-800). Subtle morph z    */
+/* base 600 (semibold) do 650 dodaje wagę bez dramatycznego skoku      */
+/* — nieoczekiwany detal premium. */
+
+.vv-btn {
+  transition:
+    background-color var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+    color var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+    border-color var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+    transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 280ms ease,
+    font-variation-settings 220ms ease;
+}
+
+.vv-btn:hover {
+  font-variation-settings: "wght" 650;
+}
+
+.vv-btn:active {
+  transform: scale(0.97);
+}
+
+/* ---------- Link underline reveal (body links) -------------------- */
+/* Prose links — backround-image podkreślenie znika od prawej, a         */
+/* czerwony ::after underline wjeżdża od lewej. Subtelne, ale daje      */
+/* widoczny sygnał interaktywności. */
+
+.prose a:not(.vv-btn),
+.legal-prose a:not(.vv-btn),
+.vv-prose a:not(.vv-btn) {
+  position: relative;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 1px;
+  transition: background-size 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.prose a:not(.vv-btn):hover,
+.legal-prose a:not(.vv-btn):hover,
+.vv-prose a:not(.vv-btn):hover {
+  background-size: 0% 1px;
+}
+
+.prose a:not(.vv-btn)::after,
+.legal-prose a:not(.vv-btn)::after,
+.vv-prose a:not(.vv-btn)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--vv-color-brand-red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.prose a:not(.vv-btn):hover::after,
+.legal-prose a:not(.vv-btn):hover::after,
+.vv-prose a:not(.vv-btn):hover::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Focus rings: polished --------------------------------- */
+/* Globalny :focus-visible — 2px outline brand-red + offset 3px.       */
+/* Przyciski mają większy offset (4px) by ring nie kleił się do border. */
+
+:focus-visible {
+  outline: 2px solid var(--vv-color-brand-red);
+  outline-offset: 3px;
+  border-radius: 4px;
+  transition: outline-offset 160ms ease;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline-offset: 4px;
+}
+
+/* ---------- Form inputs: brand-red focus ring --------------------- */
+/* Standardowe pole formularza — focus daje czerwony ring brand-red    */
+/* z 18% mix do białego = miękki halo, nie agresywne podświetlenie.    */
+
+.vv-input,
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea {
+  transition:
+    border-color var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+    box-shadow var(--vv-motion-duration-base) var(--vv-motion-easing-standard);
+}
+
+.vv-input:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--vv-color-brand-red);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--vv-color-brand-red) 18%, transparent);
+}
+
+/* ---------- Header nav: underline reveal on hover ----------------- */
+/* `.vv-header__nav-link` jest scoped przez Astro (Header.astro), ale  */
+/* sama klasa istnieje w DOM — globalny selektor nadal działa. Pozycja */
+/* relative na linku zapewniona przez `position: relative` poniżej     */
+/* (nadpisuje brak w scoped). Aria-current=page → trwały underline.   */
+
+.vv-header__nav-link {
+  position: relative;
+}
+
+.vv-header__nav-link::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 6px;
+  height: 1.5px;
+  background: var(--vv-color-brand-red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.vv-header__nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+.vv-header__nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+  background: var(--vv-color-brand-red-700);
+}
+
+/* ---------- prefers-reduced-motion ------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .vv-btn,
+  .vv-input,
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  textarea,
+  .prose a,
+  .legal-prose a,
+  .vv-prose a,
+  .prose a::after,
+  .legal-prose a::after,
+  .vv-prose a::after,
+  .vv-header__nav-link::after,
+  :focus-visible {
+    transition: none !important;
+  }
+}

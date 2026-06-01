@@ -1,0 +1,336 @@
+---
+/**
+ * FleetCards — sekcja "Nasza flota" jako 3D card stack (Wow#6, M09).
+ *
+ * Renderuje dwie karty (Renault Trafic + Renault Master) z parallax depth
+ * na obrazie i subtle hover tilt (±3deg, mniejszy niż M05 segmenty by
+ * fleet section nie konkurowała wizualnie z segmentami).
+ *
+ * Warianty:
+ *  - "full"    — z `dl.specs` (3 pola: seats/equip/branded dla Trafica,
+ *                usage/km/driver dla Mastera). Używany na /wynajem-busa
+ *                i /transfery-korporacyjne.
+ *  - "compact" — bez specs grid, sam image + name + usage. Dla home,
+ *                gdzie obok stoi SegmentGrid i nie chcemy redundancji
+ *                danych.
+ *
+ * Tilt + parallax: vanilla JS (requestAnimationFrame, throttle do 60fps),
+ * CSS custom properties `--vv-fleet-rx`, `--vv-fleet-ry`, `--vv-fleet-parallax`.
+ * Disable na touch (pointer: fine) + prefers-reduced-motion.
+ *
+ * Treści specs — defensywnie z `dict.fleet?.specs?.*` (fallback na PL
+ * literały), bo `dict.fleet` jest nowym top-level kluczem dodanym w M09
+ * — istniejące strony nie muszą się sypać typowo, jeśli ktoś użyje
+ * komponentu z dict bez tych pól.
+ */
+
+import { getDictionary, type Locale } from "@i18n/index";
+
+interface Props {
+  locale: Locale;
+  /** Compact wariant — bez specs grid (np. dla home, gdzie sekcja jest krótka). */
+  variant?: "full" | "compact";
+}
+
+const { locale, variant = "full" } = Astro.props;
+const dict = getDictionary(locale);
+
+// Specs dict z fallbackiem na PL — defensywnie, bo `fleet` to nowa gałąź dict.
+const fleetDict = (dict as unknown as {
+  fleet?: {
+    specs?: {
+      seats?: string;
+      equip?: string;
+      branded?: string;
+      usage?: string;
+      km?: string;
+      driver?: string;
+    };
+  };
+}).fleet;
+
+const labels = {
+  seats:   fleetDict?.specs?.seats   ?? (locale === "pl" ? "Miejsca"     : "Seats"),
+  equip:   fleetDict?.specs?.equip   ?? (locale === "pl" ? "Wyposażenie" : "Equipment"),
+  branded: fleetDict?.specs?.branded ?? (locale === "pl" ? "Branding"    : "Branding"),
+  usage:   fleetDict?.specs?.usage   ?? (locale === "pl" ? "Tryb"        : "Mode"),
+  km:      fleetDict?.specs?.km      ?? (locale === "pl" ? "Limit km"    : "Mileage"),
+  driver:  fleetDict?.specs?.driver  ?? (locale === "pl" ? "Kierowca"    : "Driver"),
+};
+
+const fleetSpec = [
+  {
+    model: "Renault Trafic",
+    type: locale === "pl" ? "osobowy" : "passenger",
+    image: "/images/fleet/fleet-trafic-front.jpg",
+    imageWebp: "/images/fleet/fleet-trafic-front.webp",
+    imageAlt:
+      locale === "pl"
+        ? "Renault Trafic Via Viator — bus osobowy 8-miejscowy."
+        : "Via Viator Renault Trafic — 8-seater passenger van.",
+    specs: [
+      { label: labels.seats,   value: locale === "pl" ? "4 lub 8"        : "4 or 8" },
+      { label: labels.equip,   value: locale === "pl" ? "Klima, fotelik" : "AC, child seat" },
+      { label: labels.branded, value: locale === "pl" ? "Pas + numer"    : "Stripe + number" },
+    ],
+    usage:
+      locale === "pl"
+        ? "Transfery, pielgrzymki, weseliska, transport DPS."
+        : "Airport transfers, group trips, weddings, accessible transport.",
+  },
+  {
+    model: "Renault Master",
+    type: locale === "pl" ? "osobowy / cargo" : "passenger / cargo",
+    image: "/images/fleet/fleet-master-front.jpg",
+    imageWebp: "/images/fleet/fleet-master-front.webp",
+    imageAlt:
+      locale === "pl"
+        ? "Renault Master Via Viator — cargo / osobowy do wynajmu."
+        : "Via Viator Renault Master — cargo / passenger for rental.",
+    specs: [
+      { label: labels.usage,  value: locale === "pl" ? "Doba"         : "Per day" },
+      { label: labels.km,     value: "300/dobę" },
+      { label: labels.driver, value: locale === "pl" ? "Bez kierowcy" : "Self-drive" },
+    ],
+    usage:
+      locale === "pl"
+        ? "Przeprowadzki, transport sprzętu. Bez gwiazdek."
+        : "Moving, equipment transport. No asterisks.",
+  },
+];
+---
+
+<section class="vv-fleet">
+  <ul class="vv-fleet__grid" role="list" data-reveal-cascade>
+    {fleetSpec.map((vehicle) => (
+      <li class="vv-fleet-card vv-reveal" data-magnetic-fleet="true">
+        <div class="vv-fleet-card__image-wrapper">
+          <picture>
+            <source srcset={vehicle.imageWebp} type="image/webp" />
+            <img
+              src={vehicle.image}
+              alt={vehicle.imageAlt}
+              class="vv-fleet-card__image"
+              loading="lazy"
+              decoding="async"
+              width="800"
+              height="600"
+            />
+          </picture>
+        </div>
+        <div class="vv-fleet-card__body">
+          <p class="vv-fleet-card__type">{vehicle.type}</p>
+          <h3 class="vv-fleet-card__model">{vehicle.model}</h3>
+          {variant === "full" && (
+            <dl class="vv-fleet-card__specs">
+              {vehicle.specs.map((spec) => (
+                <div class="vv-fleet-card__spec">
+                  <dt>{spec.label}</dt>
+                  <dd>{spec.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          <p class="vv-fleet-card__usage">{vehicle.usage}</p>
+        </div>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .vv-fleet {
+    perspective: 1400px;
+  }
+
+  .vv-fleet__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-6);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 768px) {
+    .vv-fleet__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--vv-space-8);
+    }
+  }
+
+  .vv-fleet-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--vv-radius-xl);
+    background: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transform-style: preserve-3d;
+    transform:
+      translate3d(0, 0, 0)
+      rotateX(var(--vv-fleet-rx, 0deg))
+      rotateY(var(--vv-fleet-ry, 0deg));
+    transition:
+      transform 460ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 380ms ease;
+  }
+
+  .vv-fleet-card__image-wrapper {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--vv-color-bg-elevated);
+    position: relative;
+  }
+
+  .vv-fleet-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 60%;
+    transform: scale(1) translate3d(0, 0, 0);
+    transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+    display: block;
+  }
+
+  @media (pointer: fine) {
+    .vv-fleet-card:hover {
+      box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.12),
+        0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .vv-fleet-card:hover .vv-fleet-card__image {
+      transform: scale(1.06) translate3d(0, var(--vv-fleet-parallax, 0px), 0);
+    }
+  }
+
+  .vv-fleet-card__body {
+    padding: var(--vv-space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+  }
+
+  .vv-fleet-card__type {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--vv-color-brand-red-700);
+    margin: 0;
+  }
+
+  .vv-fleet-card__model {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(22px, 2.5vw, 28px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--vv-space-3);
+    color: var(--vv-color-fg-primary);
+  }
+
+  /* Specs grid — 3 kolumny per spec (label + value), CSS subgrid-ish via
+     `.vv-fleet-card__spec` jako sub-container z label/value w kolumnie. */
+  .vv-fleet-card__specs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--vv-space-3);
+    padding: var(--vv-space-4) 0;
+    border-top: 1px solid var(--vv-color-border-subtle);
+    border-bottom: 1px solid var(--vv-color-border-subtle);
+    margin: var(--vv-space-3) 0;
+  }
+
+  .vv-fleet-card__spec {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-1);
+    min-width: 0;
+  }
+
+  .vv-fleet-card__spec dt {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--vv-color-fg-secondary);
+  }
+
+  .vv-fleet-card__spec dd {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .vv-fleet-card__usage {
+    font-size: 14px;
+    color: var(--vv-color-fg-secondary);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vv-fleet-card,
+    .vv-fleet-card__image {
+      transform: none !important;
+      transition: none !important;
+      will-change: auto !important;
+    }
+  }
+</style>
+
+<script>
+  function initFleetTilt() {
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const cards = document.querySelectorAll<HTMLElement>('[data-magnetic-fleet="true"]');
+    cards.forEach((card) => {
+      // Guard przed wielokrotną inicjalizacją (astro:page-load re-run).
+      if (card.dataset.fleetTiltInit === "true") return;
+      card.dataset.fleetTiltInit = "true";
+
+      let rafId: number | null = null;
+
+      const onMove = (e: PointerEvent) => {
+        if (rafId !== null) return;
+        rafId = requestAnimationFrame(() => {
+          rafId = null;
+          const rect = card.getBoundingClientRect();
+          const dx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+          const dy = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+          const ndx = Math.max(-1, Math.min(1, dx));
+          const ndy = Math.max(-1, Math.min(1, dy));
+          card.style.setProperty("--vv-fleet-ry", `${(ndx * 3).toFixed(2)}deg`);
+          card.style.setProperty("--vv-fleet-rx", `${(-ndy * 3).toFixed(2)}deg`);
+          card.style.setProperty("--vv-fleet-parallax", `${(ndy * -8).toFixed(2)}px`);
+        });
+      };
+
+      const reset = () => {
+        if (rafId !== null) cancelAnimationFrame(rafId);
+        rafId = null;
+        card.style.setProperty("--vv-fleet-rx", "0deg");
+        card.style.setProperty("--vv-fleet-ry", "0deg");
+        card.style.setProperty("--vv-fleet-parallax", "0px");
+      };
+
+      card.addEventListener("pointermove", onMove);
+      card.addEventListener("pointerleave", reset);
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initFleetTilt);
+  } else {
+    initFleetTilt();
+  }
+  document.addEventListener("astro:page-load", initFleetTilt);
+</script>

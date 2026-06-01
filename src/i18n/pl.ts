@@ -830,6 +830,16 @@ export const pl = {
     callAria: "Zadzwoń: +48 690 691 886",
     dismissAria: "Schowaj telefon na 24 godziny",
   },
+  fleet: {
+    specs: {
+      seats: "Miejsca",
+      equip: "Wyposażenie",
+      branded: "Branding",
+      usage: "Tryb",
+      km: "Limit km",
+      driver: "Kierowca",
+    },
+  },
 } as const;
 
 /**

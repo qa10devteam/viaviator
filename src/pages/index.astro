@@ -22,12 +22,12 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import Container from "@components/ui/Container.astro";
 import Section from "@components/ui/Section.astro";
-import Card from "@components/ui/Card.astro";
 import SectionIndex from "@components/ui/SectionIndex.astro";
 import HomeHero from "@components/sections/HomeHero.astro";
 import SegmentGrid from "@components/sections/SegmentGrid.astro";
 import AtlasPoludnia from "@components/sections/AtlasPoludnia.astro";
 import FeatureGrid from "@components/sections/FeatureGrid.astro";
+import FleetCards from "@components/sections/FleetCards.astro";
 import CTASection from "@components/sections/CTASection.astro";
 import { getDictionary } from "@i18n/index";
 import { company } from "@data/company";
@@ -70,24 +70,8 @@ const whyUsItems = dict.home.sectionWhyUs.points.map((p, i) => ({
   body: p.body,
 }));
 
-// Fleet vehicles — Trafic + Master z company.fleet (pierwsze 2)
-// Dla każdego: model + dict.home.sectionFleet.vehicles.{traficName, traficDesc, masterName, masterDesc}
-const fleetCards = [
-  {
-    name: dict.home.sectionFleet.vehicles.traficName,
-    desc: dict.home.sectionFleet.vehicles.traficDesc,
-    image: "/images/fleet/fleet-trafic-front.jpg",
-    imageAlt: "Renault Trafic Via Viator — bus osobowy 8-miejscowy.",
-    seats: company.fleet[0]?.seats ?? 8,
-  },
-  {
-    name: dict.home.sectionFleet.vehicles.masterName,
-    desc: dict.home.sectionFleet.vehicles.masterDesc,
-    image: "/images/fleet/fleet-master-front.jpg",
-    imageAlt: "Renault Master Via Viator — cargo/osobowy do wynajmu.",
-    seats: company.fleet[1]?.seats ?? 8,
-  },
-];
+// Flota — M09: FleetCards komponent (Trafic + Master) z 3D tilt + parallax depth.
+// Dane (model, image, specs, usage) zaszyte w komponencie z fallback PL/EN.
 ---
 
 <BaseLayout
@@ -136,7 +120,7 @@ const fleetCards = [
   {/* 4. Atlas Południa (Wow#1) — interaktywna mapa 4 województwa + 3 huby + baza TG */}
   <AtlasPoludnia locale={locale} variant="full" />
 
-  {/* 5. „Nasza flota" — 2 karty Trafic + Master, cascade na grid */}
+  {/* 5. „Nasza flota" — M09: FleetCards z 3D tilt + parallax depth (compact). */}
   <Section tone="default" ariaLabelledby="home-fleet-title">
     <Container size="default">
       <div class="vv-home-fleet__head vv-reveal">
@@ -146,28 +130,7 @@ const fleetCards = [
         </h2>
         <p class="vv-home-fleet__body">{dict.home.sectionFleet.body}</p>
       </div>
-      <ul class="vv-home-fleet__grid" role="list" data-reveal-cascade>
-        {
-          fleetCards.map((v) => (
-            <li class="vv-reveal">
-              <Card tone="default" class="vv-home-fleet__card">
-                <div class="vv-home-fleet__media">
-                  <img
-                    src={v.image}
-                    alt={v.imageAlt}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <div class="vv-home-fleet__body-wrap">
-                  <h3 class="vv-home-fleet__name">{v.name}</h3>
-                  <p class="vv-home-fleet__desc">{v.desc}</p>
-                </div>
-              </Card>
-            </li>
-          ))
-        }
-      </ul>
+      <FleetCards locale={locale} variant="compact" />
     </Container>
   </Section>
 
@@ -298,63 +261,7 @@ const fleetCards = [
     margin: 0;
   }
 
-  .vv-home-fleet__grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--vv-space-6);
-    grid-template-columns: 1fr;
-  }
-
-  @media (min-width: 768px) {
-    .vv-home-fleet__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  .vv-home-fleet__card {
-    padding: 0;
-    overflow: hidden;
-    height: 100%;
-    gap: 0;
-  }
-
-  .vv-home-fleet__media {
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    background-color: var(--vv-color-bg-elevated);
-  }
-
-  .vv-home-fleet__media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .vv-home-fleet__body-wrap {
-    padding: var(--vv-space-6);
-    display: flex;
-    flex-direction: column;
-    gap: var(--vv-space-3);
-  }
-
-  .vv-home-fleet__name {
-    font-family: var(--vv-typography-font-family-display);
-    font-size: var(--vv-typography-font-size-2xl);
-    font-weight: var(--vv-typography-font-weight-bold);
-    line-height: var(--vv-typography-line-height-snug);
-    margin: 0;
-    color: var(--vv-color-fg-primary);
-  }
-
-  .vv-home-fleet__desc {
-    font-size: var(--vv-typography-font-size-base);
-    line-height: var(--vv-typography-line-height-relaxed);
-    color: var(--vv-color-fg-secondary);
-    margin: 0;
-  }
+  /* Karty floty M09 — własny styling w `FleetCards.astro` (3D tilt + parallax).  */
 
   /* Dlaczego my */
   .vv-home-whyus__title {

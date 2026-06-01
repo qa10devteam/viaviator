@@ -26,6 +26,7 @@ import Icon from "@components/ui/Icon.astro";
 import SectionIndex from "@components/ui/SectionIndex.astro";
 import Hero from "@components/sections/Hero.astro";
 import FAQAccordion from "@components/sections/FAQAccordion.astro";
+import FleetCards from "@components/sections/FleetCards.astro";
 import CTASection from "@components/sections/CTASection.astro";
 import PullQuote from "@components/sections/PullQuote.astro";
 import { getDictionary } from "@i18n/index";
@@ -167,6 +168,22 @@ const faqItems = [...seg.faq.items];
         <p class="vv-seg-block__lead">{seg.decisionList.body}</p>
       </div>
       <FAQAccordion items={decisionItems} defaultOpenFirst={true} />
+    </Container>
+  </Section>
+
+  {/* 4b. Flota — M09: FleetCards (Trafic + Master) — auta, którymi obsługujemy korpo. */}
+  <Section tone="elevated" ariaLabelledby="seg-fleet-title">
+    <Container size="default">
+      <div class="vv-seg-block">
+        <SectionIndex number={5} label="Flota" />
+        <h2 id="seg-fleet-title" class="vv-seg-block__title">
+          Auta, którymi przywieziemy Twojego gościa
+        </h2>
+        <p class="vv-seg-block__lead">
+          Renault Trafic — bus 8-osobowy, w cenie klimatyzacja i fotelik dziecięcy. Renault Master wchodzi do gry, gdy bagaż przekracza standard kabinowy.
+        </p>
+      </div>
+      <FleetCards locale={locale} variant="full" />
     </Container>
   </Section>
 
