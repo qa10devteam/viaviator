@@ -115,10 +115,25 @@ viaviator/
 
 Vercel project: `viaviator` (do utworzenia). Branch produkcyjny: `main`. Sekrety w Vercel env (NIE w repo). DNS migracja domeny `viaviator.pl` zaplanowana na finalną fazę launchu.
 
-## Status (2026-05-31)
+## Status (2026-06-01)
 
-Faza 0 + 1 — szkielet, brief, brand intake — done.
-Fazy 2–15 wykonywane autonomicznie przez rój agenturalny QA10 (spec: `docs/00-swarm-spec.md`).
+Build status: **READY TO SHIP** — 24 routes prerendered, 0 errors, 0 warnings, 515/515 i18n parity.
+Masterpiece plan M01–M12 (`docs/12-phase-masterpiece-plan.md`) — done.
+
+### Wow effects (M04–M11)
+
+| # | Komponent | Faza | Strony |
+|---|---|---|---|
+| 1 | **Atlas Południa** — interaktywna mapa SVG 4 województw + 3 huby | M04 | `/`, `/o-nas` (+EN) |
+| 2 | **Magnetic Segments** — 3D tilt + accent flood (pointer:fine only) | M05 | `/` (+EN) |
+| 3 | **Szlak Sanktuariów** — animowana trajektoria SVG draw-on | M06 | `/pielgrzymki` (+EN) |
+| 4 | **Floating Telefon** — anchor positioning + IntersectionObserver | M07 | wszystkie strony |
+| 5 | **Manuskrypt Patryka** — signature draw-on + QA10 seal | M11 | `/o-nas` (+EN) |
+| 6 | **Karty Floty** — 3D tilt subtle + parallax | M09 | `/`, `/wynajem-busa`, `/transfery-korporacyjne` |
+
+Plus system-wide: View Transitions API (M02), Scroll Choreography (M03 — `vv-reveal`), Editorial Typography (M08), Microinteractions polish (M10), Final polish + a11y + perf budget (M12).
+
+Wszystkie wow effects mają `prefers-reduced-motion` guard. Komponenty React (ConsentBanner) — opt-in client hydration. Aria coverage: H1 = 1 na każdej z 12 stron PL + 11 EN, skip link wszędzie, focus management w dropdownach + drawer.
 
 ## Licencja
 
