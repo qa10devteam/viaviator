@@ -114,6 +114,23 @@ const whyUsItems = dict.home.sectionWhyUs.points.map((p, i) => ({
         <p class="vv-home-fleet__body">{dict.home.sectionFleet.body}</p>
       </div>
       <FleetCards locale={locale} variant="compact" />
+
+      <figure class="vv-home-fleet__a6 vv-reveal">
+        <picture>
+          <source srcset="/images/brand-detail/via-viator-a6-flyer.webp" type="image/webp" />
+          <img
+            src="/images/brand-detail/via-viator-a6-flyer.png"
+            alt="Via Viator A6 poster — phone number and fleet"
+            loading="lazy"
+            decoding="async"
+            width="620"
+            height="876"
+          />
+        </picture>
+        <figcaption>
+          A6 poster — the paper card we leave inside the vehicle after every booking.
+        </figcaption>
+      </figure>
     </Container>
   </Section>
 
@@ -242,6 +259,40 @@ const whyUsItems = dict.home.sectionWhyUs.points.map((p, i) => ({
     line-height: var(--vv-typography-line-height-relaxed);
     color: var(--vv-color-fg-secondary);
     margin: 0;
+  }
+
+  .vv-home-fleet__a6 {
+    margin: var(--vv-space-12) auto 0;
+    max-width: 420px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--vv-space-3);
+  }
+  .vv-home-fleet__a6 picture {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1240 / 1748;
+    background: var(--vv-color-bg-elevated);
+    border-radius: var(--vv-radius-md);
+    overflow: hidden;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 16px 40px rgba(0, 0, 0, 0.12);
+  }
+  .vv-home-fleet__a6 img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .vv-home-fleet__a6 figcaption {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    letter-spacing: 0.06em;
+    color: var(--vv-color-fg-muted);
+    max-width: 36ch;
   }
 
   /* Fleet cards M09 — own styling in `FleetCards.astro` (3D tilt + parallax). */
