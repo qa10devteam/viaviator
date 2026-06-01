@@ -20,6 +20,11 @@ interface Props {
   class?: string;
   /** Czy to logo w headerze (loading=eager) czy w treści (loading=lazy). */
   priority?: boolean;
+  /** Czy nadawać `view-transition-name: logo` (M02 shared element).
+   *  Header z `transition:persist` i tak sprawia, że logo nie re-renderuje,
+   *  ale wskazujemy explicite żeby browser miał deterministyczny named
+   *  transition na wypadek konfiguracji bez persist (np. footer logo). */
+  withViewTransition?: boolean;
 }
 
 const {
@@ -28,6 +33,7 @@ const {
   locale = "pl",
   class: extraClass = "",
   priority = true,
+  withViewTransition = false,
 } = Astro.props;
 
 const dict = getDictionary(locale);
@@ -48,6 +54,7 @@ const src = {
   loading={priority ? "eager" : "lazy"}
   decoding="async"
   fetchpriority={priority ? "high" : "auto"}
+  style={withViewTransition ? "view-transition-name: logo;" : undefined}
 />
 
 <style>

@@ -64,7 +64,8 @@ const webpImage =
   <Container size="wide" class="vv-hero__inner">
     <div class="vv-hero__content">
       {eyebrow && <p class="vv-hero__eyebrow eyebrow">{eyebrow}</p>}
-      <h1 class="vv-hero__headline display">{headline}</h1>
+      {/* `transition:name="hero-display"` — morf z HomeHero <h1> przy nav. */}
+      <h1 class="vv-hero__headline display" transition:name="hero-display">{headline}</h1>
       {subhead && <p class="vv-hero__subhead lede">{subhead}</p>}
       {
         (primaryCta || secondaryCta) && (

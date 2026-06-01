@@ -46,7 +46,7 @@ function urlFor(item: { href: string; hrefEn: string }): string {
 const logoHref = locale === "pl" ? "/" : "/en/";
 ---
 
-<footer class="vv-footer" role="contentinfo">
+<footer class="vv-footer" role="contentinfo" transition:persist>
   <Container size="wide">
     <div class="vv-footer__grid">
       {/* ---- Column 1: brand ---- */}

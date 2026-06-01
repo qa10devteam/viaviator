@@ -11,6 +11,7 @@
 import "@styles/global.css";
 import "@fontsource-variable/bricolage-grotesque";
 
+import { ClientRouter } from "astro:transitions";
 import { type Locale, getDictionary } from "@i18n/index";
 import { company, buildOrganizationSchema } from "@data/company";
 import SEO from "@components/seo/SEO.astro";
@@ -127,11 +128,22 @@ const currentPath = Astro.url.pathname;
         document.documentElement.dataset.vvFontsLoaded = "true";
       }
     </script>
+
+    {/* ---- View Transitions API (Astro 6 ClientRouter) ----
+         Cross-document view transitions tam, gdzie wspiera je przeglądarka
+         (Chrome 126+, Safari 18+, Edge 111+ same-doc). Browser bez wsparcia
+         = instant nav, brak degradacji. Style w src/styles/view-transitions.css.
+         Reduced-motion guard wpiętą w view-transitions.css. */}
+    <ClientRouter />
   </head>
 
   <body class:list={["vv-body", bodyClass]}>
     <a href="#main" class="vv-skip-link">{dict.nav.skipToContent}</a>
 
+    {/* Header + Footer mają `transition:persist` osadzony bezpośrednio na
+        <header>/<footer> DOM root w samych komponentach — to gwarantuje, że
+        Astro 6 ClientRouter zachowa je przy nawigacji (a logo, drawer state
+        itp. nie re-renderują się). */}
     <Header
       locale={locale}
       currentPath={currentPath}
@@ -144,7 +156,7 @@ const currentPath = Astro.url.pathname;
 
     <Footer locale={locale} />
 
-    <ConsentBanner client:idle locale={locale} />
+    <ConsentBanner client:idle locale={locale} transition:persist />
 
     <style is:global>
       html, body {

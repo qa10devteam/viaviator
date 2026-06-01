@@ -68,7 +68,7 @@ const normalizedPath = currentPath.replace(/\/$/, "") || "/";
 const isHome = normalizedPath === "/" || normalizedPath === "/en";
 ---
 
-<header class="vv-header" role="banner" data-vv-header>
+<header class="vv-header" role="banner" data-vv-header transition:persist>
   {/* ---- Utility bar (>= lg) ---- */}
   <div class="vv-header__utility">
     <Container size="wide" class="vv-header__utility-inner">
@@ -114,9 +114,9 @@ const isHome = normalizedPath === "/" || normalizedPath === "/en";
       >
         {
           isHome ? (
-            <LogoMark variant="mono" height={28} locale={locale} priority />
+            <LogoMark variant="mono" height={28} locale={locale} priority withViewTransition />
           ) : (
-            <LogoMark variant="primary" height={36} locale={locale} priority />
+            <LogoMark variant="primary" height={36} locale={locale} priority withViewTransition />
           )
         }
       </a>

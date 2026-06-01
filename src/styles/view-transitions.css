@@ -1,0 +1,175 @@
+/* ────────────────────────────────────────────────────────────────────────
+ * Via Viator — View Transitions API (M02)
+ *
+ * Astro 6 `<ClientRouter />` w BaseLayout wpina cross-document view
+ * transitions tam, gdzie wspiera je przeglądarka (Chrome 126+ cross-doc,
+ * Chrome 111+ same-doc, Safari 18+, Edge 111+). Fallback: instant nav.
+ *
+ * Tutaj definiujemy:
+ *   • globalne keyframes fade out / fade in dla `::view-transition-old(root)`
+ *     i `::view-transition-new(root)` — bazowy crossfade
+ *   • specjalne keyframes dla nazwanych shared elementów (logo, hero,
+ *     phone-totem, hub-strip, segment-{slug}, qa10-seal)
+ *   • reduced-motion guard — zerujemy wszystkie animacje view-transition
+ *
+ * NIE dotykamy tutaj `view-transition-name` per element — te są nakładane
+ * na komponentach przez atrybut `transition:name` (Astro syntactic sugar)
+ * albo bezpośrednio przez `style="view-transition-name: …"`.
+ *
+ * Reference: https://docs.astro.build/en/guides/view-transitions/
+ *            https://developer.mozilla.org/en-US/docs/Web/CSS/::view-transition
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* ─────────────── Bazowy crossfade dla całego dokumentu ─────────────── */
+
+@keyframes vv-vt-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vv-vt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vv-vt-slide-out-up {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes vv-vt-slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Bazowy crossfade `root` — następujący po Astro default.
+ * 200ms out, 220ms in z subtle stagger (in zaczyna się gdy out
+ * jest w połowie) — wrażenie ciągłości, nie cięcia.
+ *
+ * Easing dopasowany do --vv-motion-easing-standard z token systemu
+ * (zhardcodowany bo `::view-transition-*` nie czyta CSS vars w Chrome
+ * stable 2026-06). */
+
+::view-transition-old(root) {
+  animation: vv-vt-fade-out 200ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: vv-vt-fade-in 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ─────────────── Shared element: logo (persistent across pages) ───────────────
+ *
+ * `transition:persist` na <Header> wystarczy żeby logo NIE re-renderowało
+ * się przy nawigacji — ale dla pewności że jest deterministycznie
+ * traktowane jako shared element nadajemy mu też own view-transition-name.
+ * Jeśli persist zadziała pierwszy (a powinien), animacja poniżej jest
+ * no-op (Astro pomija nazwane transitions dla persisted elements).
+ *
+ * Crossfade subtle — sygnalizuje że element jest „tym samym" zasobem. */
+
+::view-transition-old(logo),
+::view-transition-new(logo) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ─────────────── Shared element: hero-display (home h1 → segment h1) ───────────────
+ *
+ * Home `<h1 transition:name="hero-display">` morf do segment `<h1>`
+ * z tą samą nazwą. Browser interpoluje position + size automatycznie.
+ *
+ * Subtle ease-out żeby morfowanie tekstu nie wyglądało jak gumka. */
+
+::view-transition-old(hero-display),
+::view-transition-new(hero-display) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─────────────── Shared element: phone-totem ───────────────
+ *
+ * Home phone <a> → kontakt phone <a>. Czerwone mono 56px → 32px.
+ * Auto-morph z subtle crossfade na kolor (gdy kontakt ma inny background). */
+
+::view-transition-old(phone-totem),
+::view-transition-new(phone-totem) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─────────────── Shared element: hub-strip ─────────────── */
+
+::view-transition-old(hub-strip),
+::view-transition-new(hub-strip) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─────────────── Shared element: segment-{slug} ───────────────
+ *
+ * SegmentGrid card → segment page hero. 6 nazw:
+ *   segment-transfery-korporacyjne   (P1)
+ *   segment-pielgrzymki              (P2)
+ *   segment-transport-dostepny       (P3)
+ *   segment-przewozy-rodzinne        (P4)
+ *   segment-wynajem-busa             (P5)
+ *   segment-imprezy                  (P6)
+ *
+ * (oraz EN: segment-corporate-transfers, segment-pilgrimages, …)
+ *
+ * Wspólny attribute selector — nie listujemy wszystkich 12 nazw. */
+
+::view-transition-old(*),
+::view-transition-new(*) {
+  /* Defaultowy timing dla wszystkich nazwanych transitions
+   * — jeśli element ma view-transition-name inny niż root, dostaje
+   *   ten timing zamiast bazowego fade. */
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─────────────── Shared element: qa10-seal ─────────────── */
+
+::view-transition-old(qa10-seal),
+::view-transition-new(qa10-seal) {
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─────────────── Reduced-motion guard ───────────────
+ *
+ * WCAG 2.3.3 Animation from Interactions (AAA) + 2.2.2 Pause, Stop, Hide.
+ * Honorujemy `prefers-reduced-motion: reduce` zerując wszystkie animacje
+ * view-transition. Browser zachowuje się jak instant nav (no flash, bo
+ * old/new frame'y są generowane ale animacja jest 0ms).
+ *
+ * `*::view-transition-*` cover: root + wszystkie nazwane. */
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

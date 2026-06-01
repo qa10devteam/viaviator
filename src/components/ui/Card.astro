@@ -13,6 +13,8 @@ interface Props {
   accentColor?: string;
   class?: string;
   ariaLabel?: string;
+  /** Dodatkowe style inline (np. `view-transition-name` z M02). */
+  style?: string;
 }
 
 const {
@@ -23,12 +25,14 @@ const {
   accentColor,
   class: extraClass = "",
   ariaLabel,
+  style: extraStyle,
 } = Astro.props;
 
 const Tag = as ?? (href ? "a" : "div");
 const isInteractive = interactive || !!href;
 
 const styleVar = accentColor ? `--vv-card-accent:${accentColor}` : undefined;
+const mergedStyle = [styleVar, extraStyle].filter(Boolean).join("; ") || undefined;
 ---
 
 <Tag
@@ -40,7 +44,7 @@ const styleVar = accentColor ? `--vv-card-accent:${accentColor}` : undefined;
     extraClass,
   ]}
   href={href}
-  style={styleVar}
+  style={mergedStyle}
   aria-label={ariaLabel}
 >
   <slot />

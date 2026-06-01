@@ -62,6 +62,11 @@ const learnMore = dict.cta.learnMore;
       const name = tKey(seg.nameKey);
       const shortDesc = tKey(seg.shortDescKey);
       const iconName = ICON_MAP[seg.iconKeyword];
+      // M02: nazwa view-transition oparta o PL slug (kanoniczny w danych).
+      // Per locale ten sam shared element identifier, bo card → hero
+      // jest zawsze w obrębie tego samego języka, a Astro view-transition
+      // matchuje tylko obecność tej samej nazwy w next document.
+      const vtName = `segment-${seg.slug}`;
 
       return (
         <li>
@@ -72,6 +77,7 @@ const learnMore = dict.cta.learnMore;
             accentColor={seg.color}
             class="vv-segments__card"
             ariaLabel={`${name} — ${shortDesc}`}
+            style={`view-transition-name: ${vtName};`}
           >
             <div class="vv-segments__head">
               {iconName && (

@@ -132,8 +132,13 @@ const scrollTarget = "#dla-kogo";
         </svg>
       </div>
 
-      {/* Display headline „Zawsze na miejscu." — per-word entrance cascade */}
-      <h1 id="vv-home-hero-title" class="vv-home-hero__display">
+      {/* Display headline „Zawsze na miejscu." — per-word entrance cascade.
+          `transition:name="hero-display"` → morf do <h1> w segment hero. */}
+      <h1
+        id="vv-home-hero-title"
+        class="vv-home-hero__display"
+        transition:name="hero-display"
+      >
         {
           headlineWords.map((word, i) => (
             <span class="vv-home-hero__word" style={`--vv-word-i:${i}`}>
@@ -145,8 +150,14 @@ const scrollTarget = "#dla-kogo";
         {hasTrailingDot && <span class="vv-home-hero__dot" aria-hidden="true">.</span>}
       </h1>
 
-      {/* Hub strip — operational data, mono uppercase */}
-      <p class="vv-home-hero__hubs" aria-label={dict.hero.homeHubsAria}>
+      {/* Hub strip — operational data, mono uppercase.
+          `transition:name="hub-strip"` → persistence przy nav home → segment
+          (jeśli segment ma analogiczny pasek) lub łagodny crossfade. */}
+      <p
+        class="vv-home-hero__hubs"
+        aria-label={dict.hero.homeHubsAria}
+        transition:name="hub-strip"
+      >
         {
           hubs.map((hub, i) => (
             <>
@@ -159,11 +170,13 @@ const scrollTarget = "#dla-kogo";
         }
       </p>
 
-      {/* Phone totem — pierwszy CTA wizualnie, klikalny tel: */}
+      {/* Phone totem — pierwszy CTA wizualnie, klikalny tel:.
+          `transition:name="phone-totem"` → morf do phone <a> w /kontakt. */}
       <a
         class="vv-home-hero__phone"
         href={company.phoneHref}
         aria-label={dict.hero.homePhoneAria}
+        transition:name="phone-totem"
       >
         {company.phoneDisplay}
       </a>
