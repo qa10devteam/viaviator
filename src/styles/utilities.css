@@ -44,17 +44,15 @@
 
 /* ---------- Sections ----------------------------------------------- */
 
+/* Section vertical rhythm — fluid clamp żeby uniknąć niechlujnych
+ * disproportions. Desktop ~80px, tablet ~64px, mobile ~48px.
+ * Spójna kadencja dla wszystkich sekcji home + podstron. */
 .section {
-  padding-block: var(--vv-space-20);
+  padding-block: clamp(var(--vv-space-12), 6vw, var(--vv-space-20));
 }
 
 .section-tight {
-  padding-block: var(--vv-space-12);
-}
-
-@media (max-width: 768px) {
-  .section { padding-block: var(--vv-space-12); }
-  .section-tight { padding-block: var(--vv-space-8); }
+  padding-block: clamp(var(--vv-space-8), 4vw, var(--vv-space-12));
 }
 
 /* ---------- Stack (vertical rhythm) -------------------------------- */
