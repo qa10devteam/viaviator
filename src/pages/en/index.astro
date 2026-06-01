@@ -10,7 +10,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import Container from "@components/ui/Container.astro";
 import Section from "@components/ui/Section.astro";
 import Card from "@components/ui/Card.astro";
-import Hero from "@components/sections/Hero.astro";
+import HomeHero from "@components/sections/HomeHero.astro";
 import SegmentGrid from "@components/sections/SegmentGrid.astro";
 import FeatureGrid from "@components/sections/FeatureGrid.astro";
 import CTASection from "@components/sections/CTASection.astro";
@@ -40,9 +40,9 @@ const jsonLd: Record<string, unknown>[] = [
   localBusinessSchema(SITE),
 ];
 
+// HomeHero v2 uses /images/hero/hero-03-trafic-arena-side.webp internally,
+// but og:image keeps the legacy hero-01 (already indexed by Facebook crawler).
 const heroImage = "/images/hero/hero-01-lichen-trafic.jpg";
-const heroImageAlt =
-  "Via Viator Renault Trafic in front of the Licheń basilica — pilgrimage van.";
 
 const whyUsIcons = ["clock", "map-pin", "shield-check", "phone"] as const;
 const whyUsItems = dict.home.sectionWhyUs.points.map((p, i) => ({
@@ -79,25 +79,8 @@ const fleetCards = [
   jsonLd={jsonLd}
   bodyClass="page-home"
 >
-  {/* 1. HERO */}
-  <Hero
-    headline={dict.hero.homeHeadline}
-    subhead={dict.hero.homeSubhead}
-    microcopy={dict.hero.homeMicrocopy}
-    image={heroImage}
-    imageAlt={heroImageAlt}
-    primaryCta={{
-      label: dict.hero.homeCtaPrimary,
-      href: "/en/contact",
-    }}
-    secondaryCta={{
-      label: dict.hero.homeCtaSecondary,
-      href: "#dla-kogo",
-    }}
-    align="left"
-    tone="default"
-    priority={true}
-  />
+  {/* 1. HERO — Editorial Split „Manifest on a spread" (HomeHero v2) */}
+  <HomeHero locale={locale} />
 
   {/* 2. What we do */}
   <Section tone="default" ariaLabelledby="home-what-title">

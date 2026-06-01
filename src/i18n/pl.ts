@@ -109,6 +109,12 @@ export const pl = {
     homeCtaPrimary: "Zapytaj o ofertę",
     homeCtaSecondary: "Zobacz co robimy",
     homeMicrocopy: "Telefon odbieramy. E-mail czytamy. Brief mamy zwięzły.",
+    homeEyebrow: "N°01",
+    homeScrollCue: "Zobacz, co robimy",
+    homeHubsAria: "Huby lotniskowe — Pyrzowice, Kraków-Balice, Wrocław",
+    homePhoneAria: "Zadzwoń teraz: +48 690 691 886",
+    homeLogoAria: "Via Viator — przewóz osób",
+    homeImageAlt: "Renault Trafic Via Viator przy PreZero Arena Gliwice",
   },
   segments: {
     korpo: {

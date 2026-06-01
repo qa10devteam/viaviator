@@ -1,0 +1,633 @@
+---
+/**
+ * HomeHero — dedykowany komponent hero dla strony głównej (PL + EN).
+ *
+ * Koncepcja: „Editorial Split — Manifest na rozkładówce" (hero-v2-design-direction.md).
+ *  - Lewa kolumna (58% desktop): bg #0A0A0A, manifest typograficzny.
+ *    eyebrow „N°01" → logo-stack inline SVG 180px → display headline „Zawsze na miejscu."
+ *    (kropka czerwona) → hub strip „PYRZOWICE · KRAKÓW-BALICE · WROCŁAW" → phone totem
+ *    mono 56px czerwony → scroll cue muted.
+ *  - Prawa kolumna (42%): full-bleed `hero-03-trafic-arena-side.webp`,
+ *    pozioma orientacja Trafica.
+ *  - Czerwona nitka 1px SVG diagonalna łącząca kolumny (decorative).
+ *  - Mobile (<768px): stack vertical, clip-path diagonal cut.
+ *  - Brak CTA buttons — phone totem zastępuje primary, scroll cue secondary.
+ *
+ * Performance:
+ *  - SSR static HTML, zero JS dla initial render.
+ *  - Image: webp 1920×1440 (275KB), fetchpriority=high, decoding=sync, width/height
+ *    żeby zapobiec CLS.
+ *  - Motion lib NIE używana — animacje czysto CSS @keyframes z reduced-motion guard.
+ */
+
+import { getDictionary, type Locale } from "@i18n/index";
+import { company } from "@data/company";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props as Props;
+const dict = getDictionary(locale);
+
+// Headline split: „Zawsze na miejscu." → 3 słowa + kropka jako osobny span (czerwona)
+// Brand book: kropka jest częścią znaku, MUSI być eksponowana (sekcja 4.3 design direction)
+const headlineRaw = dict.hero.homeHeadline; // PL: „Zawsze na miejscu." / EN: „Always there."
+// Odetnij końcową kropkę, jeśli jest
+const hasTrailingDot = headlineRaw.endsWith(".");
+const headlineCore = hasTrailingDot ? headlineRaw.slice(0, -1) : headlineRaw;
+const headlineWords = headlineCore.split(" ");
+
+// Hub strip — z company.hubs (single source of truth)
+const hubs = company.hubs;
+
+// Scroll target: home ma sekcję #dla-kogo (id w obu locale)
+const scrollTarget = "#dla-kogo";
+---
+
+<section class="vv-home-hero" aria-labelledby="vv-home-hero-title">
+  {/* ───────── LEWA KOLUMNA — manifest typograficzny ───────── */}
+  <div class="vv-home-hero__manifest">
+    <div class="vv-home-hero__manifest-inner">
+      {/* Eyebrow „N°01" — czerwone mono uppercase */}
+      <p class="vv-home-hero__eyebrow">{dict.hero.homeEyebrow}</p>
+
+      {/* Logo-stack inline SVG — 180px desktop, fluid mobile */}
+      <div
+        class="vv-home-hero__logo"
+        role="img"
+        aria-label={dict.hero.homeLogoAria}
+      >
+        <svg
+          viewBox="0 0 375 270"
+          preserveAspectRatio="xMidYMid meet"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <defs>
+            <clipPath id="vv-logo-stack-mark-inline">
+              <path d="M 125.988281 93.902344 L 248.988281 93.902344 L 248.988281 201 L 125.988281 201 Z" />
+            </clipPath>
+            <clipPath id="vv-logo-stack-arrow-inline">
+              <path d="M 147.078125 211.671875 L 133.046875 201.636719 L 146.136719 183.335938 L 160.167969 193.375 Z" />
+            </clipPath>
+          </defs>
+          <g clip-path="url(#vv-logo-stack-mark-inline)">
+            <path
+              class="vv-home-hero__logo-mark"
+              d="M 249.011719 93.910156 L 187.332031 200.921875 L 177.714844 184.984375 L 180.335938 180.78125 L 187.257812 192.269531 L 241.367188 98.355469 L 183.101562 98.355469 L 193.53125 116.214844 L 212.664062 116.214844 L 174.496094 179.097656 L 125.988281 93.910156 L 155.457031 93.910156 L 185 143.28125 L 182.425781 147.414062 L 152.957031 98.355469 L 133.582031 98.355469 L 174.613281 170.445312 L 204.828125 120.6875 L 191.007812 120.6875 L 175.382812 93.910156 Z"
+            />
+          </g>
+          <path
+            class="vv-home-hero__logo-arrow-line"
+            fill="none"
+            stroke-width="6"
+            stroke-linejoin="miter"
+            stroke-miterlimit="4"
+            transform="matrix(0.40732, -0.629754, 0.629754, 0.40732, 147.229771, 193.986873)"
+            d="M 0.00067828 2.996629 L 84.018403 2.997569"
+          />
+          <g clip-path="url(#vv-logo-stack-arrow-inline)">
+            <path
+              class="vv-home-hero__logo-arrow"
+              fill-rule="evenodd"
+              d="M 140.210938 206.757812 L 146.445312 183.53125 L 150.035156 193.023438 L 160.179688 193.359375 Z"
+            />
+          </g>
+          <g class="vv-home-hero__logo-via">
+            <g transform="translate(106.575238, 257.419831)">
+              <path
+                d="M 25.5625 -23.671875 L 15.3125 0 L 9.90625 0 L -0.296875 -23.671875 L 5.609375 -23.671875 L 12.8125 -6.765625 L 20.125 -23.671875 Z M 25.5625 -23.671875"
+              />
+            </g>
+            <g transform="translate(136.868858, 257.419831)">
+              <path
+                d="M 2.8125 -23.671875 L 8.28125 -23.671875 L 8.28125 0 L 2.8125 0 Z M 2.8125 -23.671875"
+              />
+            </g>
+            <g transform="translate(153.030512, 257.419831)">
+              <path
+                d="M 18.390625 -5.078125 L 7.40625 -5.078125 L 5.3125 0 L -0.296875 0 L 10.25 -23.671875 L 15.65625 -23.671875 L 26.234375 0 L 20.484375 0 Z M 16.671875 -9.234375 L 12.921875 -18.296875 L 9.15625 -9.234375 Z M 16.671875 -9.234375"
+              />
+            </g>
+          </g>
+          <g class="vv-home-hero__logo-tor">
+            <g transform="translate(184.001014, 257.419831)">
+              <path
+                d="M 7.703125 -19.203125 L 0.140625 -19.203125 L 0.140625 -23.671875 L 20.765625 -23.671875 L 20.765625 -19.203125 L 13.1875 -19.203125 L 13.1875 0 L 7.703125 0 Z M 7.703125 -19.203125"
+              />
+            </g>
+            <g transform="translate(209.967142, 257.419831)">
+              <path
+                d="M 14.265625 0.40625 C 11.804688 0.40625 9.59375 -0.117188 7.625 -1.171875 C 5.65625 -2.234375 4.109375 -3.695312 2.984375 -5.5625 C 1.867188 -7.425781 1.3125 -9.515625 1.3125 -11.828125 C 1.3125 -14.148438 1.867188 -16.238281 2.984375 -18.09375 C 4.109375 -19.957031 5.65625 -21.421875 7.625 -22.484375 C 9.59375 -23.546875 11.804688 -24.078125 14.265625 -24.078125 C 16.722656 -24.078125 18.929688 -23.546875 20.890625 -22.484375 C 22.859375 -21.421875 24.40625 -19.957031 25.53125 -18.09375 C 26.65625 -16.238281 27.21875 -14.148438 27.21875 -11.828125 C 27.21875 -9.515625 26.65625 -7.425781 25.53125 -5.5625 C 24.40625 -3.695312 22.859375 -2.234375 20.890625 -1.171875 C 18.929688 -0.117188 16.722656 0.40625 14.265625 0.40625 Z M 14.265625 -4.265625 C 15.660156 -4.265625 16.921875 -4.582031 18.046875 -5.21875 C 19.179688 -5.863281 20.066406 -6.757812 20.703125 -7.90625 C 21.347656 -9.0625 21.671875 -10.367188 21.671875 -11.828125 C 21.671875 -13.296875 21.347656 -14.601562 20.703125 -15.75 C 20.066406 -16.90625 19.179688 -17.800781 18.046875 -18.4375 C 16.921875 -19.082031 15.660156 -19.40625 14.265625 -19.40625 C 12.867188 -19.40625 11.609375 -19.082031 10.484375 -18.4375 C 9.359375 -17.800781 8.472656 -16.90625 7.828125 -15.75 C 7.179688 -14.601562 6.859375 -13.296875 6.859375 -11.828125 C 6.859375 -10.367188 7.179688 -9.0625 7.828125 -7.90625 C 8.472656 -6.757812 9.359375 -5.863281 10.484375 -5.21875 C 11.609375 -4.582031 12.867188 -4.265625 14.265625 -4.265625 Z M 14.265625 -4.265625"
+              />
+            </g>
+            <g transform="translate(243.573997, 257.419831)">
+              <path
+                d="M 17.890625 0 L 13.328125 -6.59375 L 8.28125 -6.59375 L 8.28125 0 L 2.8125 0 L 2.8125 -23.671875 L 13.046875 -23.671875 C 15.148438 -23.671875 16.972656 -23.320312 18.515625 -22.625 C 20.054688 -21.925781 21.242188 -20.929688 22.078125 -19.640625 C 22.910156 -18.359375 23.328125 -16.835938 23.328125 -15.078125 C 23.328125 -13.316406 22.90625 -11.800781 22.0625 -10.53125 C 21.21875 -9.257812 20.019531 -8.285156 18.46875 -7.609375 L 23.765625 0 Z M 17.78125 -15.078125 C 17.78125 -16.410156 17.351562 -17.429688 16.5 -18.140625 C 15.644531 -18.847656 14.394531 -19.203125 12.75 -19.203125 L 8.28125 -19.203125 L 8.28125 -10.953125 L 12.75 -10.953125 C 14.394531 -10.953125 15.644531 -11.3125 16.5 -12.03125 C 17.351562 -12.757812 17.78125 -13.773438 17.78125 -15.078125 Z M 17.78125 -15.078125"
+              />
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      {/* Display headline „Zawsze na miejscu." — per-word entrance cascade */}
+      <h1 id="vv-home-hero-title" class="vv-home-hero__display">
+        {
+          headlineWords.map((word, i) => (
+            <span class="vv-home-hero__word" style={`--vv-word-i:${i}`}>
+              {word}
+              {i < headlineWords.length - 1 ? " " : null}
+            </span>
+          ))
+        }
+        {hasTrailingDot && <span class="vv-home-hero__dot" aria-hidden="true">.</span>}
+      </h1>
+
+      {/* Hub strip — operational data, mono uppercase */}
+      <p class="vv-home-hero__hubs" aria-label={dict.hero.homeHubsAria}>
+        {
+          hubs.map((hub, i) => (
+            <>
+              <span class="vv-home-hero__hub">{hub.toUpperCase()}</span>
+              {i < hubs.length - 1 && (
+                <span class="vv-home-hero__hub-sep" aria-hidden="true">·</span>
+              )}
+            </>
+          ))
+        }
+      </p>
+
+      {/* Phone totem — pierwszy CTA wizualnie, klikalny tel: */}
+      <a
+        class="vv-home-hero__phone"
+        href={company.phoneHref}
+        aria-label={dict.hero.homePhoneAria}
+      >
+        {company.phoneDisplay}
+      </a>
+
+      {/* Scroll cue — sygnał kontynuacji */}
+      <a class="vv-home-hero__scroll-cue" href={scrollTarget}>
+        <span class="vv-home-hero__scroll-arrow" aria-hidden="true">↓</span>
+        <span>{dict.hero.homeScrollCue}</span>
+      </a>
+    </div>
+  </div>
+
+  {/* ───────── PRAWA KOLUMNA — full-bleed Trafic ───────── */}
+  <div class="vv-home-hero__visual">
+    <picture>
+      <source
+        type="image/webp"
+        srcset="/images/hero/hero-03-trafic-arena-side.webp"
+      />
+      <img
+        src="/images/hero/hero-03-trafic-arena-side.jpg"
+        alt={dict.hero.homeImageAlt}
+        class="vv-home-hero__image"
+        fetchpriority="high"
+        loading="eager"
+        decoding="sync"
+        width="1200"
+        height="900"
+      />
+    </picture>
+    <div class="vv-home-hero__visual-overlay" aria-hidden="true"></div>
+  </div>
+
+  {/* ───────── Czerwona nitka 1px diagonalna — connector lewej i prawej ───────── */}
+  {/* Pozycjonowana absolute na całość, decorative only, desktop only. */}
+  <svg
+    class="vv-home-hero__thread"
+    viewBox="0 0 1440 200"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path
+      d="M 50 100 Q 720 120 1100 80"
+      stroke="currentColor"
+      stroke-width="1"
+      stroke-linecap="round"
+      pathLength="1"
+    />
+  </svg>
+</section>
+
+<style>
+  /* ═══════════════════════════════════════════════════════════════════════
+   * vv-home-hero — Editorial Split, „Manifest na rozkładówce"
+   * Mapowanie tokenów: Appendix A z hero-v2-design-direction.md
+   * ═══════════════════════════════════════════════════════════════════════ */
+
+  .vv-home-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+    min-height: 100svh;
+    max-height: 900px;
+    background-color: var(--vv-color-bg-inverse); /* #0A0A0A — fallback dla obszaru pod fold */
+    color: var(--vv-color-fg-inverse);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Desktop split 58/42 (≥1024px) */
+  @media (min-width: 1024px) {
+    .vv-home-hero {
+      grid-template-columns: 58% 42%;
+    }
+  }
+
+  /* Wide xl breakpoint — wstrzymujemy max-width na 1600px, aby na 2560px nie rozciągnąć w nieskończoność */
+  @media (min-width: 1536px) {
+    .vv-home-hero {
+      max-height: 920px;
+    }
+  }
+
+  /* ─────────────── Lewa kolumna — manifest ─────────────── */
+
+  .vv-home-hero__manifest {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    background-color: var(--vv-color-bg-inverse);
+    padding: clamp(1.5rem, 4vw, 4rem) clamp(1.5rem, 4vw, 4rem);
+    /* clip-path mobile: diagonal cut bottom */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 32px));
+  }
+
+  @media (min-width: 768px) {
+    .vv-home-hero__manifest {
+      clip-path: none;
+      padding: clamp(2rem, 5vw, 4rem) clamp(2rem, 5vw, 5rem);
+    }
+  }
+
+  .vv-home-hero__manifest-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 700px;
+    gap: clamp(1rem, 2.5vw, 2rem);
+  }
+
+  /* ─────────────── Eyebrow „N°01" ─────────────── */
+
+  .vv-home-hero__eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: clamp(12px, 1vw, 14px);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--vv-color-brand-red);
+    margin: 0;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: vv-home-hero-fade-up 400ms var(--vv-motion-easing-entrance) 0ms forwards;
+  }
+
+  /* ─────────────── Logo-stack inline SVG ─────────────── */
+
+  .vv-home-hero__logo {
+    /* fluid scaling 96 → 180 */
+    width: auto;
+    height: clamp(96px, 12vw, 180px);
+    display: flex;
+    align-items: flex-start;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: vv-home-hero-fade-up 600ms var(--vv-motion-easing-entrance) 80ms forwards;
+  }
+
+  .vv-home-hero__logo svg {
+    height: 100%;
+    width: auto;
+    display: block;
+  }
+
+  /* Per-warstwa color control — currentColor steruje per klasa */
+  .vv-home-hero__logo-mark {
+    fill: var(--vv-color-brand-red);
+  }
+
+  .vv-home-hero__logo-arrow-line {
+    stroke: var(--vv-color-brand-red);
+  }
+
+  .vv-home-hero__logo-arrow {
+    fill: var(--vv-color-brand-red);
+  }
+
+  .vv-home-hero__logo-via {
+    fill: var(--vv-color-brand-red);
+  }
+
+  .vv-home-hero__logo-tor {
+    fill: var(--vv-color-fg-inverse);
+  }
+
+  /* ─────────────── Display headline ─────────────── */
+
+  .vv-home-hero__display {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(40px, 9vw, 128px);
+    font-weight: var(--vv-typography-font-weight-extrabold); /* 800 */
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    font-variation-settings: "wdth" 90;
+    color: var(--vv-color-fg-inverse);
+    margin: 0;
+    text-wrap: balance;
+    overflow: hidden;
+  }
+
+  .vv-home-hero__word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: vv-home-hero-fade-up 500ms var(--vv-motion-easing-entrance)
+      calc(200ms + var(--vv-word-i, 0) * 80ms) forwards;
+  }
+
+  .vv-home-hero__dot {
+    display: inline-block;
+    color: var(--vv-color-brand-red);
+    font-size: 1.05em;
+    margin-left: 0.02em;
+    transform: scale(0);
+    transform-origin: 50% 80%;
+    animation: vv-home-hero-dot-pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1) 600ms forwards;
+  }
+
+  /* ─────────────── Hub strip ─────────────── */
+
+  .vv-home-hero__hubs {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: clamp(13px, 1.4vw, 18px);
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--vv-color-fg-inverse);
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3em;
+    line-height: 1.4;
+    opacity: 0;
+    /* animation-name override: vv-home-hero-hubs-in (zachowuje opacity 0.85 jako target — patrz linia 585) */
+    animation: vv-home-hero-fade 400ms var(--vv-motion-easing-entrance) 1000ms forwards;
+    animation-fill-mode: both;
+  }
+
+  .vv-home-hero__hub-sep {
+    color: var(--vv-color-brand-red);
+    font-weight: 600;
+  }
+
+  /* ─────────────── Phone totem ─────────────── */
+
+  .vv-home-hero__phone {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: clamp(28px, 4.5vw, 56px);
+    font-weight: var(--vv-typography-font-weight-semibold); /* 600 */
+    line-height: 1.1;
+    letter-spacing: 0;
+    color: var(--vv-color-brand-red);
+    text-decoration: none;
+    display: inline-block;
+    width: fit-content;
+    padding: 4px 0;
+    transition:
+      text-decoration var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
+      transform 75ms ease-out;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: vv-home-hero-fade-up 400ms var(--vv-motion-easing-entrance) 1100ms forwards;
+  }
+
+  .vv-home-hero__phone:hover,
+  .vv-home-hero__phone:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 8px;
+  }
+
+  .vv-home-hero__phone:active {
+    transform: scale(0.98);
+  }
+
+  .vv-home-hero__phone:focus-visible {
+    outline: 2px solid var(--vv-color-brand-red);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* ─────────────── Scroll cue ─────────────── */
+
+  .vv-home-hero__scroll-cue {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: clamp(12px, 1vw, 14px);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--vv-color-fg-muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    width: fit-content;
+    transition: color var(--vv-motion-duration-fast) var(--vv-motion-easing-standard);
+    opacity: 0;
+    animation: vv-home-hero-fade 600ms var(--vv-motion-easing-entrance) 1400ms forwards;
+  }
+
+  .vv-home-hero__scroll-cue:hover,
+  .vv-home-hero__scroll-cue:focus-visible {
+    color: var(--vv-color-fg-inverse);
+  }
+
+  .vv-home-hero__scroll-arrow {
+    display: inline-block;
+    animation: vv-home-hero-bounce 1.8s ease-in-out infinite;
+    animation-delay: 2000ms;
+  }
+
+  /* ─────────────── Prawa kolumna — full-bleed visual ─────────────── */
+
+  .vv-home-hero__visual {
+    position: relative;
+    width: 100%;
+    height: clamp(280px, 45vh, 480px);
+    overflow: hidden;
+    background-color: var(--vv-color-bg-inverse);
+    /* Mobile clip-path mirror — diagonal cut top */
+    clip-path: polygon(0 32px, 100% 0, 100% 100%, 0 100%);
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .vv-home-hero__visual {
+      height: 360px;
+      clip-path: none;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-home-hero__visual {
+      height: 100%;
+      max-height: 900px;
+      clip-path: none;
+    }
+  }
+
+  .vv-home-hero__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 30% center;
+    filter: brightness(0.96);
+    opacity: 0;
+    animation: vv-home-hero-fade 600ms ease-out 0ms forwards;
+  }
+
+  .vv-home-hero__visual-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      transparent 60%,
+      rgba(10, 10, 10, 0.35) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* ─────────────── Czerwona nitka 1px ─────────────── */
+
+  .vv-home-hero__thread {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    transform: translateY(-50%);
+    color: var(--vv-color-brand-red);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  @media (min-width: 1024px) {
+    .vv-home-hero__thread {
+      display: block;
+      animation: vv-home-hero-thread-in 800ms var(--vv-motion-easing-standard) 1200ms forwards;
+    }
+
+    .vv-home-hero__thread path {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: vv-home-hero-thread-draw 800ms var(--vv-motion-easing-standard) 1200ms forwards;
+    }
+  }
+
+  /* ─────────────── Keyframes ─────────────── */
+
+  @keyframes vv-home-hero-fade {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes vv-home-hero-fade-up {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes vv-home-hero-dot-pop {
+    to {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes vv-home-hero-thread-in {
+    to {
+      opacity: 0.7;
+    }
+  }
+
+  @keyframes vv-home-hero-thread-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes vv-home-hero-bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(4px);
+    }
+  }
+
+  /* Hub strip dedykowana animacja, bo zachowuje opacity: 0.85 jako baseline */
+  .vv-home-hero__hubs {
+    animation-name: vv-home-hero-hubs-in;
+  }
+
+  @keyframes vv-home-hero-hubs-in {
+    to {
+      opacity: 0.85;
+    }
+  }
+
+  /* ─────────────── Reduced motion guard ─────────────── */
+
+  @media (prefers-reduced-motion: reduce) {
+    .vv-home-hero__eyebrow,
+    .vv-home-hero__logo,
+    .vv-home-hero__word,
+    .vv-home-hero__dot,
+    .vv-home-hero__phone,
+    .vv-home-hero__scroll-cue,
+    .vv-home-hero__image {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .vv-home-hero__hubs {
+      animation: none !important;
+      opacity: 0.85 !important;
+    }
+
+    .vv-home-hero__dot {
+      transform: scale(1) !important;
+    }
+
+    .vv-home-hero__thread {
+      animation: none !important;
+      opacity: 0.7 !important;
+    }
+
+    .vv-home-hero__thread path {
+      animation: none !important;
+      stroke-dashoffset: 0 !important;
+    }
+
+    .vv-home-hero__scroll-arrow {
+      animation: none !important;
+    }
+  }
+</style>

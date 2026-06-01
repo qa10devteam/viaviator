@@ -111,6 +111,12 @@ export const en: Dictionary = {
     homeCtaPrimary: "Get a quote",
     homeCtaSecondary: "See what we do",
     homeMicrocopy: "We pick up the phone. We read e-mail. Our briefs are short.",
+    homeEyebrow: "N°01",
+    homeScrollCue: "See what we do",
+    homeHubsAria: "Airport hubs — Pyrzowice, Kraków-Balice, Wrocław",
+    homePhoneAria: "Call now: +48 690 691 886",
+    homeLogoAria: "Via Viator — passenger transport",
+    homeImageAlt: "Via Viator Renault Trafic at PreZero Arena Gliwice",
   },
   segments: {
     korpo: {

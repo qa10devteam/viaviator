@@ -59,6 +59,13 @@ const contactHref = locale === "pl" ? "/kontakt" : "/en/contact";
 const homeHref = locale === "pl" ? "/" : "/en/";
 const navAriaLabel = dict.nav.primaryNavAria;
 const drawerAriaLabel = dict.nav.mobileMenuAria;
+
+// Simplified header dla strony głównej — sam mark V (logo5/mono) zamiast pełnego
+// poziomego wordmark+mark (logo4). Hero v2 ma własny duży logo-stack jako
+// element kompozycyjny — w headerze nie chcemy duplikatu pełnego znaku, sam mark
+// to ledger sygnatura nawigacyjna. Auto-detect z currentPath bez extra prop.
+const normalizedPath = currentPath.replace(/\/$/, "") || "/";
+const isHome = normalizedPath === "/" || normalizedPath === "/en";
 ---
 
 <header class="vv-header" role="banner" data-vv-header>
@@ -100,8 +107,18 @@ const drawerAriaLabel = dict.nav.mobileMenuAria;
   {/* ---- Main bar ---- */}
   <div class="vv-header__main">
     <Container size="wide" class="vv-header__main-inner">
-      <a href={homeHref} class="vv-header__brand" aria-label={dict.brand.name}>
-        <LogoMark variant="primary" height={36} locale={locale} priority />
+      <a
+        href={homeHref}
+        class:list={["vv-header__brand", isHome ? "vv-header__brand--mark-only" : null]}
+        aria-label={dict.brand.name}
+      >
+        {
+          isHome ? (
+            <LogoMark variant="mono" height={28} locale={locale} priority />
+          ) : (
+            <LogoMark variant="primary" height={36} locale={locale} priority />
+          )
+        }
       </a>
 
       <nav class="vv-header__nav" aria-label={navAriaLabel} id="vv-primary-nav">
