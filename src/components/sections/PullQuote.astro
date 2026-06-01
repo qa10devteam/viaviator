@@ -1,0 +1,41 @@
+---
+/**
+ * PullQuote — editorial pull-quote (cytat redakcyjny).
+ *
+ * Render:
+ *   <blockquote class="pull-quote">
+ *     {quote}
+ *     {attribution && <cite>— {attribution}</cite>}
+ *   </blockquote>
+ *
+ * Style w `src/styles/typography.css` (klasa `.pull-quote`):
+ *  - lewa krawędź czerwona 3px brand-red
+ *  - font display italic, clamp(20px, 3vw, 28px)
+ *  - cudzysłów ::before zależny od `[lang]`: PL „, EN "
+ *  - text-wrap: balance + max-width: 60ch
+ *
+ * A11y: `<blockquote>` ma natywną semantykę cytatu; `<cite>` zawiera autorstwo.
+ * Cytat nie jest oznaczony jako "decorative" — czytany przez screen reader
+ * jako pełnoprawny element narracyjny strony.
+ *
+ * Użycie:
+ *   <PullQuote
+ *     quote="Mała flota, znajome twarze, ten sam numer telefonu od dwóch lat."
+ *     attribution="Patryk Tomeczek"
+ *   />
+ */
+
+interface Props {
+  /** Treść cytatu — bez cudzysłowów, dodajemy CSS ::before. */
+  quote: string;
+  /** Autor cytatu — np. „Patryk Tomeczek". Opcjonalne. */
+  attribution?: string;
+}
+
+const { quote, attribution } = Astro.props;
+---
+
+<blockquote class="pull-quote">
+  {quote}
+  {attribution && <cite class="pull-quote__attribution">— {attribution}</cite>}
+</blockquote>

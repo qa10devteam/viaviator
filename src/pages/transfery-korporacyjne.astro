@@ -23,9 +23,11 @@ import Container from "@components/ui/Container.astro";
 import Section from "@components/ui/Section.astro";
 import Badge from "@components/ui/Badge.astro";
 import Icon from "@components/ui/Icon.astro";
+import SectionIndex from "@components/ui/SectionIndex.astro";
 import Hero from "@components/sections/Hero.astro";
 import FAQAccordion from "@components/sections/FAQAccordion.astro";
 import CTASection from "@components/sections/CTASection.astro";
+import PullQuote from "@components/sections/PullQuote.astro";
 import { getDictionary } from "@i18n/index";
 import { company } from "@data/company";
 import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
@@ -108,6 +110,7 @@ const faqItems = [...seg.faq.items];
   <Section tone="default" ariaLabelledby="seg-what-title">
     <Container size="default">
       <div class="vv-seg-block">
+        <SectionIndex number={2} label="Co dostajesz" />
         <h2 id="seg-what-title" class="vv-seg-block__title">
           {seg.what.title}
         </h2>
@@ -132,6 +135,7 @@ const faqItems = [...seg.faq.items];
   <Section tone="elevated" ariaLabelledby="seg-how-title">
     <Container size="default">
       <div class="vv-seg-block">
+        <SectionIndex number={3} label="Jak pracujemy" />
         <h2 id="seg-how-title" class="vv-seg-block__title">
           {seg.howWeWork.title}
         </h2>
@@ -166,13 +170,19 @@ const faqItems = [...seg.faq.items];
     </Container>
   </Section>
 
-  {/* 5. Social proof — placeholder */}
+  {/* 5. Social proof — placeholder + pull-quote z buyer persony Anny (P1). */}
   <Section tone="elevated" tight ariaLabelledby="seg-trust-title">
     <Container size="narrow">
       <div class="vv-seg-trust">
         <h2 id="seg-trust-title" class="vv-seg-trust__title">
           Z kim pracujemy
         </h2>
+
+        <PullQuote
+          quote="Twój gość wyląduje o 7:42. My będziemy o 7:40."
+          attribution="Anna, office manager B2B"
+        />
+
         <p class="vv-seg-trust__body">
           Pracujemy m.in. dla firm produkcyjnych i biurowych z Katowic, Gliwic,
           Krakowa i Wrocławia — od kilkuosobowych zespołów po działy z

@@ -19,10 +19,12 @@ import Container from "@components/ui/Container.astro";
 import Section from "@components/ui/Section.astro";
 import Badge from "@components/ui/Badge.astro";
 import Icon from "@components/ui/Icon.astro";
+import SectionIndex from "@components/ui/SectionIndex.astro";
 import Hero from "@components/sections/Hero.astro";
 import FeatureGrid from "@components/sections/FeatureGrid.astro";
 import FAQAccordion from "@components/sections/FAQAccordion.astro";
 import CTASection from "@components/sections/CTASection.astro";
+import PullQuote from "@components/sections/PullQuote.astro";
 import SzlakSanktuariow from "@components/sections/SzlakSanktuariow.astro";
 import { getDictionary } from "@i18n/index";
 import { company } from "@data/company";
@@ -146,6 +148,7 @@ const faqItems = [...seg.faq.items];
   <Section tone="default" ariaLabelledby="seg-sanctuaries-title">
     <Container size="default">
       <div class="vv-seg-block">
+        <SectionIndex number={2} label="Sanktuaria" />
         <h2 id="seg-sanctuaries-title" class="vv-seg-block__title">
           Sanktuaria, do których jeździmy
         </h2>
@@ -156,6 +159,11 @@ const faqItems = [...seg.faq.items];
         </p>
       </div>
       <FeatureGrid items={sanctuaries} columns={3} tone="default" />
+
+      <PullQuote
+        quote="Czy znacie parking pod Jasną Górą? Bo niektórzy nie wiedzą i zostawiają autobus 2 km od bramy."
+        attribution="Maria, organizatorka pielgrzymek"
+      />
     </Container>
   </Section>
 
@@ -163,6 +171,7 @@ const faqItems = [...seg.faq.items];
   <Section tone="elevated" ariaLabelledby="seg-what-title">
     <Container size="default">
       <div class="vv-seg-block">
+        <SectionIndex number={3} label="Co dostajesz" />
         <h2 id="seg-what-title" class="vv-seg-block__title">
           {seg.what.title}
         </h2>
@@ -187,6 +196,7 @@ const faqItems = [...seg.faq.items];
   <Section tone="default" ariaLabelledby="seg-decision-title">
     <Container size="default">
       <div class="vv-seg-block">
+        <SectionIndex number={4} label="Kryteria decyzji" />
         <h2 id="seg-decision-title" class="vv-seg-block__title">
           {seg.decisionList.title}
         </h2>

@@ -153,3 +153,203 @@ a:hover {
   .h1      { font-size: var(--vv-typography-font-size-4xl); }
   .h2      { font-size: var(--vv-typography-font-size-3xl); }
 }
+
+/* ────────────────────────────────────────────────────────────────────── */
+/* M08 — Editorial Typography Polish                                      */
+/* text-wrap globally + variable font axes + hyphenation + drop cap       */
+/* + pull-quote editorial + section index numerals (N°02-N°07).           */
+/* Tokens-only. Brand canon: brand-red ≤10% palety, brak gradientów       */
+/* ekstremalnych, brak poświat. Patrz docs/12-phase-masterpiece-plan.md   */
+/* sekcja M08.                                                            */
+/* ────────────────────────────────────────────────────────────────────── */
+
+/* ── A. text-wrap globally ───────────────────────────────────────────── */
+/* Class-based headings dostają już balance wyżej; tu uzupełniamy
+   bare element selectors dla zawartości generowanej przez treści. */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+li {
+  text-wrap: pretty;
+}
+
+/* Public utility classes — dostępne dla per-element overridów. */
+.vv-text-balance,
+.text-balance {
+  text-wrap: balance;
+}
+
+.vv-text-pretty,
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* ── B. Variable font axes (Bricolage) ────────────────────────────────
+   Bricolage Grotesque Variable: opsz (12–96), wdth (75–125), wght (200–800).
+   Wider tracking, more dramatic on display sizes; opsz-fluid per use. */
+.display {
+  font-variation-settings: "wdth" 95, "opsz" 96;
+}
+
+@media (max-width: 768px) {
+  .display {
+    font-variation-settings: "wdth" 100, "opsz" 48;
+  }
+}
+
+.h1 {
+  font-variation-settings: "wdth" 96, "opsz" 72;
+}
+
+.h2 {
+  font-variation-settings: "wdth" 98, "opsz" 56;
+}
+
+.h3 {
+  font-variation-settings: "wdth" 100, "opsz" 40;
+}
+
+/* Body — optical sizing per use. */
+.body-text {
+  font-variation-settings: "opsz" 18;
+}
+
+.lede {
+  font-variation-settings: "wdth" 100, "opsz" 24;
+}
+
+/* ── C. Hyphenation ───────────────────────────────────────────────────
+   Włączone dla długiej prozy (legal, lead body) — w Polsce dzielenie
+   wyrazów ratuje wąskie kolumny i unika nadmiernego tracking.
+   .prose / .legal-prose to istniejące hooki używane w polityka-* stronach. */
+.prose,
+.legal-prose,
+.vv-prose {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 6 3 3;
+}
+
+[lang="pl"] .prose,
+[lang="pl"] .legal-prose,
+[lang="pl"] .vv-prose {
+  hyphenate-language: "pl";
+}
+
+[lang="en"] .prose,
+[lang="en"] .legal-prose,
+[lang="en"] .vv-prose {
+  hyphenate-language: "en";
+}
+
+/* ── D. Drop cap utility ──────────────────────────────────────────────
+   Editorial drop cap — Klim Type Foundry / Pentagram szkoła.
+   Brand-red, Bricolage display, 4.2em wysokości (~3 linie).
+   Stosować przez `<div class="drop-cap">` wokół paragrafu otwarcia. */
+.drop-cap > p:first-of-type::first-letter,
+.vv-dropcap > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--vv-typography-font-family-display);
+  font-size: 4.2em;
+  line-height: 0.88;
+  font-weight: 800;
+  margin: 0.05em 0.12em 0 0;
+  color: var(--vv-color-brand-red);
+  font-variation-settings: "wdth" 90, "opsz" 96;
+  /* Subtelne dosunięcie do baseline pierwszej linii */
+  padding-top: 0.02em;
+}
+
+@media (max-width: 640px) {
+  .drop-cap > p:first-of-type::first-letter,
+  .vv-dropcap > p:first-of-type::first-letter {
+    font-size: 3.2em;
+  }
+}
+
+/* ── E. Pull quote — editorial ────────────────────────────────────────
+   Cytat redakcyjny: cudzysłów polski („) dla PL, angielski (") dla EN
+   przez podmianę zawartości ::before. Lewa krawędź czerwona 3px,
+   font display italic, ~28px. Attribution w sekcji `<cite>`. */
+.pull-quote {
+  position: relative;
+  padding: var(--vv-space-6) 0 var(--vv-space-6) var(--vv-space-8);
+  margin: var(--vv-space-10) 0;
+  border-left: 3px solid var(--vv-color-brand-red);
+  font-family: var(--vv-typography-font-family-display);
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 600;
+  font-variation-settings: "wdth" 95, "opsz" 28;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--vv-color-fg-primary);
+  font-style: italic;
+  text-wrap: balance;
+  max-width: 60ch;
+}
+
+.pull-quote::before {
+  content: "„";
+  position: absolute;
+  top: -0.3em;
+  left: 0.15em;
+  font-size: 3em;
+  line-height: 1;
+  color: var(--vv-color-brand-red);
+  font-style: normal;
+  opacity: 0.35;
+  pointer-events: none;
+  user-select: none;
+}
+
+.pull-quote__attribution {
+  display: block;
+  margin-top: var(--vv-space-3);
+  font-family: var(--vv-typography-font-family-mono);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--vv-color-fg-secondary);
+}
+
+/* English locale — angielski cudzysłów „” → „" "”. */
+[lang="en"] .pull-quote::before {
+  content: "\201C";
+}
+
+/* ── F. Section index numeral ─────────────────────────────────────────
+   N°02 / N°03 / N°04 — Studio Frith editorial index pattern.
+   Mono uppercase 13px brand-red, leading bar 24px. Numeral = tabular nums
+   żeby N°02 i N°10 miały tę samą szerokość liczb. */
+.section-index {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--vv-space-3);
+  font-family: var(--vv-typography-font-family-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--vv-color-brand-red-700);
+  margin: 0 0 var(--vv-space-4) 0;
+}
+
+.section-index::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--vv-color-brand-red-700);
+  flex-shrink: 0;
+}
+
+.section-index__numeral {
+  font-feature-settings: "tnum" on;
+}
+
+.section-index__label {
+  font-weight: 500;
+  /* Lekko zciemniony dla hierarchii — numeral dominuje */
+  color: var(--vv-color-fg-secondary);
+}

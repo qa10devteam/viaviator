@@ -10,6 +10,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import Container from "@components/ui/Container.astro";
 import Section from "@components/ui/Section.astro";
 import Card from "@components/ui/Card.astro";
+import SectionIndex from "@components/ui/SectionIndex.astro";
 import HomeHero from "@components/sections/HomeHero.astro";
 import SegmentGrid from "@components/sections/SegmentGrid.astro";
 import AtlasPoludnia from "@components/sections/AtlasPoludnia.astro";
@@ -87,6 +88,7 @@ const fleetCards = [
   <Section tone="default" ariaLabelledby="home-what-title">
     <Container size="default">
       <div class="vv-home-what vv-reveal">
+        <SectionIndex number={2} label="What we do" />
         <h2 id="home-what-title" class="vv-home-what__title">
           {dict.home.sectionWhatWeDo.title}
         </h2>
@@ -99,6 +101,7 @@ const fleetCards = [
   <Section tone="elevated" id="dla-kogo" ariaLabelledby="home-segments-title">
     <Container size="wide">
       <div class="vv-home-segments__head vv-reveal">
+        <SectionIndex number={3} label="Who we drive for" />
         <h2 id="home-segments-title" class="vv-home-segments__title">
           {dict.home.sectionForWhom.title}
         </h2>
@@ -118,6 +121,7 @@ const fleetCards = [
   <Section tone="default" ariaLabelledby="home-fleet-title">
     <Container size="default">
       <div class="vv-home-fleet__head vv-reveal">
+        <SectionIndex number={4} label="Fleet" />
         <h2 id="home-fleet-title" class="vv-home-fleet__title">
           {dict.home.sectionFleet.title}
         </h2>
@@ -151,9 +155,12 @@ const fleetCards = [
   {/* 6. Why us — title reveals; FeatureGrid cascades children */}
   <Section tone="elevated" ariaLabelledby="home-whyus-title">
     <Container size="default">
-      <h2 id="home-whyus-title" class="vv-home-whyus__title vv-reveal">
-        {dict.home.sectionWhyUs.title}
-      </h2>
+      <div class="vv-home-whyus__head vv-reveal">
+        <SectionIndex number={5} label="Why us" />
+        <h2 id="home-whyus-title" class="vv-home-whyus__title">
+          {dict.home.sectionWhyUs.title}
+        </h2>
+      </div>
       <FeatureGrid items={whyUsItems} columns={2} tone="default" />
     </Container>
   </Section>
@@ -162,6 +169,7 @@ const fleetCards = [
   <Section tone="default" tight ariaLabelledby="home-trust-title">
     <Container size="narrow">
       <div class="vv-home-trust vv-reveal">
+        <SectionIndex number={6} label="Trusted by" />
         <h2 id="home-trust-title" class="vv-home-trust__title">
           {dict.home.sectionTrust.title}
         </h2>
@@ -346,6 +354,21 @@ const fleetCards = [
     text-align: center;
     max-width: 60ch;
     margin-inline: auto;
+  }
+
+  /* Centered SectionIndex w trust block (mirror /index.astro). */
+  .vv-home-trust :global(.section-index) {
+    justify-content: center;
+  }
+
+  /* Why-us head wrapper — daje miejsce SectionIndex nad h2. */
+  .vv-home-whyus__head {
+    margin: 0 0 var(--vv-space-10) 0;
+    max-width: 70ch;
+  }
+
+  .vv-home-whyus__head .vv-home-whyus__title {
+    margin: 0;
   }
 
   .vv-home-trust__title {

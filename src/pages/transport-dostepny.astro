@@ -19,10 +19,12 @@ import Container from "@components/ui/Container.astro";
 import Section from "@components/ui/Section.astro";
 import Badge from "@components/ui/Badge.astro";
 import Icon from "@components/ui/Icon.astro";
+import SectionIndex from "@components/ui/SectionIndex.astro";
 import Hero from "@components/sections/Hero.astro";
 import FeatureGrid from "@components/sections/FeatureGrid.astro";
 import FAQAccordion from "@components/sections/FAQAccordion.astro";
 import CTASection from "@components/sections/CTASection.astro";
+import PullQuote from "@components/sections/PullQuote.astro";
 import { getDictionary } from "@i18n/index";
 import { company } from "@data/company";
 import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
@@ -131,6 +133,7 @@ const faqItems = [...seg.faq.items];
   <Section tone="default" ariaLabelledby="seg-what-title">
     <Container size="default">
       <div class="vv-seg-block">
+        <SectionIndex number={2} label="Czym jest transport dostępny" />
         <h2 id="seg-what-title" class="vv-seg-block__title">
           {seg.what.title}
         </h2>
@@ -151,10 +154,11 @@ const faqItems = [...seg.faq.items];
     </Container>
   </Section>
 
-  {/* 3. Czego pilnujemy w trasie */}
+  {/* 3. Czego pilnujemy w trasie + pull-quote z buyer persony Tomasza (P3). */}
   <Section tone="elevated" ariaLabelledby="seg-rules-title">
     <Container size="default">
       <div class="vv-seg-block">
+        <SectionIndex number={3} label="Czego pilnujemy w trasie" />
         <h2 id="seg-rules-title" class="vv-seg-block__title">
           Czego pilnujemy w trasie
         </h2>
@@ -164,6 +168,11 @@ const faqItems = [...seg.faq.items];
         </p>
       </div>
       <FeatureGrid items={driveRules} columns={2} tone="default" />
+
+      <PullQuote
+        quote="Nikt nie pogania pasażera. Wsiadanie i wysiadanie w tempie podopiecznego — to jest dla mnie standard, nie wyjątek."
+        attribution="Tomasz, koordynator DPS"
+      />
     </Container>
   </Section>
 
@@ -171,6 +180,7 @@ const faqItems = [...seg.faq.items];
   <Section tone="default" ariaLabelledby="seg-decision-title">
     <Container size="default">
       <div class="vv-seg-block">
+        <SectionIndex number={4} label="Kryteria decyzji" />
         <h2 id="seg-decision-title" class="vv-seg-block__title">
           {seg.decisionList.title}
         </h2>

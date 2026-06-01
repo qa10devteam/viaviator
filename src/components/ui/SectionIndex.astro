@@ -1,0 +1,43 @@
+---
+/**
+ * SectionIndex — Studio Frith editorial index pattern.
+ * Renderuje „N°02" (mono uppercase, brand-red) z opcjonalną krótką etykietą.
+ *
+ * Użycie:
+ *   <SectionIndex number={2} label="Trasa" />
+ *   <SectionIndex number={3} />          // tylko numeral
+ *   <SectionIndex number={5} as="span" /> // inline w nagłówku
+ *
+ * Numeral jest zero-padded do 2 cyfr (1 → "01", 12 → "12").
+ * Style w `src/styles/typography.css` (klasy `section-index`, `section-index__numeral`,
+ * `section-index__label`). Liczby renderują tabular nums dla spójnej szerokości.
+ *
+ * A11y: dla domyślnego `as="p"` element jest natywnie czytany. Zalecane jest
+ * stawianie SectionIndex bezpośrednio nad `<h2>` sekcji — wtedy screen reader
+ * przeczyta najpierw indeks („N° zero dwa, trasa"), a potem właściwy tytuł.
+ * Brak `aria-hidden` — to celowo zostawiamy w drzewie czytelnym.
+ */
+
+interface Props {
+  /** Numer sekcji — np. 2 → renderuje „N°02". 1-99 zero-padded. */
+  number: number;
+  /** Krótka etykieta po N°02 — np. „Trasa", „Zespół". Opcjonalna. */
+  label?: string;
+  /** Element wrappera — domyślnie `<p>`. Może być `span` (inline w h2). */
+  as?: string;
+  /** Dodatkowe klasy CSS przekazane do wrappera. */
+  class?: string;
+}
+
+const { number, label, as: AsTag = "p", class: extraClass = "" } = Astro.props;
+
+// Zero-padding do 2 cyfr: 2 → "02", 12 → "12", 100 → "100" (graceful overflow).
+const numeral = String(number).padStart(2, "0");
+
+const Tag = AsTag as keyof HTMLElementTagNameMap;
+---
+
+<Tag class:list={["section-index", extraClass]}>
+  <span class="section-index__numeral">N°{numeral}</span>
+  {label && <span class="section-index__label">· {label}</span>}
+</Tag>

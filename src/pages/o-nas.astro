@@ -23,8 +23,10 @@ import Container from "@components/ui/Container.astro";
 import Section from "@components/ui/Section.astro";
 import Card from "@components/ui/Card.astro";
 import Icon from "@components/ui/Icon.astro";
+import SectionIndex from "@components/ui/SectionIndex.astro";
 import Hero from "@components/sections/Hero.astro";
 import CTASection from "@components/sections/CTASection.astro";
+import PullQuote from "@components/sections/PullQuote.astro";
 import AtlasPoludnia from "@components/sections/AtlasPoludnia.astro";
 import { getDictionary } from "@i18n/index";
 import { company } from "@data/company";
@@ -131,10 +133,12 @@ const patrykInitials = "PT";
     priority={true}
   />
 
-  {/* 2. „Po co jesteśmy" — dlaczego firma powstała */}
+  {/* 2. „Po co jesteśmy" — dlaczego firma powstała.
+       SectionIndex N°02 + drop-cap na pierwszym (jedynym) paragrafie. */}
   <Section tone="elevated" ariaLabelledby="about-mission-title">
     <Container size="default">
-      <div class="vv-about-mission vv-reveal">
+      <div class="vv-about-mission vv-reveal drop-cap">
+        <SectionIndex number={2} label="Po co jesteśmy" />
         <h2 id="about-mission-title" class="vv-about-section-title">
           {dict.about.mission.title}
         </h2>
@@ -147,6 +151,7 @@ const patrykInitials = "PT";
   <Section tone="default" ariaLabelledby="about-rules-title">
     <Container size="default">
       <header class="vv-about-section-head vv-reveal">
+        <SectionIndex number={3} label="Jak jeździmy" />
         <h2 id="about-rules-title" class="vv-about-section-title">
           {howWeWork.title}
         </h2>
@@ -171,15 +176,21 @@ const patrykInitials = "PT";
     </Container>
   </Section>
 
-  {/* 4. Zespół — Patryk + drobna nota o współzałożeniu */}
+  {/* 4. Zespół — Patryk + drobna nota o współzałożeniu + pull-quote */}
   <Section tone="surface" ariaLabelledby="about-team-title">
     <Container size="default">
       <header class="vv-about-section-head vv-reveal">
+        <SectionIndex number={4} label="Zespół" />
         <h2 id="about-team-title" class="vv-about-section-title">
           {dict.about.team.title}
         </h2>
         <p class="vv-about-section-lead">{teamBody}</p>
       </header>
+
+      <PullQuote
+        quote="Mała flota, znajome twarze, ten sam numer telefonu od dwóch lat."
+        attribution="Patryk Tomeczek"
+      />
 
       <div class="vv-about-team vv-reveal">
         {/* Patryk — face of brand, avatar placeholder z inicjałami */}
@@ -209,6 +220,7 @@ const patrykInitials = "PT";
   <Section tone="default" ariaLabelledby="about-region-title">
     <Container size="default">
       <header class="vv-about-section-head vv-reveal">
+        <SectionIndex number={5} label="Gdzie jeździmy" />
         <h2 id="about-region-title" class="vv-about-section-title">
           {dict.about.region.title}
         </h2>
@@ -258,6 +270,7 @@ const patrykInitials = "PT";
   <Section tone="elevated" ariaLabelledby="about-fleet-title">
     <Container size="default">
       <header class="vv-about-section-head vv-reveal">
+        <SectionIndex number={6} label="Flota" />
         <h2 id="about-fleet-title" class="vv-about-section-title">
           {dict.about.fleet.title}
         </h2>
