@@ -92,16 +92,9 @@ const currentPath = Astro.url.pathname;
     <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/brand/apple-touch-icon.png" />
 
-    {/* ---- Font preload: Bricolage Grotesque (latin-ext, wght axis, woff2) ---- */}
-    {/* PL diakrytyki są w latin-ext; wght axis pokrywa 200-800. Self-hosted, */}
-    {/* nie ma render-blocking @import ani preconnect do Google Fonts. */}
-    <link
-      rel="preload"
-      as="font"
-      type="font/woff2"
-      href="/fonts/bricolage-grotesque-latin-ext-wght-normal.woff2"
-      crossorigin="anonymous"
-    />
+    {/* Bricolage Grotesque ładowany przez @fontsource-variable (hash w bundled
+        CSS). Manualny preload usunięty — nie pasował do @fontsource ścieżki
+        i powodował 'preloaded but not used' warning. */}
 
     {/* ---- QA10 Quality Seal meta (machine-readable) ---- */}
     <meta name="qa10:seal-version" content="1.0" />
