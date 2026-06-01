@@ -1,0 +1,18 @@
+---
+/**
+ * MagneticCards — vanilla JS island dla M05 magnetic segments.
+ *
+ * Zero React. Importuje `src/lib/magnetic-cards.ts` jako side-effect.
+ * Astro emit'uje to jako pojedynczy <script type="module"> w head,
+ * hashed i deduplicated jeśli importowany wielokrotnie.
+ *
+ * Umieść raz w BaseLayout przed `</body>` (po ScrollOrchestrator) —
+ * lib sam wpina się na `DOMContentLoaded` + `astro:page-load`.
+ *
+ * Bundle target: <2KB gzipped (zero deps, pointer:fine gating, rAF throttle).
+ */
+---
+
+<script>
+  import "@lib/magnetic-cards";
+</script>

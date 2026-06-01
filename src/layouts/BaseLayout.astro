@@ -19,6 +19,7 @@ import Header from "@components/sections/Header.astro";
 import Footer from "@components/sections/Footer.astro";
 import ConsentBanner from "@components/islands/ConsentBanner.tsx";
 import ScrollOrchestrator from "@components/islands/ScrollOrchestrator.astro";
+import MagneticCards from "@components/islands/MagneticCards.astro";
 
 interface Alternate {
   lang: string;
@@ -165,6 +166,12 @@ const currentPath = Astro.url.pathname;
         wbudowany. transition:persist trzyma stan między nawigacjami,
         ale orchestrator i tak re-init'uje się na `astro:page-load`. */}
     <ScrollOrchestrator />
+
+    {/* M05 — Magnetic cards (vanilla JS island). Pointer:fine gating
+        + reduced-motion guard wewnątrz lib. Hooks na `[data-magnetic="true"]`
+        — obecnie tylko SegmentGrid karty, ale generic selector pozwala
+        re-use w innych miejscach (np. M09 fleet cards). */}
+    <MagneticCards />
 
     <style is:global>
       html, body {

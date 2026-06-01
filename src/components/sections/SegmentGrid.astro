@@ -73,12 +73,18 @@ const learnMore = dict.cta.learnMore;
           <Card
             href={href}
             interactive
+            magnetic
             tone="default"
             accentColor={seg.color}
-            class="vv-segments__card"
+            class="vv-segments__card vv-segment-card"
             ariaLabel={`${name} — ${shortDesc}`}
             style={`view-transition-name: ${vtName};`}
           >
+            {/* M05: flood layer (radial-gradient w accent color), positioned
+                via --vv-card-mx/my CSS vars updated z JS na pointer:fine,
+                fallback do plain hover na touch. aria-hidden bo to ornament. */}
+            <div class="vv-segment-card__flood" aria-hidden="true"></div>
+
             <div class="vv-segments__head">
               {iconName && (
                 <span
@@ -119,6 +125,9 @@ const learnMore = dict.cta.learnMore;
     gap: var(--vv-space-5);
     margin: 0;
     padding: 0;
+    /* M05: perspective ustawiony na grid container, nie na każdej karcie,
+       żeby tilt każdej karty respektował jeden viewpoint (spójny parallax). */
+    perspective: 1200px;
   }
 
   @media (min-width: 640px) {
@@ -136,6 +145,114 @@ const learnMore = dict.cta.learnMore;
   .vv-segments__card {
     height: 100%;
     gap: var(--vv-space-3);
+  }
+
+  /* --------------------------------------------------------------
+     M05 — Magnetic card transform + 3D tilt + flood overlay
+     -------------------------------------------------------------- */
+
+  .vv-segment-card {
+    /* transform-style: preserve-3d → karta jako 3D plane, dzieci
+       partycypują w przestrzeni 3D (działają translateZ jeśli kiedyś
+       dodamy). overflow: hidden + isolation: stacking context dla
+       flood layer pseudo-element. */
+    transform-style: preserve-3d;
+    overflow: hidden;
+    isolation: isolate;
+    /* Resting baseline: zero translate, zero rotate, zero magnetic shift.
+       Custom properties fallback do 0 / 0deg jeśli JS nie zdążył ustawić
+       (np. pre-hydration). */
+    transform: translate3d(
+        var(--vv-card-tx, 0px),
+        var(--vv-card-ty, 0px),
+        0
+      )
+      rotateX(var(--vv-card-rx, 0deg)) rotateY(var(--vv-card-ry, 0deg));
+    /* Return-to-rest: 400ms premium ease (cubic-bezier match z motion-tokens).
+       Aktywnie podczas hover: skracane do 80ms linear przez
+       [data-magnetic-active="true"] niżej (responsive cursor tracking). */
+    transition:
+      transform 400ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow var(--vv-motion-duration-base) var(--vv-motion-easing-standard),
+      border-color var(--vv-motion-duration-base)
+        var(--vv-motion-easing-standard);
+  }
+
+  .vv-segment-card__flood {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      260px circle at var(--vv-card-mx, 50%) var(--vv-card-my, 50%),
+      color-mix(in srgb, var(--vv-card-accent, currentColor) 14%, transparent)
+        0%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 380ms ease;
+    pointer-events: none;
+    z-index: 0;
+    /* GPU promotion na hover only (managed przez parent state).
+       Bez tego flood layer compositing każdą klatkę = paint cost. */
+  }
+
+  /* Wszystkie children OPRÓCZ flood layer dostają z-index: 1 żeby
+     renderować się NAD radial-gradient. Selector używa :not żeby
+     flood layer trzymał z-index 0 i był wyłącznie tłem. */
+  .vv-segment-card > *:not(.vv-segment-card__flood) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Neutralizujemy default Card hover lift (translateY -2px) — magnetic
+     karty mają własny transform i konflikt by powodował "skok" na
+     pointerenter. Specificity .vv-segment-card.vv-card--interactive */
+  .vv-segment-card.vv-card--interactive:hover,
+  .vv-segment-card.vv-card--interactive:focus-visible {
+    transform: translate3d(
+        var(--vv-card-tx, 0px),
+        var(--vv-card-ty, 0px),
+        0
+      )
+      rotateX(var(--vv-card-rx, 0deg)) rotateY(var(--vv-card-ry, 0deg));
+  }
+
+  @media (pointer: fine) {
+    .vv-segment-card:hover .vv-segment-card__flood,
+    .vv-segment-card:focus-within .vv-segment-card__flood {
+      opacity: 1;
+    }
+
+    /* Active magnetic state — krótkie transition żeby kursor "ciągnął"
+       kartę bez delay. Po pointerleave wraca do default 400ms cubic. */
+    .vv-segment-card[data-magnetic-active="true"] {
+      transition: transform 80ms linear;
+      will-change: transform;
+    }
+  }
+
+  @media (pointer: coarse) {
+    /* Touch devices: brak magnetic, jedynie subtle flood przy tap (active
+       state krótki, ale lepsze niż nic). Hover na touch = sticky po tapie
+       w wielu browserach, akceptowalne dla card-as-link. */
+    .vv-segment-card:hover .vv-segment-card__flood,
+    .vv-segment-card:active .vv-segment-card__flood {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* Defense in depth: JS nie binduje listenerów przy reduced-motion,
+       ale gdyby coś wyciekło — CSS zeruje transform i transition.
+       Flood opacity nadal działa (instant, bez transition) bo to nie
+       jest motion, tylko color change. */
+    .vv-segment-card {
+      transform: none !important;
+      transition: none !important;
+      will-change: auto !important;
+    }
+    .vv-segment-card__flood {
+      transition: none !important;
+    }
   }
 
   .vv-segments__head {

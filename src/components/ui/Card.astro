@@ -15,6 +15,8 @@ interface Props {
   ariaLabel?: string;
   /** Dodatkowe style inline (np. `view-transition-name` z M02). */
   style?: string;
+  /** M05 — opt-in do magnetic pull/tilt (pointer:fine devices). */
+  magnetic?: boolean;
 }
 
 const {
@@ -26,6 +28,7 @@ const {
   class: extraClass = "",
   ariaLabel,
   style: extraStyle,
+  magnetic = false,
 } = Astro.props;
 
 const Tag = as ?? (href ? "a" : "div");
@@ -41,11 +44,13 @@ const mergedStyle = [styleVar, extraStyle].filter(Boolean).join("; ") || undefin
     `vv-card--${tone}`,
     isInteractive ? "vv-card--interactive" : null,
     accentColor ? "vv-card--has-accent" : null,
+    magnetic ? "vv-card--magnetic" : null,
     extraClass,
   ]}
   href={href}
   style={mergedStyle}
   aria-label={ariaLabel}
+  data-magnetic={magnetic ? "true" : undefined}
 >
   <slot />
 </Tag>
