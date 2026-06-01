@@ -549,6 +549,20 @@ export const pl = {
     captionFull: "Mapa schematyczna — uproszczona geometria, nie geodezyjna. Cztery województwa rdzeniowe, trzy huby lotniskowe, baza w Tarnowskich Górach.",
     captionCompact: "Cztery województwa, trzy lotniska, baza w Tarnowskich Górach.",
   },
+  szlak: {
+    eyebrow: "N°02 · Szlak",
+    title: "Sześć sanktuariów. Jedna baza. Postój wpisany w cennik.",
+    lead: "Z Tarnowskich Gór do Częstochowy — 1h45. Postój 2 godziny przy bramie Jasnogórskiej. Cena za całość, nie za kilometry.",
+    ariaPathLabel: "Trasa z Tarnowskich Gór do {{name}}",
+    svgTitle: "Szlak sanktuariów — sześć tras pielgrzymkowych z bazy Via Viator",
+    svgDesc: "Schemat sześciu sanktuariów połączonych ścieżkami z Tarnowskich Gór. Częstochowa, Licheń, Niepokalanów na północ; Kalwaria, Łagiewniki, Wadowice na południe.",
+    timeLabel: "Dojazd",
+    stopLabel: "Postój typowy",
+    minutes: "min",
+    hours: "h",
+    baseLabel: "Tarnowskie Góry — baza Via Viator",
+    cardsCaption: "Czasy szacunkowe z bazy w Tarnowskich Górach. Postoje wpisane w cennik — bez „za każdą rozpoczętą godzinę”.",
+  },
   about: {
     h1: "O Via Viator",
     intro:

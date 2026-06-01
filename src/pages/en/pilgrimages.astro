@@ -15,6 +15,7 @@ import Hero from "@components/sections/Hero.astro";
 import FeatureGrid from "@components/sections/FeatureGrid.astro";
 import FAQAccordion from "@components/sections/FAQAccordion.astro";
 import CTASection from "@components/sections/CTASection.astro";
+import SzlakSanktuariow from "@components/sections/SzlakSanktuariow.astro";
 import { getDictionary } from "@i18n/index";
 import { company } from "@data/company";
 import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
@@ -128,6 +129,9 @@ const faqItems = [...seg.faq.items];
       </div>
     </Container>
   </Section>
+
+  {/* Wow #3 — Sanctuary Trail */}
+  <SzlakSanktuariow locale={locale} />
 
   {/* 2. Sanctuaries */}
   <Section tone="default" ariaLabelledby="seg-sanctuaries-title">

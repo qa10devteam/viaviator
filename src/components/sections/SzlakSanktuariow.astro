@@ -1,0 +1,598 @@
+---
+/**
+ * SzlakSanktuariow — Wow #3 "Szlak Sanktuariów".
+ *
+ * Animowana SVG mapa-trajektoria pielgrzymek z Tarnowskich Gór do 6 sanktuariów.
+ * Renderowana na `/pielgrzymki` (PL) + `/en/pilgrimages` (EN).
+ *
+ * Mechanika:
+ *  - 6 sanktuariów (Częstochowa, Licheń, Niepokalanów, Kalwaria, Łagiewniki, Wadowice)
+ *  - 6 curved Q paths od baseTG do każdego celu
+ *  - stroke-dashoffset draw-on animation triggerowana przez IntersectionObserver
+ *    (NIE on page-load — czeka aż section wchodzi viewport ~10% threshold)
+ *  - Stagger cascade: pathy rysują się sekwencyjnie (120ms delay per index),
+ *    markery pojawiają się po zakończeniu rysowania (600ms baseline + 120ms stagger)
+ *  - Pod SVG: responsive grid kart z dojazdem + typowym postojem
+ *
+ * Reduced-motion guard:
+ *  - prefers-reduced-motion: zero animations, instant reveal,
+ *    SVG renderuje się gotowy bez draw-on
+ *
+ * A11y:
+ *  - SVG: role="img" + <title> + <desc> + aria-labelledby
+ *  - Markery: <text> labelki dla SR (aria-hidden, fallback w cards niżej)
+ *  - Sekcja header: h2 + lead z aria-labelledby
+ *  - Cards: full text dostępny do screen reader
+ *
+ * Performance:
+ *  - JS overhead: ~0.6 KB raw (IntersectionObserver init + reduced-motion guard)
+ *  - SVG inline (~3 KB gzip), zero zewnętrznych assetów
+ *  - Animation runs once per page load (observer disconnects po reveal)
+ */
+
+import { getDictionary, type Locale } from "@i18n/index";
+import {
+  baseTG,
+  sanctuaries,
+  formatMinutesShort,
+  routePathFromBase,
+} from "@data/sanctuaries";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = getDictionary(locale);
+const szlak = dict.szlak;
+
+// Stałe IDs do aria-labelledby (sekcja może wystąpić tylko raz per strona).
+const titleId = "szlak-title";
+const leadId = "szlak-lead";
+const svgTitleId = "szlak-svg-title";
+const svgDescId = "szlak-svg-desc";
+
+// Pre-render listy z dynamicznymi delays — czytelniej w templace.
+const sanctuariesWithMeta = sanctuaries.map((s, i) => ({
+  ...s,
+  index: i,
+  pathDelay: i * 120, // ms — stagger cascade dla rysowania
+  markerDelay: i * 120, // ms — stagger cascade dla markerów
+  travelLabel: formatMinutesShort(s.travelMinutes, szlak.minutes),
+  stopLabel: formatMinutesShort(s.typicalStopMinutes, szlak.minutes),
+  ariaLabel: szlak.ariaPathLabel.replace("{{name}}", s.fullName),
+  path: routePathFromBase(s, i),
+}));
+---
+
+<section
+  class="vv-szlak"
+  aria-labelledby={titleId}
+  data-vv-szlak
+>
+  <div class="vv-szlak__container">
+    {/* ─────────── Header ─────────── */}
+    <header class="vv-szlak__head vv-reveal">
+      <p class="vv-szlak__eyebrow">{szlak.eyebrow}</p>
+      <h2 id={titleId} class="vv-szlak__title">
+        {szlak.title}
+      </h2>
+      <p id={leadId} class="vv-szlak__lead">
+        {szlak.lead}
+      </p>
+    </header>
+
+    {/* ─────────── SVG mapa ─────────── */}
+    <figure class="vv-szlak__figure vv-reveal">
+      <svg
+        class="vv-szlak__svg"
+        viewBox="0 0 600 800"
+        xmlns="http://www.w3.org/2000/svg"
+        role="img"
+        aria-labelledby={`${svgTitleId} ${svgDescId}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <title id={svgTitleId}>{szlak.svgTitle}</title>
+        <desc id={svgDescId}>{szlak.svgDesc}</desc>
+
+        {/* ── Warstwa 1: Trasy (paths) ── */}
+        <g class="vv-szlak__paths" data-layer="paths" aria-hidden="true">
+          {
+            sanctuariesWithMeta.map((s) => (
+              <path
+                class="vv-szlak__path"
+                data-sanctuary-id={s.id}
+                style={`--vv-path-delay: ${s.pathDelay}ms`}
+                d={s.path}
+                fill="none"
+                pathLength="1"
+              />
+            ))
+          }
+        </g>
+
+        {/* ── Warstwa 2: Markery sanktuariów ── */}
+        <g class="vv-szlak__markers" data-layer="markers">
+          {
+            sanctuariesWithMeta.map((s) => (
+              <g
+                class="vv-szlak__marker"
+                data-sanctuary-id={s.id}
+                style={`--vv-marker-delay: ${s.markerDelay}ms`}
+              >
+                {/* Biały rim — separator od path */}
+                <circle
+                  class="vv-szlak__marker-rim"
+                  cx={s.cx}
+                  cy={s.cy}
+                  r="10"
+                  aria-hidden="true"
+                />
+                {/* Czerwony dot */}
+                <circle
+                  class="vv-szlak__marker-dot"
+                  cx={s.cx}
+                  cy={s.cy}
+                  r="6"
+                  aria-hidden="true"
+                />
+                {/* Labelka — nazwa + dojazd */}
+                <text
+                  class="vv-szlak__marker-label"
+                  x={s.cx}
+                  y={s.cy - 18}
+                  text-anchor="middle"
+                  aria-hidden="true"
+                >
+                  {s.name}
+                </text>
+                <text
+                  class="vv-szlak__marker-time"
+                  x={s.cx}
+                  y={s.cy + 24}
+                  text-anchor="middle"
+                  aria-hidden="true"
+                >
+                  · {s.travelLabel} ·
+                </text>
+              </g>
+            ))
+          }
+        </g>
+
+        {/* ── Warstwa 3: Baza Tarnowskie Góry ── */}
+        <g class="vv-szlak__base" data-layer="base" aria-hidden="true">
+          <circle
+            class="vv-szlak__base-rim"
+            cx={baseTG.cx}
+            cy={baseTG.cy}
+            r="14"
+          />
+          <circle
+            class="vv-szlak__base-dot"
+            cx={baseTG.cx}
+            cy={baseTG.cy}
+            r="10"
+          />
+          <text
+            class="vv-szlak__base-label"
+            x={baseTG.cx}
+            y={baseTG.cy + 32}
+            text-anchor="middle"
+          >
+            {baseTG.label}
+          </text>
+          <text
+            class="vv-szlak__base-sublabel"
+            x={baseTG.cx}
+            y={baseTG.cy + 48}
+            text-anchor="middle"
+          >
+            · {szlak.baseLabel.split(" — ")[1] ?? "baza"} ·
+          </text>
+        </g>
+      </svg>
+    </figure>
+
+    {/* ─────────── Karty sanktuariów ─────────── */}
+    <ul class="vv-szlak__cards vv-reveal" role="list">
+      {
+        sanctuariesWithMeta.map((s) => (
+          <li class="vv-szlak-card" data-sanctuary-id={s.id}>
+            <p class="vv-szlak-card__time">
+              {szlak.timeLabel}: {s.travelLabel}
+            </p>
+            <h3 class="vv-szlak-card__name">{s.name}</h3>
+            <p class="vv-szlak-card__full">{s.fullName}</p>
+            <dl class="vv-szlak-card__meta">
+              <div class="vv-szlak-card__meta-row">
+                <dt>{szlak.stopLabel}</dt>
+                <dd>{s.stopLabel}</dd>
+              </div>
+              {s.note && (
+                <div class="vv-szlak-card__meta-row vv-szlak-card__meta-row--note">
+                  <dt class="sr-only">Notatka</dt>
+                  <dd>{s.note}</dd>
+                </div>
+              )}
+            </dl>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="vv-szlak__caption">{szlak.cardsCaption}</p>
+  </div>
+</section>
+
+{/* ────────────────── IntersectionObserver — draw-on trigger ────────────────── */}
+<script>
+  function vvSzlakInit() {
+    const sections = document.querySelectorAll<HTMLElement>("[data-vv-szlak]");
+    if (sections.length === 0) return;
+
+    // Reduced-motion: instant reveal, bez animacji.
+    const reducedMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    sections.forEach((section) => {
+      if (reducedMotion) {
+        section.setAttribute("data-revealed", "true");
+        return;
+      }
+
+      // Jeśli już zrevealed (np. po hot-reload w dev), nie inicjalizujemy.
+      if (section.getAttribute("data-revealed") === "true") return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.setAttribute("data-revealed", "true");
+              observer.disconnect();
+            }
+          });
+        },
+        {
+          // rootMargin -20% bottom = trigger gdy section jest ~20% w viewport,
+          // threshold 0.1 = przynajmniej 10% widoczne.
+          rootMargin: "0px 0px -20% 0px",
+          threshold: 0.1,
+        },
+      );
+
+      observer.observe(section);
+    });
+  }
+
+  // Initial load.
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", vvSzlakInit);
+  } else {
+    vvSzlakInit();
+  }
+  // Astro 6 ClientRouter — re-init po client-side nawigacji.
+  document.addEventListener("astro:page-load", vvSzlakInit);
+</script>
+
+<style>
+  /* ───────────────────── Section wrapper ───────────────────── */
+  .vv-szlak {
+    background-color: var(--vv-color-bg-surface);
+    padding-block: var(--vv-space-16);
+    padding-inline: var(--vv-space-5);
+  }
+
+  @media (min-width: 768px) {
+    .vv-szlak {
+      padding-block: var(--vv-space-20);
+      padding-inline: var(--vv-space-8);
+    }
+  }
+
+  .vv-szlak__container {
+    max-width: 1100px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-10);
+  }
+
+  /* ───────────────────── Header ───────────────────── */
+  .vv-szlak__head {
+    max-width: 64ch;
+  }
+
+  .vv-szlak__eyebrow {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-brand-red-700);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 0 0 var(--vv-space-3) 0;
+  }
+
+  .vv-szlak__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 4vw, var(--vv-typography-font-size-4xl));
+    font-weight: var(--vv-typography-font-weight-extrabold);
+    line-height: var(--vv-typography-line-height-tight);
+    letter-spacing: var(--vv-typography-letter-spacing-tight);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-4) 0;
+    text-wrap: balance;
+  }
+
+  .vv-szlak__lead {
+    font-size: var(--vv-typography-font-size-lg);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ───────────────────── Figure / SVG ───────────────────── */
+  .vv-szlak__figure {
+    margin: 0;
+    background-color: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-xl);
+    padding: var(--vv-space-6);
+    display: flex;
+    justify-content: center;
+  }
+
+  .vv-szlak__svg {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    display: block;
+    user-select: none;
+  }
+
+  /* ───────────────────── Paths (trasy) ─────────────────────
+   *
+   * pathLength="1" — normalizuje długość każdego path do 1 jednostki,
+   * dzięki czemu stroke-dasharray: 1 i stroke-dashoffset: 1 działa
+   * identycznie dla wszystkich path-y niezależnie od ich faktycznej
+   * długości w pikselach.
+   *
+   * Initial state: dashoffset 1 = path niewidoczny.
+   * Po data-revealed="true": dashoffset 0 = path narysowany.
+   * Stagger via --vv-path-delay (per index).
+   */
+  .vv-szlak__path {
+    fill: none;
+    stroke: var(--vv-color-brand-red);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0.55;
+    vector-effect: non-scaling-stroke;
+    transition:
+      stroke-dashoffset 1200ms cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 800ms ease;
+    transition-delay: var(--vv-path-delay, 0ms);
+  }
+
+  .vv-szlak[data-revealed="true"] .vv-szlak__path {
+    stroke-dashoffset: 0;
+  }
+
+  /* ───────────────────── Markery sanktuariów ─────────────────────
+   *
+   * Initial state: opacity 0 + translateY(8px) — markery „lecą" do góry.
+   * Delay = base 600ms (czas rysowania głównego path) + stagger.
+   * Easing back-out (1.56) — subtle spring overshoot.
+   */
+  .vv-szlak__marker {
+    opacity: 0;
+    transform: translateY(8px);
+    transform-origin: center;
+    transition:
+      opacity 400ms ease,
+      transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition-delay: calc(var(--vv-marker-delay, 0ms) + 600ms);
+  }
+
+  .vv-szlak[data-revealed="true"] .vv-szlak__marker {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .vv-szlak__marker-rim {
+    fill: var(--vv-color-bg-page);
+    stroke: none;
+  }
+
+  .vv-szlak__marker-dot {
+    fill: var(--vv-color-brand-red);
+  }
+
+  .vv-szlak__marker-label {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: 14px;
+    font-weight: var(--vv-typography-font-weight-bold);
+    fill: var(--vv-color-fg-primary);
+    pointer-events: none;
+  }
+
+  .vv-szlak__marker-time {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 10px;
+    font-weight: var(--vv-typography-font-weight-medium);
+    fill: var(--vv-color-brand-red-700);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    pointer-events: none;
+  }
+
+  /* ───────────────────── Baza (Tarnowskie Góry) ───────────────────── */
+  .vv-szlak__base {
+    /* Baza pojawia się od razu po reveal — nie czeka na pathy. */
+    opacity: 0;
+    transition: opacity 600ms ease;
+    transition-delay: 100ms;
+  }
+
+  .vv-szlak[data-revealed="true"] .vv-szlak__base {
+    opacity: 1;
+  }
+
+  .vv-szlak__base-rim {
+    fill: var(--vv-color-bg-page);
+    stroke: var(--vv-color-fg-primary);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .vv-szlak__base-dot {
+    fill: var(--vv-color-fg-primary);
+  }
+
+  .vv-szlak__base-label {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: 14px;
+    font-weight: var(--vv-typography-font-weight-bold);
+    fill: var(--vv-color-fg-primary);
+    pointer-events: none;
+  }
+
+  .vv-szlak__base-sublabel {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 10px;
+    font-weight: var(--vv-typography-font-weight-medium);
+    fill: var(--vv-color-fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    pointer-events: none;
+  }
+
+  /* ───────────────────── Karty (lista pod mapą) ───────────────────── */
+  .vv-szlak__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--vv-space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .vv-szlak-card {
+    padding: var(--vv-space-5);
+    background: var(--vv-color-bg-page);
+    border: 1px solid var(--vv-color-border-subtle);
+    border-radius: var(--vv-radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-2);
+  }
+
+  .vv-szlak-card__time {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: var(--vv-typography-font-size-xs);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    color: var(--vv-color-brand-red-700);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+
+  .vv-szlak-card__name {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
+    font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-snug);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+  }
+
+  .vv-szlak-card__full {
+    font-size: var(--vv-typography-font-size-sm);
+    line-height: var(--vv-typography-line-height-relaxed);
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+  }
+
+  .vv-szlak-card__meta {
+    margin: var(--vv-space-2) 0 0 0;
+    padding-top: var(--vv-space-3);
+    border-top: 1px solid var(--vv-color-border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: var(--vv-space-1);
+  }
+
+  .vv-szlak-card__meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--vv-space-3);
+    font-size: var(--vv-typography-font-size-sm);
+    line-height: var(--vv-typography-line-height-snug);
+  }
+
+  .vv-szlak-card__meta-row dt {
+    color: var(--vv-color-fg-muted);
+    font-weight: var(--vv-typography-font-weight-medium);
+    margin: 0;
+  }
+
+  .vv-szlak-card__meta-row dd {
+    color: var(--vv-color-fg-primary);
+    font-weight: var(--vv-typography-font-weight-semibold);
+    font-family: var(--vv-typography-font-family-mono);
+    margin: 0;
+  }
+
+  .vv-szlak-card__meta-row--note {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .vv-szlak-card__meta-row--note dd {
+    color: var(--vv-color-fg-secondary);
+    font-family: var(--vv-typography-font-family-body, inherit);
+    font-weight: var(--vv-typography-font-weight-regular, 400);
+    font-style: italic;
+    font-size: var(--vv-typography-font-size-xs);
+  }
+
+  .vv-szlak__caption {
+    font-size: var(--vv-typography-font-size-sm);
+    color: var(--vv-color-fg-muted);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0;
+    text-align: center;
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+
+  /* sr-only utility — w razie braku globalnego. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ───────────────────── Reduced motion guard ───────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .vv-szlak__path,
+    .vv-szlak__marker,
+    .vv-szlak__base {
+      transition: none !important;
+      stroke-dashoffset: 0 !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>

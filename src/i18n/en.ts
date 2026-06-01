@@ -551,6 +551,20 @@ export const en: Dictionary = {
     captionFull: "Schematic map — simplified geometry, not cartographic. Four core regions, three airport hubs, base in Tarnowskie Góry.",
     captionCompact: "Four regions, three airports, base in Tarnowskie Góry.",
   },
+  szlak: {
+    eyebrow: "N°02 · Trail",
+    title: "Six sanctuaries. One base. Waiting time included in the price.",
+    lead: "From Tarnowskie Góry to Częstochowa — 1h45. Two hours of waiting at the Jasna Góra gate. One price for the whole trip, not per kilometre.",
+    ariaPathLabel: "Route from Tarnowskie Góry to {{name}}",
+    svgTitle: "Sanctuary trail — six pilgrimage routes from the Via Viator base",
+    svgDesc: "Diagram of six sanctuaries connected by paths from Tarnowskie Góry. Częstochowa, Licheń, Niepokalanów to the north; Kalwaria, Łagiewniki, Wadowice to the south.",
+    timeLabel: "Drive time",
+    stopLabel: "Typical stop",
+    minutes: "min",
+    hours: "h",
+    baseLabel: "Tarnowskie Góry — Via Viator base",
+    cardsCaption: "Estimated drive times from our base in Tarnowskie Góry. Waiting time is part of the price — no \"each started hour\" billing.",
+  },
   about: {
     h1: "About Via Viator",
     intro:
