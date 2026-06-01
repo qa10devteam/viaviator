@@ -25,6 +25,7 @@ import Card from "@components/ui/Card.astro";
 import Icon from "@components/ui/Icon.astro";
 import Hero from "@components/sections/Hero.astro";
 import CTASection from "@components/sections/CTASection.astro";
+import AtlasPoludnia from "@components/sections/AtlasPoludnia.astro";
 import { getDictionary } from "@i18n/index";
 import { company } from "@data/company";
 import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
@@ -201,7 +202,10 @@ const patrykInitials = "PT";
     </Container>
   </Section>
 
-  {/* 5. „Gdzie jeździmy" — region + huby + mapa SVG */}
+  {/* 5. „Gdzie jeździmy" — region + huby + huby lotniskowe + interaktywna mapa.
+       Mapa (Wow#1 Atlas Południa, variant=compact) zastępuje prostą placeholder-mapę
+       z v1.0 (PR M04). Listy województw/hubów zostają jako szybki tekstowy fallback
+       dla SR / SEO indeksacji; AtlasPoludnia.astro daje wersję interaktywną. */}
   <Section tone="default" ariaLabelledby="about-region-title">
     <Container size="default">
       <header class="vv-about-section-head vv-reveal">
@@ -212,7 +216,7 @@ const patrykInitials = "PT";
       </header>
 
       <div class="vv-about-region vv-reveal">
-        {/* Lewa kolumna — listy województw i hubów */}
+        {/* Lewa kolumna — listy województw i hubów (szybki skan tekstowy) */}
         <div class="vv-about-region__lists">
           <div class="vv-about-region__group">
             <h3 class="vv-about-region__heading">Województwa</h3>
@@ -242,64 +246,10 @@ const patrykInitials = "PT";
           </div>
         </div>
 
-        {/* Prawa kolumna — uproszczony SVG mapy PL z zaznaczonymi 4 województwami.
-            Inline (brak HTTP), aria-label dla screen readerów. Cztery elipsy
-            symbolizują regiony — to NIE jest geodezyjnie poprawna mapa, tylko
-            wizualizacja zasięgu (decyzja produktowa: prawdziwa mapa = osobny
-            asset designerski, którego klient jeszcze nie dostarczył). */}
-        <figure class="vv-about-region__map">
-          <svg
-            viewBox="0 0 320 280"
-            xmlns="http://www.w3.org/2000/svg"
-            role="img"
-            aria-label="Mapa zasięgu Via Viator — śląskie, opolskie, małopolskie, świętokrzyskie"
-            class="vv-about-region__map-svg"
-          >
-            {/* Tło — kontur uproszczony Polski (placeholder shape) */}
-            <path
-              d="M40 60 Q80 30 130 35 Q190 40 250 50 Q285 90 280 140 Q275 200 240 230 Q180 250 110 240 Q60 230 35 180 Q25 130 40 60 Z"
-              fill="var(--vv-color-bg-surface)"
-              stroke="var(--vv-color-border-subtle)"
-              stroke-width="1.5"
-            />
-            {/* Strefa operacyjna — południowa Polska, czerwony fill z transparency */}
-            <path
-              d="M60 150 Q120 145 200 155 Q260 165 270 200 Q250 230 180 235 Q100 235 55 215 Q40 185 60 150 Z"
-              fill="color-mix(in srgb, var(--vv-color-brand-red) 18%, transparent)"
-              stroke="var(--vv-color-brand-red)"
-              stroke-width="2"
-              stroke-dasharray="6 4"
-            />
-            {/* 4 województwa — koliste markery z labelem */}
-            <g class="vv-about-region__marker">
-              {/* śląskie (centrum operacyjne, większa kropka) */}
-              <circle cx="155" cy="185" r="9" fill="var(--vv-color-brand-red)" />
-              <text x="155" y="208" text-anchor="middle" fill="var(--vv-color-fg-primary)" font-size="11" font-weight="600">Śląskie</text>
-              {/* opolskie */}
-              <circle cx="110" cy="180" r="6" fill="var(--vv-color-brand-red)" />
-              <text x="105" y="170" text-anchor="middle" fill="var(--vv-color-fg-primary)" font-size="10">Opolskie</text>
-              {/* małopolskie */}
-              <circle cx="205" cy="200" r="6" fill="var(--vv-color-brand-red)" />
-              <text x="220" y="222" text-anchor="middle" fill="var(--vv-color-fg-primary)" font-size="10">Małopolskie</text>
-              {/* świętokrzyskie */}
-              <circle cx="225" cy="155" r="6" fill="var(--vv-color-brand-red)" />
-              <text x="230" y="145" text-anchor="middle" fill="var(--vv-color-fg-primary)" font-size="10">Świętokrzyskie</text>
-            </g>
-            {/* Huby lotniskowe — trójkąty */}
-            <g class="vv-about-region__hubs">
-              {/* Pyrzowice (nad Śląskiem) */}
-              <polygon points="155,165 161,175 149,175" fill="var(--vv-color-fg-primary)" />
-              {/* Balice (Kraków) */}
-              <polygon points="195,185 201,195 189,195" fill="var(--vv-color-fg-primary)" />
-              {/* Wrocław */}
-              <polygon points="85,155 91,165 79,165" fill="var(--vv-color-fg-primary)" />
-            </g>
-          </svg>
-          <figcaption class="vv-about-region__map-caption">
-            Zasięg operacyjny — 4 województwa, 3 huby lotniskowe.
-            Wizualizacja schematyczna.
-          </figcaption>
-        </figure>
+        {/* Prawa kolumna — interaktywna mapa Wow#1 (variant compact) */}
+        <div class="vv-about-region__atlas">
+          <AtlasPoludnia locale={locale} variant="compact" />
+        </div>
       </div>
     </Container>
   </Section>
@@ -598,30 +548,11 @@ const patrykInitials = "PT";
     flex-shrink: 0;
   }
 
-  .vv-about-region__map {
-    margin: 0;
-    background-color: var(--vv-color-bg-elevated);
-    border: 1px solid var(--vv-color-border-subtle);
-    border-radius: var(--vv-radius-lg);
-    padding: var(--vv-space-6);
-    display: flex;
-    flex-direction: column;
-    gap: var(--vv-space-3);
-  }
-
-  .vv-about-region__map-svg {
-    width: 100%;
-    max-width: 380px;
-    height: auto;
-    margin-inline: auto;
-    display: block;
-  }
-
-  .vv-about-region__map-caption {
-    font-size: var(--vv-typography-font-size-sm);
-    color: var(--vv-color-fg-muted);
-    text-align: center;
-    line-height: var(--vv-typography-line-height-relaxed);
+  /* Wrapper dla AtlasPoludnia (variant=compact) embedded w /o-nas.
+     Komponent dostarcza własne ramki/padding — tutaj tylko utrzymujemy
+     spójność grid-column z lewą kolumną. */
+  .vv-about-region__atlas {
+    min-width: 0;
   }
 
   /* ── Flota ────────────────────────────────────────────────────────── */

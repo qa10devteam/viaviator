@@ -25,6 +25,7 @@ import Section from "@components/ui/Section.astro";
 import Card from "@components/ui/Card.astro";
 import HomeHero from "@components/sections/HomeHero.astro";
 import SegmentGrid from "@components/sections/SegmentGrid.astro";
+import AtlasPoludnia from "@components/sections/AtlasPoludnia.astro";
 import FeatureGrid from "@components/sections/FeatureGrid.astro";
 import CTASection from "@components/sections/CTASection.astro";
 import { getDictionary } from "@i18n/index";
@@ -129,7 +130,10 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 4. „Nasza flota" — 2 karty Trafic + Master, cascade na grid */}
+  {/* 4. Atlas Południa (Wow#1) — interaktywna mapa 4 województwa + 3 huby + baza TG */}
+  <AtlasPoludnia locale={locale} variant="full" />
+
+  {/* 5. „Nasza flota" — 2 karty Trafic + Master, cascade na grid */}
   <Section tone="default" ariaLabelledby="home-fleet-title">
     <Container size="default">
       <div class="vv-home-fleet__head vv-reveal">
@@ -163,7 +167,7 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 5. „Dlaczego my" — FeatureGrid (cascade applied wewnątrz komponentu) */}
+  {/* 6. „Dlaczego my" — FeatureGrid (cascade applied wewnątrz komponentu) */}
   <Section tone="elevated" ariaLabelledby="home-whyus-title">
     <Container size="default">
       <h2 id="home-whyus-title" class="vv-home-whyus__title vv-reveal">
@@ -173,7 +177,7 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 6. „Zaufali nam" — placeholder strip */}
+  {/* 7. „Zaufali nam" — placeholder strip */}
   <Section tone="default" tight ariaLabelledby="home-trust-title">
     <Container size="narrow">
       <div class="vv-home-trust vv-reveal">
@@ -188,7 +192,7 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 7. CTA finalna */}
+  {/* 8. CTA finalna */}
   <CTASection
     tone="brand"
     title={dict.home.sectionContactTeaser.title}

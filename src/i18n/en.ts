@@ -513,6 +513,44 @@ export const en: Dictionary = {
       phoneCta: "Call: +48 690 691 886",
     },
   },
+  atlas: {
+    title: "Four regions, three airports, one base",
+    lead: "We operate from Tarnowskie Góry. Katowice Airport 25 minutes, Kraków 1 h 30 min, Wrocław 2 h 30 min. Four core regions — Silesia, Opole, Lesser Poland, Świętokrzyskie.",
+    region: {
+      slaskie: "Silesia",
+      opolskie: "Opole",
+      malopolskie: "Lesser Poland",
+      swietokrzyskie: "Świętokrzyskie",
+    },
+    stat: {
+      slaskie: "Primary B2B market — Katowice, Gliwice, Bytom, Tarnowskie Góry. Corporate transfers and family trips daily.",
+      opolskie: "Western pilgrimage routes plus care-home and foundation transport. Regular trips toward Nysa and Brzeg.",
+      malopolskie: "Kraków Airport 90 min, Kalwaria Zebrzydowska, Łagiewniki, Wadowice. Pilgrimages, transfers, family runs.",
+      swietokrzyskie: "Long-term contracts and occasional pilgrimages. Routes Kielce — Częstochowa — Jasna Góra.",
+    },
+    hub: {
+      label: "Airport",
+      distanceLabel: "Drive time from base",
+      minutes: "min",
+      ctaLabel: "See corporate transfers",
+    },
+    base: {
+      label: "Via Viator base",
+      address: "ul. Władysława Broniewskiego 25, Tarnowskie Góry",
+      cta: "About us",
+    },
+    defaultPanel: {
+      title: "Hover over a hub or region",
+      body: "Each marker shows where we drive, how long it takes and which segment we cover.",
+    },
+    legend: {
+      region: "Region",
+      hub: "Airport",
+      base: "Base",
+    },
+    captionFull: "Schematic map — simplified geometry, not cartographic. Four core regions, three airport hubs, base in Tarnowskie Góry.",
+    captionCompact: "Four regions, three airports, base in Tarnowskie Góry.",
+  },
   about: {
     h1: "About Via Viator",
     intro:

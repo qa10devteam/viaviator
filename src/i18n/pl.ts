@@ -511,6 +511,44 @@ export const pl = {
       phoneCta: "Zadzwoń: +48 690 691 886",
     },
   },
+  atlas: {
+    title: "Cztery województwa, trzy lotniska, jedna baza",
+    lead: "Operujemy z Tarnowskich Gór. Pyrzowice 25 minut, Balice 1 h 30 min, Wrocław 2 h 30 min. Cztery województwa rdzeniowe — śląskie, opolskie, małopolskie, świętokrzyskie.",
+    region: {
+      slaskie: "śląskie",
+      opolskie: "opolskie",
+      malopolskie: "małopolskie",
+      swietokrzyskie: "świętokrzyskie",
+    },
+    stat: {
+      slaskie: "Główny rynek B2B — Katowice, Gliwice, Bytom, Tarnowskie Góry. Transfery korpo i kursy rodzinne na codzień.",
+      opolskie: "Pielgrzymki na trasy zachodnie + transport DPS i fundacji. Stała siatka kursów w stronę Nysy i Brzegu.",
+      malopolskie: "Balice 90 min, Kalwaria Zebrzydowska, Łagiewniki, Wadowice. Pielgrzymki, transfery, transport rodzinny.",
+      swietokrzyskie: "Transport długoterminowy + okazjonalne pielgrzymki. Trasy Kielce — Częstochowa — Jasna Góra.",
+    },
+    hub: {
+      label: "Lotnisko",
+      distanceLabel: "Czas dojazdu z bazy",
+      minutes: "min",
+      ctaLabel: "Zobacz transfery korporacyjne",
+    },
+    base: {
+      label: "Baza Via Viator",
+      address: "ul. Władysława Broniewskiego 25, Tarnowskie Góry",
+      cta: "O nas",
+    },
+    defaultPanel: {
+      title: "Najedź na hub lub województwo",
+      body: "Każdy znacznik pokazuje, gdzie jeździmy, ile zajmuje dojazd i jaki segment obsługuje.",
+    },
+    legend: {
+      region: "Województwo",
+      hub: "Lotnisko",
+      base: "Baza",
+    },
+    captionFull: "Mapa schematyczna — uproszczona geometria, nie geodezyjna. Cztery województwa rdzeniowe, trzy huby lotniskowe, baza w Tarnowskich Górach.",
+    captionCompact: "Cztery województwa, trzy lotniska, baza w Tarnowskich Górach.",
+  },
   about: {
     h1: "O Via Viator",
     intro:
