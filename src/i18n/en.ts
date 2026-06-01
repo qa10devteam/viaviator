@@ -70,6 +70,9 @@ export const en: Dictionary = {
   nav: {
     home: "Home",
     offer: "Services",
+    transport: "Transport",
+    rental: "Rental",
+    events: "Events",
     about: "About",
     contact: "Contact",
     quality: "Quality",

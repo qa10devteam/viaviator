@@ -87,7 +87,34 @@ function segmentToNavLink(segment: Segment): NavLink {
   };
 }
 
-/** Submenu „Oferta” — 6 segmentów generowanych z `segments`. */
+// Podział usług na 3 kategorie nawigacyjne (per feedback klienta 2026-06-01):
+//   Transport — usługi z kierowcą (4 segmenty: korpo, pielgrzymki, dostępny, rodzinne)
+//   Wynajem   — Master bez kierowcy
+//   Eventy    — sprzęt eventowy (namiot, popcorn, wata + jesień 2026 stoły/ławki)
+//
+// SegmentId == personaId; mapowanie ręczne żeby kolejność w dropdown była
+// celowo dobrana (B2B najpierw, B2C dalej).
+const TRANSPORT_PERSONAS = ["P1", "P2", "P3", "P4"] as const;
+const RENTAL_PERSONAS = ["P5"] as const;
+const EVENTS_PERSONAS = ["P6"] as const;
+
+function segmentsByPersona(ids: readonly string[]): readonly NavLink[] {
+  return ids
+    .map((id) => segments.find((s) => s.personaId === id))
+    .filter((s): s is Segment => Boolean(s))
+    .map(segmentToNavLink);
+}
+
+/** Submenu „Transport" — 4 segmenty z kierowcą. */
+export const transportDropdown: readonly NavLink[] = segmentsByPersona(TRANSPORT_PERSONAS);
+
+/** Submenu „Wynajem" — Master bez kierowcy. */
+export const rentalDropdown: readonly NavLink[] = segmentsByPersona(RENTAL_PERSONAS);
+
+/** Submenu „Eventy" — sprzęt eventowy. */
+export const eventsDropdown: readonly NavLink[] = segmentsByPersona(EVENTS_PERSONAS);
+
+/** Legacy — pełna lista 6 segmentów (zachowane dla footer i ewentualnych innych konsumentów). */
 export const offerDropdown: readonly NavLink[] = segments.map(segmentToNavLink);
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -101,12 +128,23 @@ export const primaryNav: readonly NavLink[] = [
     hrefEn: "/en/",
   },
   {
-    labelKey: "nav.offer",
-    // Brak hrefu — to kontener dropdown, klik na desktop nic nie robi (hover open),
-    // na mobile rozwija sekcję accordion w drawerze.
+    labelKey: "nav.transport",
+    // Kontener dropdown — 4 usługi z kierowcą.
     href: "#",
     hrefEn: "#",
-    children: offerDropdown,
+    children: transportDropdown,
+  },
+  {
+    // Tylko jeden segment — kliknięcie wiedzie wprost na /wynajem-busa.
+    // Mimo to renderujemy jako dropdown (UX spójność), ale child = 1 → bezpośredni link działa.
+    labelKey: "nav.rental",
+    href: rentalDropdown[0]?.href ?? "/wynajem-busa",
+    hrefEn: rentalDropdown[0]?.hrefEn ?? "/en/van-rental",
+  },
+  {
+    labelKey: "nav.events",
+    href: eventsDropdown[0]?.href ?? "/imprezy",
+    hrefEn: eventsDropdown[0]?.hrefEn ?? "/en/events",
   },
   {
     labelKey: "nav.about",

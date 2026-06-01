@@ -68,6 +68,9 @@ export const pl = {
   nav: {
     home: "Strona główna",
     offer: "Oferta",
+    transport: "Transport",
+    rental: "Wynajem",
+    events: "Eventy",
     about: "O nas",
     contact: "Kontakt",
     quality: "Jakość",
