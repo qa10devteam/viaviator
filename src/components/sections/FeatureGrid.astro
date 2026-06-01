@@ -35,10 +35,11 @@ const {
 <ul
   class:list={["vv-features", `vv-features--cols-${columns}`, extraClass]}
   role="list"
+  data-reveal-cascade
 >
   {
     items.map((item) => (
-      <li>
+      <li class="vv-reveal">
         <Card
           tone={tone}
           href={item.href}

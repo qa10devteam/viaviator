@@ -101,10 +101,10 @@ const fleetCards = [
   {/* 1. HERO — Editorial Split „Manifest na rozkładówce" (HomeHero v2) */}
   <HomeHero locale={locale} />
 
-  {/* 2. „Co robimy" */}
+  {/* 2. „Co robimy" — reveal całej sekcji */}
   <Section tone="default" ariaLabelledby="home-what-title">
     <Container size="default">
-      <div class="vv-home-what">
+      <div class="vv-home-what vv-reveal">
         <h2 id="home-what-title" class="vv-home-what__title">
           {dict.home.sectionWhatWeDo.title}
         </h2>
@@ -113,10 +113,10 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 3. „Dla kogo jeździmy" — SegmentGrid */}
+  {/* 3. „Dla kogo jeździmy" — SegmentGrid (cascade applied wewnątrz komponentu) */}
   <Section tone="elevated" id="dla-kogo" ariaLabelledby="home-segments-title">
     <Container size="wide">
-      <div class="vv-home-segments__head">
+      <div class="vv-home-segments__head vv-reveal">
         <h2 id="home-segments-title" class="vv-home-segments__title">
           {dict.home.sectionForWhom.title}
         </h2>
@@ -129,19 +129,19 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 4. „Nasza flota" — 2 karty Trafic + Master */}
+  {/* 4. „Nasza flota" — 2 karty Trafic + Master, cascade na grid */}
   <Section tone="default" ariaLabelledby="home-fleet-title">
     <Container size="default">
-      <div class="vv-home-fleet__head">
+      <div class="vv-home-fleet__head vv-reveal">
         <h2 id="home-fleet-title" class="vv-home-fleet__title">
           {dict.home.sectionFleet.title}
         </h2>
         <p class="vv-home-fleet__body">{dict.home.sectionFleet.body}</p>
       </div>
-      <ul class="vv-home-fleet__grid" role="list">
+      <ul class="vv-home-fleet__grid" role="list" data-reveal-cascade>
         {
           fleetCards.map((v) => (
-            <li>
+            <li class="vv-reveal">
               <Card tone="default" class="vv-home-fleet__card">
                 <div class="vv-home-fleet__media">
                   <img
@@ -163,10 +163,10 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 5. „Dlaczego my" — FeatureGrid */}
+  {/* 5. „Dlaczego my" — FeatureGrid (cascade applied wewnątrz komponentu) */}
   <Section tone="elevated" ariaLabelledby="home-whyus-title">
     <Container size="default">
-      <h2 id="home-whyus-title" class="vv-home-whyus__title">
+      <h2 id="home-whyus-title" class="vv-home-whyus__title vv-reveal">
         {dict.home.sectionWhyUs.title}
       </h2>
       <FeatureGrid items={whyUsItems} columns={2} tone="default" />
@@ -176,7 +176,7 @@ const fleetCards = [
   {/* 6. „Zaufali nam" — placeholder strip */}
   <Section tone="default" tight ariaLabelledby="home-trust-title">
     <Container size="narrow">
-      <div class="vv-home-trust">
+      <div class="vv-home-trust vv-reveal">
         <h2 id="home-trust-title" class="vv-home-trust__title">
           {dict.home.sectionTrust.title}
         </h2>

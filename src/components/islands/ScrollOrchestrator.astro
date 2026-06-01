@@ -1,0 +1,18 @@
+---
+/**
+ * ScrollOrchestrator — vanilla JS island dla M03 scroll choreography.
+ *
+ * Zero React. Importuje `src/lib/scroll-orchestrator.ts` jako side-effect.
+ * Astro emit'uje to jako pojedynczy <script type="module"> w head, hashed
+ * i deduplicated jeśli importowany wielokrotnie.
+ *
+ * Umieść raz w BaseLayout przed `</body>` — orchestrator sam wpina się
+ * na `DOMContentLoaded` + `astro:page-load`.
+ *
+ * Bundle target: <1KB gzipped (zero deps).
+ */
+---
+
+<script>
+  import "@lib/scroll-orchestrator";
+</script>

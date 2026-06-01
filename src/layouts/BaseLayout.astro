@@ -18,6 +18,7 @@ import SEO from "@components/seo/SEO.astro";
 import Header from "@components/sections/Header.astro";
 import Footer from "@components/sections/Footer.astro";
 import ConsentBanner from "@components/islands/ConsentBanner.tsx";
+import ScrollOrchestrator from "@components/islands/ScrollOrchestrator.astro";
 
 interface Alternate {
   lang: string;
@@ -157,6 +158,13 @@ const currentPath = Astro.url.pathname;
     <Footer locale={locale} />
 
     <ConsentBanner client:idle locale={locale} transition:persist />
+
+    {/* M03 — Scroll choreography orchestrator (vanilla JS island, IO fallback).
+        Modern browsers z @supports (animation-timeline: view()) idą czystym
+        CSS, fallback przez IntersectionObserver. Reduced-motion guard
+        wbudowany. transition:persist trzyma stan między nawigacjami,
+        ale orchestrator i tak re-init'uje się na `astro:page-load`. */}
+    <ScrollOrchestrator />
 
     <style is:global>
       html, body {

@@ -55,7 +55,7 @@ const ICON_MAP: Record<string, IconName> = {
 const learnMore = dict.cta.learnMore;
 ---
 
-<ul class:list={["vv-segments", extraClass]} role="list">
+<ul class:list={["vv-segments", extraClass]} role="list" data-reveal-cascade>
   {
     items.map((seg) => {
       const href = locale === "pl" ? `/${seg.slug}` : `/en/${seg.slugEn}`;
@@ -69,7 +69,7 @@ const learnMore = dict.cta.learnMore;
       const vtName = `segment-${seg.slug}`;
 
       return (
-        <li>
+        <li class="vv-reveal">
           <Card
             href={href}
             interactive

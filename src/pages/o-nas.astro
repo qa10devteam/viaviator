@@ -133,7 +133,7 @@ const patrykInitials = "PT";
   {/* 2. „Po co jesteśmy" — dlaczego firma powstała */}
   <Section tone="elevated" ariaLabelledby="about-mission-title">
     <Container size="default">
-      <div class="vv-about-mission">
+      <div class="vv-about-mission vv-reveal">
         <h2 id="about-mission-title" class="vv-about-section-title">
           {dict.about.mission.title}
         </h2>
@@ -142,20 +142,20 @@ const patrykInitials = "PT";
     </Container>
   </Section>
 
-  {/* 3. „Jak jeździmy" — 6 zasad operacyjnych Via Viator */}
+  {/* 3. „Jak jeździmy" — 6 zasad operacyjnych Via Viator (cascade na regułach) */}
   <Section tone="default" ariaLabelledby="about-rules-title">
     <Container size="default">
-      <header class="vv-about-section-head">
+      <header class="vv-about-section-head vv-reveal">
         <h2 id="about-rules-title" class="vv-about-section-title">
           {howWeWork.title}
         </h2>
         <p class="vv-about-section-lead">{howWeWork.body}</p>
       </header>
 
-      <ol class="vv-about-rules" role="list">
+      <ol class="vv-about-rules" role="list" data-reveal-cascade>
         {
           howWeWork.rules.map((rule, index) => (
-            <li>
+            <li class="vv-reveal">
               <Card tone="default" class="vv-about-rule">
                 <span class="vv-about-rule__number" aria-hidden="true">
                   {String(index + 1).padStart(2, "0")}
@@ -173,14 +173,14 @@ const patrykInitials = "PT";
   {/* 4. Zespół — Patryk + drobna nota o współzałożeniu */}
   <Section tone="surface" ariaLabelledby="about-team-title">
     <Container size="default">
-      <header class="vv-about-section-head">
+      <header class="vv-about-section-head vv-reveal">
         <h2 id="about-team-title" class="vv-about-section-title">
           {dict.about.team.title}
         </h2>
         <p class="vv-about-section-lead">{teamBody}</p>
       </header>
 
-      <div class="vv-about-team">
+      <div class="vv-about-team vv-reveal">
         {/* Patryk — face of brand, avatar placeholder z inicjałami */}
         <Card tone="elevated" class="vv-about-team__card">
           <div class="vv-about-team__avatar" aria-hidden="true">
@@ -204,14 +204,14 @@ const patrykInitials = "PT";
   {/* 5. „Gdzie jeździmy" — region + huby + mapa SVG */}
   <Section tone="default" ariaLabelledby="about-region-title">
     <Container size="default">
-      <header class="vv-about-section-head">
+      <header class="vv-about-section-head vv-reveal">
         <h2 id="about-region-title" class="vv-about-section-title">
           {dict.about.region.title}
         </h2>
         <p class="vv-about-section-lead">{dict.about.region.body}</p>
       </header>
 
-      <div class="vv-about-region">
+      <div class="vv-about-region vv-reveal">
         {/* Lewa kolumna — listy województw i hubów */}
         <div class="vv-about-region__lists">
           <div class="vv-about-region__group">
@@ -307,17 +307,17 @@ const patrykInitials = "PT";
   {/* 6. Flota — grid kart pojazdów + sprzęt eventowy poniżej */}
   <Section tone="elevated" ariaLabelledby="about-fleet-title">
     <Container size="default">
-      <header class="vv-about-section-head">
+      <header class="vv-about-section-head vv-reveal">
         <h2 id="about-fleet-title" class="vv-about-section-title">
           {dict.about.fleet.title}
         </h2>
         <p class="vv-about-section-lead">{dict.about.fleet.body}</p>
       </header>
 
-      <ul class="vv-about-fleet__grid" role="list">
+      <ul class="vv-about-fleet__grid" role="list" data-reveal-cascade>
         {
           fleetItems.map((vehicle) => (
-            <li>
+            <li class="vv-reveal">
               <Card tone="default" class="vv-about-fleet__card">
                 <h3 class="vv-about-fleet__model">{vehicle.model}</h3>
                 <p class="vv-about-fleet__desc">{vehicle.desc}</p>
@@ -327,7 +327,7 @@ const patrykInitials = "PT";
         }
       </ul>
 
-      <p class="vv-about-fleet__event-note">{fleetEventEquipment}</p>
+      <p class="vv-about-fleet__event-note vv-reveal">{fleetEventEquipment}</p>
     </Container>
   </Section>
 

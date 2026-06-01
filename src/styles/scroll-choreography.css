@@ -1,0 +1,229 @@
+/* ────────────────────────────────────────────────────────────────────────
+ * Via Viator — Scroll choreography (M03)
+ *
+ * Universal reveal-on-scroll system. Pure CSS scroll-driven animations
+ * w nowoczesnych przeglądarkach (`@supports (animation-timeline: view())`,
+ * Chrome 115+, Edge 115+) z IntersectionObserver fallback w Firefox/Safari
+ * 18- przez `src/lib/scroll-orchestrator.ts`.
+ *
+ * Architektura:
+ *   1. Motion tokens — distance, stagger, easing (CSS custom properties)
+ *   2. `.vv-reveal` — utility opacity 0→1 + translateY entrance,
+ *       wyzwalany przez `data-revealed="true"` (IO) LUB scroll-timeline
+ *   3. `[data-reveal-cascade]` — staggered children via `--vv-reveal-i`
+ *   4. `.vv-reveal-progressive` — scroll-timeline native dla browser
+ *      bez polyfilla (no JS overhead, GPU-driven)
+ *   5. `.vv-parallax-{slow,fast}` — subtelne depth motion via cover()
+ *   6. Reduced-motion guard — zerujemy entrance, end-state instant
+ *
+ * Wartości czerpiemy z brand canon: 600ms reveal, easing-entrance =
+ * cubic-bezier(0.16, 1, 0.3, 1) (anti-spring, „arrival" feeling), distance
+ * domyślnie 16px (md) — dystans wystarczający żeby oko zauważyło ruch,
+ * ale nie tyle żeby rozsadzić layout grid.
+ *
+ * NIE motion library — nie framer-motion, nie GSAP. Wszystko CSS + 1.5KB
+ * IO fallback. View Transitions już osobno w `view-transitions.css`.
+ *
+ * Reference:
+ *   https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline
+ *   https://drafts.csswg.org/scroll-animations-1/
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* ────────────────────── A. Motion tokens ────────────────────── */
+
+:root {
+  /* Distance — jak daleko element wjeżdża podczas reveal.
+   * sm = subtelny (przyciski, badge); md = standard (sekcje, karty);
+   * lg = mocny (hero spreads, key moments). */
+  --vv-motion-distance-sm: 8px;
+  --vv-motion-distance-md: 16px;
+  --vv-motion-distance-lg: 32px;
+
+  /* Stagger — delay between sibling elements w `[data-reveal-cascade]`.
+   * fast = dense rapid feedback (icon grids); base = standard;
+   * slow = dramatic editorial spread. */
+  --vv-motion-stagger-fast: 60ms;
+  --vv-motion-stagger-base: 100ms;
+  --vv-motion-stagger-slow: 160ms;
+
+  /* Easings — entrance/anticipate/exit semantics zgodne z brand canon.
+   * entrance: anti-overshoot, „arrival" feeling (cubic-bezier exact same
+   *           jak view-transition shared elements w view-transitions.css)
+   * anticipate: subtle overshoot dla micro-moments (badge tap, segment hover)
+   * exit: fast linear-out, znika z drogi. */
+  --vv-motion-easing-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --vv-motion-easing-anticipate: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --vv-motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* ────────────────────── B. Reveal utility ────────────────────── */
+
+/* Klasy `.vv-reveal` — base state to opacity 0 + translateY(--md).
+ * Transition odpala się przy `data-revealed="true"` (set przez IO)
+ * LUB przy scroll-timeline (browser-native, patrz sekcja C).
+ *
+ * Transition-delay = --vv-reveal-delay (custom property) — pozwala
+ * cascadeowi indeksować dzieci bez touchowania JS po wstrzyknięciu indeksu.
+ *
+ * Composition note: `transform` używamy translateY — nie `top` / `margin` —
+ * żeby trzymać GPU pipeline, nie wywoływać layout. */
+.vv-reveal {
+  opacity: 0;
+  transform: translateY(var(--vv-motion-distance-md));
+  transition:
+    opacity 600ms var(--vv-motion-easing-entrance),
+    transform 600ms var(--vv-motion-easing-entrance);
+  transition-delay: var(--vv-reveal-delay, 0ms);
+  /* will-change pominięty deliberately — element transitionuje raz po
+   * `data-revealed="true"`, więc upfront promotion to waste.
+   * Browser allocates layer JIT przy starcie transition. */
+}
+
+.vv-reveal[data-revealed="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Wariant — mocniejszy distance dla key moments (hero spreads, manifesty). */
+.vv-reveal--lg {
+  transform: translateY(var(--vv-motion-distance-lg));
+}
+
+/* Wariant — subtelny dla micro-reveals (badge fade-ins, accent kropek). */
+.vv-reveal--sm {
+  transform: translateY(var(--vv-motion-distance-sm));
+}
+
+/* ────────────────────── Cascade ──────────────────────
+ *
+ * Parent `<div data-reveal-cascade>` indeksuje dzieci `.vv-reveal`
+ * przez custom property `--vv-reveal-i` ustawioną w JS (scroll-orchestrator).
+ *
+ * Każde dziecko dostaje delay = i * --vv-motion-stagger-base.
+ * Override przez `data-cascade-speed="fast" | "slow"` na parent.
+ *
+ * Decyzja: stagger nie liczymy `:nth-child` (calc na n) — to działa, ale
+ * łamie się przy DOM reorderze (np. filter). Custom property + JS index
+ * jest deterministyczne. */
+[data-reveal-cascade] > .vv-reveal {
+  --vv-reveal-delay: calc(var(--vv-reveal-i, 0) * var(--vv-motion-stagger-base));
+}
+
+[data-reveal-cascade][data-cascade-speed="fast"] > .vv-reveal {
+  --vv-reveal-delay: calc(var(--vv-reveal-i, 0) * var(--vv-motion-stagger-fast));
+}
+
+[data-reveal-cascade][data-cascade-speed="slow"] > .vv-reveal {
+  --vv-reveal-delay: calc(var(--vv-reveal-i, 0) * var(--vv-motion-stagger-slow));
+}
+
+/* ────────────────────── C. Scroll-driven (progressive) ──────────────────────
+ *
+ * Modern Chromium/Edge (115+) dostaje czyste CSS scroll-timeline —
+ * animacja sterowana scroll position, nie czasem. Brak JS observer'a,
+ * GPU-driven, smooth jak masło. animation-range: entry 0% entry 50% =
+ * keyframe progres mapowany na 0-50% wjazdu elementu w viewport.
+ *
+ * Klasa `.vv-reveal-progressive` jest opt-in — używamy ją na elementach
+ * gdzie scroll-driven daje lepsze UX niż „jeden shot" IO trigger
+ * (np. duże spread'y, fleet grids, gdzie user może scrollować w tę i z powrotem).
+ *
+ * Browser bez wsparcia: opacity zostaje 0 (problem!) — dlatego defaultowo
+ * NIE używamy `.vv-reveal-progressive` bez fallbacka, tylko obok `.vv-reveal`
+ * przez `@supports`. Patrz `.vv-reveal-progressive` poniżej —
+ * w @supports block reset opacity dla browser bez support'u.
+ *
+ * UWAGA — semantyka:
+ *   `.vv-reveal-progressive` SAM bez @supports = opacity 0 forever w starym Safari.
+ *   `.vv-reveal` (IO-based) = zawsze działa wszędzie.
+ *   Recommend: użyj `.vv-reveal` jako default, `.vv-reveal-progressive`
+ *   jako enhancement na osobnych elementach. */
+
+@supports (animation-timeline: view()) {
+  .vv-reveal-progressive {
+    opacity: 0;
+    transform: translateY(var(--vv-motion-distance-md));
+    animation: vv-reveal-enter linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 50%;
+  }
+
+  @keyframes vv-reveal-enter {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* ────────────────────── D. Parallax depth ──────────────────────
+ *
+ * Subtelny parallax — element przesuwa się o ±20px w trakcie pełnego cover()
+ * w viewport. NIE dla każdego elementu — typowo hero background image,
+ * decorative accent shapes, occasional editorial spread.
+ *
+ * cover 0% cover 100% = animacja sterowana od momentu wjazdu elementu
+ * w viewport do momentu jego wyjazdu (pełna podróż przez viewport).
+ *
+ * Browser bez `animation-timeline` = brak parallaxu, element static.
+ * To jest by design — parallax to garnish, nie wymóg UX. */
+
+@supports (animation-timeline: view()) {
+  .vv-parallax-slow {
+    animation: vv-parallax-slow linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+
+  .vv-parallax-fast {
+    animation: vv-parallax-fast linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 100%;
+  }
+
+  @keyframes vv-parallax-slow {
+    from {
+      transform: translateY(-20px);
+    }
+    to {
+      transform: translateY(20px);
+    }
+  }
+
+  @keyframes vv-parallax-fast {
+    from {
+      transform: translateY(-40px);
+    }
+    to {
+      transform: translateY(40px);
+    }
+  }
+}
+
+/* ────────────────────── E. Reduced-motion guard ──────────────────────
+ *
+ * WCAG 2.3.3 Animation from Interactions (AAA) + 2.2.2 Pause, Stop, Hide.
+ * Honorujemy `prefers-reduced-motion: reduce` zerując wszystkie entrance,
+ * cascade'y, parallaxy. End-state instant — element widoczny od razu.
+ *
+ * `!important` jest tu uprawniony — guard musi pobić każdą inline style
+ * ustawioną przez JS fallback (np. transition-delay z custom property).
+ * Alternatywą byłoby ręczne removeProperty w scroll-orchestrator, ale to
+ * bardziej fragile niż jeden CSS rule.
+ *
+ * scroll-orchestrator.ts dodatkowo ustawia `data-revealed="true"` od razu
+ * przy reduced-motion (skip observation entirely) — defense in depth. */
+
+@media (prefers-reduced-motion: reduce) {
+  .vv-reveal,
+  .vv-reveal--sm,
+  .vv-reveal--lg,
+  .vv-reveal-progressive,
+  .vv-parallax-slow,
+  .vv-parallax-fast {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}

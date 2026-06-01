@@ -82,10 +82,10 @@ const fleetCards = [
   {/* 1. HERO — Editorial Split „Manifest on a spread" (HomeHero v2) */}
   <HomeHero locale={locale} />
 
-  {/* 2. What we do */}
+  {/* 2. What we do — section-level reveal */}
   <Section tone="default" ariaLabelledby="home-what-title">
     <Container size="default">
-      <div class="vv-home-what">
+      <div class="vv-home-what vv-reveal">
         <h2 id="home-what-title" class="vv-home-what__title">
           {dict.home.sectionWhatWeDo.title}
         </h2>
@@ -94,10 +94,10 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 3. Who we drive for */}
+  {/* 3. Who we drive for — head reveals; SegmentGrid cascades children */}
   <Section tone="elevated" id="dla-kogo" ariaLabelledby="home-segments-title">
     <Container size="wide">
-      <div class="vv-home-segments__head">
+      <div class="vv-home-segments__head vv-reveal">
         <h2 id="home-segments-title" class="vv-home-segments__title">
           {dict.home.sectionForWhom.title}
         </h2>
@@ -110,19 +110,19 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 4. Our fleet */}
+  {/* 4. Our fleet — head reveals; grid uses cascade on the two cards */}
   <Section tone="default" ariaLabelledby="home-fleet-title">
     <Container size="default">
-      <div class="vv-home-fleet__head">
+      <div class="vv-home-fleet__head vv-reveal">
         <h2 id="home-fleet-title" class="vv-home-fleet__title">
           {dict.home.sectionFleet.title}
         </h2>
         <p class="vv-home-fleet__body">{dict.home.sectionFleet.body}</p>
       </div>
-      <ul class="vv-home-fleet__grid" role="list">
+      <ul class="vv-home-fleet__grid" role="list" data-reveal-cascade>
         {
           fleetCards.map((v) => (
-            <li>
+            <li class="vv-reveal">
               <Card tone="default" class="vv-home-fleet__card">
                 <div class="vv-home-fleet__media">
                   <img
@@ -144,10 +144,10 @@ const fleetCards = [
     </Container>
   </Section>
 
-  {/* 5. Why us */}
+  {/* 5. Why us — title reveals; FeatureGrid cascades children */}
   <Section tone="elevated" ariaLabelledby="home-whyus-title">
     <Container size="default">
-      <h2 id="home-whyus-title" class="vv-home-whyus__title">
+      <h2 id="home-whyus-title" class="vv-home-whyus__title vv-reveal">
         {dict.home.sectionWhyUs.title}
       </h2>
       <FeatureGrid items={whyUsItems} columns={2} tone="default" />
@@ -157,7 +157,7 @@ const fleetCards = [
   {/* 6. Trusted by */}
   <Section tone="default" tight ariaLabelledby="home-trust-title">
     <Container size="narrow">
-      <div class="vv-home-trust">
+      <div class="vv-home-trust vv-reveal">
         <h2 id="home-trust-title" class="vv-home-trust__title">
           {dict.home.sectionTrust.title}
         </h2>
