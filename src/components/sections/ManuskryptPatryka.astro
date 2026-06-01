@@ -101,81 +101,14 @@ const sealHref = locale === "pl" ? "/jakosc" : "/en/quality";
       <p class="vv-manuskrypt__attribution">— {m.attribution}</p>
     </div>
 
-    {/* ───────── Pieczęć QA10 — wykonawca strony, wobble hover, link do /jakosc ───────── */}
+    {/* ───────── Credit QA10 — wykonawca strony jako tekst (bez badge SVG) ───────── */}
     <div class="vv-manuskrypt__seal-wrap">
       <div class="vv-manuskrypt__seal-info">
         <p class="vv-manuskrypt__seal-label">{m.sealLabel}</p>
-        <p class="vv-manuskrypt__seal-meta">{m.sealMeta}</p>
+        <p class="vv-manuskrypt__seal-meta">
+          {m.sealMeta} <a href="https://qa10.io" rel="noopener" target="_blank" class="vv-manuskrypt__qa10-link">qa10.io</a>
+        </p>
       </div>
-      <a href={sealHref} class="vv-manuskrypt__seal" aria-label={m.sealAria}>
-        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-          <title>QA10 Quality Seal v1.0</title>
-          <defs>
-            {/* Path obeganty przez tekst rim. */}
-            <path
-              id="vv-seal-circle"
-              d="M 80 80 m -64 0 a 64 64 0 1 1 128 0 a 64 64 0 1 1 -128 0"
-              fill="none"
-            />
-          </defs>
-
-          {/* Outer rim + cienki wewnętrzny okrąg */}
-          <circle cx="80" cy="80" r="76" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4" />
-          <circle cx="80" cy="80" r="70" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.6" />
-
-          {/* 10 mikrosegmentów co 36° w pierścieniu między r=70 a r=76 */}
-          <g stroke="currentColor" stroke-width="1.2" opacity="0.55">
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(0 80 80)" />
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(36 80 80)" />
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(72 80 80)" />
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(108 80 80)" />
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(144 80 80)" />
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(180 80 80)" />
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(216 80 80)" />
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(252 80 80)" />
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(288 80 80)" />
-            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(324 80 80)" />
-          </g>
-
-          {/* Tekst na obwodzie — startOffset 6% żeby litery siedziały na "godzinie 12" */}
-          <text
-            font-family="var(--vv-typography-font-family-mono)"
-            font-size="9"
-            font-weight="700"
-            letter-spacing="2.5"
-            fill="currentColor"
-          >
-            <textPath href="#vv-seal-circle" startOffset="6%"
-              >QA10 · QUALITY SEAL · BUILT WITH CARE · v1.0 ·
-            </textPath>
-          </text>
-
-          {/* Inner mark — "QA10" + "VERIFIED" + brand-red kropka */}
-          <text
-            x="80"
-            y="76"
-            text-anchor="middle"
-            font-family="var(--vv-typography-font-family-display)"
-            font-weight="800"
-            font-size="26"
-            letter-spacing="-0.5"
-            fill="currentColor"
-            >QA10</text
-          >
-          <text
-            x="80"
-            y="92"
-            text-anchor="middle"
-            font-family="var(--vv-typography-font-family-mono)"
-            font-size="8"
-            font-weight="600"
-            letter-spacing="2"
-            fill="currentColor"
-            opacity="0.55">VERIFIED</text
-          >
-          <circle cx="80" cy="104" r="2" fill="var(--vv-color-brand-red)" />
-        </svg>
-      </a>
     </div>
   </div>
 </section>

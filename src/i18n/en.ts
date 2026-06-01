@@ -849,7 +849,7 @@ export const en: Dictionary = {
     attribution: "Patryk Tomeczek, co-founder of Via Viator",
     sealLabel: "Site contractor",
     sealMeta:
-      "This site was designed and built by QA10 agency. The seal in the footer verifies a quality standard across 10 dimensions.",
-    sealAria: "See QA10 Quality Seal criteria",
+      "This site was designed and built by QA10 agency — qa10.io",
+    sealAria: "qa10.io — site contractor",
   },
 };

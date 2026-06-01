@@ -848,8 +848,8 @@ export const pl = {
     attribution: "Patryk Tomeczek, współwłaściciel Via Viator",
     sealLabel: "Wykonawca strony",
     sealMeta:
-      "Tę stronę zaprojektowała i wdrożyła agencja QA10. Pieczęć w stopce poświadcza standard jakości na 10 wymiarach.",
-    sealAria: "Zobacz kryteria QA10 Quality Seal",
+      "Tę stronę zaprojektowała i wdrożyła agencja QA10 — qa10.io",
+    sealAria: "qa10.io — wykonawca strony",
   },
 } as const;
 
