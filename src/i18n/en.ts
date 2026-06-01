@@ -841,4 +841,15 @@ export const en: Dictionary = {
       driver: "Driver",
     },
   },
+  manuskrypt: {
+    eyebrow: "Signature",
+    title: "Patryk answers the phone.",
+    lede: "Small fleet, familiar faces, the same phone number for two years. Call directly — no hotline, no \"we'll get back to you the day before\".",
+    signatureAria: "Signature of Patryk Tomeczek",
+    attribution: "Patryk Tomeczek, co-founder of Via Viator",
+    sealLabel: "Site contractor",
+    sealMeta:
+      "This site was designed and built by QA10 agency. The seal in the footer verifies a quality standard across 10 dimensions.",
+    sealAria: "See QA10 Quality Seal criteria",
+  },
 };

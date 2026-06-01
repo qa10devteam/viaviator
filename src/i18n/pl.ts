@@ -840,6 +840,17 @@ export const pl = {
       driver: "Kierowca",
     },
   },
+  manuskrypt: {
+    eyebrow: "Podpis",
+    title: "Patryk odbiera telefon.",
+    lede: "Mała flota, znajome twarze, ten sam numer telefonu od dwóch lat. Dzwoń bezpośrednio — bez infolinii, bez „odezwiemy się dzień przed”.",
+    signatureAria: "Podpis Patryka Tomeczka",
+    attribution: "Patryk Tomeczek, współwłaściciel Via Viator",
+    sealLabel: "Wykonawca strony",
+    sealMeta:
+      "Tę stronę zaprojektowała i wdrożyła agencja QA10. Pieczęć w stopce poświadcza standard jakości na 10 wymiarach.",
+    sealAria: "Zobacz kryteria QA10 Quality Seal",
+  },
 } as const;
 
 /**

@@ -1,0 +1,436 @@
+---
+/**
+ * ManuskryptPatryka — M11 Wow #5.
+ *
+ * Sekcja na /o-nas (PL) + /en/about (EN). Stylizowany "podpis" Patryka jako
+ * SVG paths z stroke-dashoffset draw-on animation triggerowaną przez
+ * IntersectionObserver (1800ms cascade, stagger 140ms per glyph). Pieczęć
+ * QA10 (z `/brand/qa10-seal.svg` w wersji inline) z hover wobble (-3deg,
+ * scale 1.04, easing anticipate). Linkuje do /jakosc (PL) lub /en/quality (EN).
+ *
+ * Brak realnego scanu podpisu — generujemy hand-drawn-look paths z 10
+ * glifów (P-a-t-r-y-k spacja T-o-m + flourish underline), każdy jako osobny
+ * <path> z `--vv-sig-i` jako transition-delay index. Po wejściu sekcji w
+ * viewport (rootMargin -15% bottom, threshold 0.1) ustawiamy
+ * `data-revealed="true"` na sekcji — stroke-dashoffset spada do 0 cascade.
+ *
+ * Reduced-motion: instant reveal (signature się rysuje bez transition,
+ * seal bez wobble). Bundle SVG inline ~3 KB raw, JS ~0.8 KB (path length
+ * pomiar + IO setup).
+ *
+ * A11y: signature SVG aria-hidden + parent role="img" + aria-label po PL/EN;
+ * seal jako <a> z aria-label. SVG ma <title> dla SR fallback.
+ */
+
+import { getDictionary, type Locale } from "@i18n/index";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = getDictionary(locale);
+const m = dict.manuskrypt;
+
+// Link pieczęci → strona /jakosc (PL) lub /en/quality (EN).
+const sealHref = locale === "pl" ? "/jakosc" : "/en/quality";
+---
+
+<section class="vv-manuskrypt" aria-labelledby="manuskrypt-title" data-vv-manuskrypt>
+  <div class="vv-manuskrypt__inner">
+    <p class="section-index">
+      <span class="section-index__numeral">N°07</span>
+      <span class="section-index__label">· {m.eyebrow}</span>
+    </p>
+
+    <h2 id="manuskrypt-title" class="vv-manuskrypt__title">{m.title}</h2>
+
+    <p class="vv-manuskrypt__lede">{m.lede}</p>
+
+    {/* ───────── Signature SVG — stylized handwriting "Patryk Tomeczek" ───────── */}
+    <div class="vv-manuskrypt__signature-wrap" role="img" aria-label={m.signatureAria}>
+      <svg
+        class="vv-manuskrypt__signature"
+        viewBox="0 0 520 140"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <title>Patryk Tomeczek — signature</title>
+        <g
+          class="vv-manuskrypt__signature-glyphs"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          {/* P — pionowa krecha + półpętla */}
+          <path d="M 30 30 L 30 100 M 30 30 Q 65 30 65 50 Q 65 70 30 70" style="--vv-sig-i: 0" />
+          {/* a */}
+          <path d="M 85 60 Q 100 50 105 65 L 105 95 M 105 70 Q 80 70 80 85 Q 80 100 105 95" style="--vv-sig-i: 1" />
+          {/* t */}
+          <path d="M 125 40 L 125 90 Q 125 100 135 100 M 118 55 L 135 55" style="--vv-sig-i: 2" />
+          {/* r */}
+          <path d="M 150 65 L 150 100 M 150 70 Q 158 60 168 65" style="--vv-sig-i: 3" />
+          {/* y — descender */}
+          <path d="M 185 65 Q 195 105 195 105 L 200 70 M 195 105 Q 190 130 175 130" style="--vv-sig-i: 4" />
+          {/* k */}
+          <path d="M 220 35 L 220 100 M 220 80 L 245 60 M 230 75 L 248 100" style="--vv-sig-i: 5" />
+          {/* spacja + T */}
+          <path d="M 295 30 L 330 30 M 312 30 L 312 100" style="--vv-sig-i: 6" />
+          {/* o */}
+          <path
+            d="M 355 80 Q 355 60 372 60 Q 390 60 390 80 Q 390 100 372 100 Q 355 100 355 80 Z"
+            style="--vv-sig-i: 7"
+          />
+          {/* m */}
+          <path
+            d="M 410 100 L 410 60 Q 410 60 420 60 Q 430 60 430 75 L 430 100 M 430 75 Q 430 60 442 60 Q 452 60 452 75 L 452 100"
+            style="--vv-sig-i: 8"
+          />
+          {/* flourish — kreska zamykająca pod całym podpisem */}
+          <path
+            d="M 30 120 Q 200 130 480 115"
+            style="--vv-sig-i: 9"
+            stroke-width="1.6"
+            opacity="0.6"
+          />
+        </g>
+      </svg>
+      <p class="vv-manuskrypt__attribution">— {m.attribution}</p>
+    </div>
+
+    {/* ───────── Pieczęć QA10 — wykonawca strony, wobble hover, link do /jakosc ───────── */}
+    <div class="vv-manuskrypt__seal-wrap">
+      <div class="vv-manuskrypt__seal-info">
+        <p class="vv-manuskrypt__seal-label">{m.sealLabel}</p>
+        <p class="vv-manuskrypt__seal-meta">{m.sealMeta}</p>
+      </div>
+      <a href={sealHref} class="vv-manuskrypt__seal" aria-label={m.sealAria}>
+        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <title>QA10 Quality Seal v1.0</title>
+          <defs>
+            {/* Path obeganty przez tekst rim. */}
+            <path
+              id="vv-seal-circle"
+              d="M 80 80 m -64 0 a 64 64 0 1 1 128 0 a 64 64 0 1 1 -128 0"
+              fill="none"
+            />
+          </defs>
+
+          {/* Outer rim + cienki wewnętrzny okrąg */}
+          <circle cx="80" cy="80" r="76" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4" />
+          <circle cx="80" cy="80" r="70" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.6" />
+
+          {/* 10 mikrosegmentów co 36° w pierścieniu między r=70 a r=76 */}
+          <g stroke="currentColor" stroke-width="1.2" opacity="0.55">
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(0 80 80)" />
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(36 80 80)" />
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(72 80 80)" />
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(108 80 80)" />
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(144 80 80)" />
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(180 80 80)" />
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(216 80 80)" />
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(252 80 80)" />
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(288 80 80)" />
+            <line x1="80" y1="0" x2="80" y2="8" transform="rotate(324 80 80)" />
+          </g>
+
+          {/* Tekst na obwodzie — startOffset 6% żeby litery siedziały na "godzinie 12" */}
+          <text
+            font-family="var(--vv-typography-font-family-mono)"
+            font-size="9"
+            font-weight="700"
+            letter-spacing="2.5"
+            fill="currentColor"
+          >
+            <textPath href="#vv-seal-circle" startOffset="6%"
+              >QA10 · QUALITY SEAL · BUILT WITH CARE · v1.0 ·
+            </textPath>
+          </text>
+
+          {/* Inner mark — "QA10" + "VERIFIED" + brand-red kropka */}
+          <text
+            x="80"
+            y="76"
+            text-anchor="middle"
+            font-family="var(--vv-typography-font-family-display)"
+            font-weight="800"
+            font-size="26"
+            letter-spacing="-0.5"
+            fill="currentColor"
+            >QA10</text
+          >
+          <text
+            x="80"
+            y="92"
+            text-anchor="middle"
+            font-family="var(--vv-typography-font-family-mono)"
+            font-size="8"
+            font-weight="600"
+            letter-spacing="2"
+            fill="currentColor"
+            opacity="0.55">VERIFIED</text
+          >
+          <circle cx="80" cy="104" r="2" fill="var(--vv-color-brand-red)" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ───────────────────── Section wrapper ───────────────────── */
+  .vv-manuskrypt {
+    padding-block: var(--vv-space-16);
+    background-color: var(--vv-color-bg-elevated);
+  }
+
+  @media (min-width: 768px) {
+    .vv-manuskrypt {
+      padding-block: var(--vv-space-20);
+    }
+  }
+
+  .vv-manuskrypt__inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding-inline: var(--vv-space-6);
+    text-align: center;
+  }
+
+  /* SectionIndex chcemy wycentrować — domyślnie ma display: inline-flex,
+     więc owinięcie centered przez parent text-align nie zadziała. Centrujemy
+     przez justify-content (parent jest already inline-flex). */
+  .vv-manuskrypt .section-index {
+    justify-content: center;
+    margin: 0 auto var(--vv-space-4);
+  }
+
+  .vv-manuskrypt__title {
+    font-family: var(--vv-typography-font-family-display);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    font-weight: var(--vv-typography-font-weight-extrabold, 800);
+    line-height: var(--vv-typography-line-height-tight, 1.1);
+    letter-spacing: -0.025em;
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-3);
+    text-wrap: balance;
+  }
+
+  .vv-manuskrypt__lede {
+    font-size: var(--vv-typography-font-size-lg, 1.125rem);
+    line-height: var(--vv-typography-line-height-relaxed, 1.6);
+    color: var(--vv-color-fg-secondary);
+    max-width: 540px;
+    margin: 0 auto var(--vv-space-10);
+    text-wrap: pretty;
+  }
+
+  /* ───────────────────── Signature ───────────────────── */
+  .vv-manuskrypt__signature-wrap {
+    margin: var(--vv-space-8) auto var(--vv-space-12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--vv-space-3);
+  }
+
+  .vv-manuskrypt__signature {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    color: var(--vv-color-brand-red);
+  }
+
+  /* Stroke draw-on — base state: dashoffset = path length (set via JS po
+     pomiarze getTotalLength). Po `[data-revealed="true"]` parent → dashoffset 0,
+     stagger 140ms per glyph (10 paths × 140ms = ~1.4s cascade + 1800ms draw). */
+  .vv-manuskrypt__signature-glyphs path {
+    stroke-dasharray: var(--vv-sig-length, 300);
+    stroke-dashoffset: var(--vv-sig-length, 300);
+    transition: stroke-dashoffset 1800ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--vv-sig-i, 0) * 140ms);
+  }
+
+  .vv-manuskrypt[data-revealed="true"] .vv-manuskrypt__signature-glyphs path {
+    stroke-dashoffset: 0;
+  }
+
+  .vv-manuskrypt__attribution {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--vv-color-fg-secondary);
+    margin: 0;
+  }
+
+  /* ───────────────────── Pieczęć QA10 ───────────────────── */
+  .vv-manuskrypt__seal-wrap {
+    margin-top: var(--vv-space-12);
+    padding-top: var(--vv-space-8);
+    border-top: 1px solid var(--vv-color-border-subtle);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--vv-space-8);
+    text-align: left;
+  }
+
+  @media (max-width: 640px) {
+    .vv-manuskrypt__seal-wrap {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: var(--vv-space-6);
+      text-align: center;
+    }
+  }
+
+  .vv-manuskrypt__seal-info {
+    min-width: 0;
+  }
+
+  .vv-manuskrypt__seal-label {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--vv-color-brand-red-700);
+    margin: 0 0 var(--vv-space-2);
+  }
+
+  .vv-manuskrypt__seal-meta {
+    font-size: 15px;
+    line-height: var(--vv-typography-line-height-relaxed, 1.6);
+    color: var(--vv-color-fg-primary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Pieczęć — fade-in via opacity (po revealed), wobble on hover.
+     Bazowo opacity 0 + lekki rotate -8deg; po revealed → 1 + 0deg.
+     Hover: -3deg + scale 1.04, easing anticipate (cubic-bezier(0.34,1.56,0.64,1)). */
+  .vv-manuskrypt__seal {
+    display: inline-flex;
+    color: var(--vv-color-fg-primary);
+    text-decoration: none;
+    width: 128px;
+    height: 128px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    opacity: 0;
+    transform: rotate(-8deg) scale(0.94);
+    transition:
+      opacity 720ms cubic-bezier(0.16, 1, 0.3, 1) 900ms,
+      transform 720ms cubic-bezier(0.34, 1.56, 0.64, 1) 900ms;
+  }
+
+  .vv-manuskrypt[data-revealed="true"] .vv-manuskrypt__seal {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  /* Po settle: hover transitions z innym (krótszym, snappy) easingiem.
+     Stacking by przykrycie revealed transition zostawi `transform: rotate(0)`. */
+  @media (pointer: fine) {
+    .vv-manuskrypt[data-revealed="true"] .vv-manuskrypt__seal {
+      transition:
+        opacity 240ms ease-out,
+        transform 480ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .vv-manuskrypt[data-revealed="true"] .vv-manuskrypt__seal:hover,
+    .vv-manuskrypt[data-revealed="true"] .vv-manuskrypt__seal:focus-visible {
+      transform: rotate(-3deg) scale(1.04);
+    }
+  }
+
+  .vv-manuskrypt__seal:focus-visible {
+    outline: 2px solid var(--vv-color-brand-red);
+    outline-offset: 4px;
+  }
+
+  .vv-manuskrypt__seal svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ───────────────────── Reduced motion guard ───────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .vv-manuskrypt__signature-glyphs path {
+      transition: none !important;
+      stroke-dashoffset: 0 !important;
+    }
+    .vv-manuskrypt__seal {
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * vvManuskryptInit — pomiar path length (getTotalLength) i ustawienie
+   * --vv-sig-length per path, potem IO trigger na sekcji. Po revealed
+   * cascade animation odpala się przez CSS.
+   *
+   * Reduced-motion guard: instant reveal, bez pomiaru length (nie potrzeba —
+   * CSS @media reduce zeruje dashoffset).
+   */
+  function vvManuskryptInit() {
+    const sections = document.querySelectorAll<HTMLElement>("[data-vv-manuskrypt]");
+    if (sections.length === 0) return;
+
+    const reducedMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    sections.forEach((section) => {
+      if (reducedMotion) {
+        section.setAttribute("data-revealed", "true");
+        return;
+      }
+
+      // Hot-reload guard.
+      if (section.getAttribute("data-revealed") === "true") return;
+
+      // Pomiar length każdego path-a. `getTotalLength` daje float długości
+      // ścieżki w jednostkach SVG — ustawiamy jako CSS variable na konkretnym
+      // <path>, żeby stroke-dasharray + initial dashoffset = length.
+      const paths = section.querySelectorAll<SVGPathElement>(
+        ".vv-manuskrypt__signature-glyphs path",
+      );
+      paths.forEach((path) => {
+        const length = path.getTotalLength();
+        path.style.setProperty("--vv-sig-length", String(length));
+      });
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.setAttribute("data-revealed", "true");
+              observer.disconnect();
+            }
+          });
+        },
+        {
+          rootMargin: "0px 0px -15% 0px",
+          threshold: 0.1,
+        },
+      );
+
+      observer.observe(section);
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", vvManuskryptInit);
+  } else {
+    vvManuskryptInit();
+  }
+  // Astro 6 ClientRouter — re-init po client-side nawigacji.
+  document.addEventListener("astro:page-load", vvManuskryptInit);
+</script>

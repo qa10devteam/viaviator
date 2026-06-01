@@ -25,6 +25,7 @@ import Hero from "@components/sections/Hero.astro";
 import CTASection from "@components/sections/CTASection.astro";
 import PullQuote from "@components/sections/PullQuote.astro";
 import AtlasPoludnia from "@components/sections/AtlasPoludnia.astro";
+import ManuskryptPatryka from "@components/sections/ManuskryptPatryka.astro";
 import { getDictionary } from "@i18n/index";
 import { company } from "@data/company";
 import { seoMap, buildCanonical, buildAlternates } from "@lib/seo";
@@ -283,7 +284,11 @@ const patrykInitials = "PT";
     </Container>
   </Section>
 
-  {/* 7. Final CTA */}
+  {/* 7. Manuskrypt Patryka (Wow #5) — stylized signature SVG draw-on +
+       QA10 site contractor seal. Section index N°07. */}
+  <ManuskryptPatryka locale={locale} />
+
+  {/* 8. Final CTA */}
   <CTASection
     tone="brand"
     title="Plan a transfer, trip or rental with us"
