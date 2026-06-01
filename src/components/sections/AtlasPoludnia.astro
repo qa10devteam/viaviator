@@ -96,12 +96,13 @@ const saintsOffViewKeys = ["saintLichen", "saintNiepokalanow"] as const;
 const base: AtlasPoint = points[baseKey];
 
 // Label offsets dla sanktuariów — dla Łagiewniki/Wadowice (bliskie Kalwarii)
-// trzeba ręcznie odsunąć label żeby nie nachodziły na siebie.
+// i wszystkich w okolicy huba Balice trzeba ręcznie odsunąć label żeby nie
+// nachodziły z hub-time "90 min" (svgY = hub.svgY + 22).
 const saintLabelOffsets: Record<string, { dx: number; dy: number; anchor: string }> = {
   saintCzestochowa: { dx: 6, dy: 3, anchor: "start" },
-  saintKalwaria: { dx: 6, dy: -6, anchor: "start" },
-  saintLagiewniki: { dx: -6, dy: 3, anchor: "end" },
-  saintWadowice: { dx: -6, dy: -6, anchor: "end" },
+  saintKalwaria: { dx: 6, dy: 11, anchor: "start" },  // pod kropką, E (start)
+  saintLagiewniki: { dx: 7, dy: 3, anchor: "start" }, // E od kropki (Łagiewniki to dzielnica Krakowa — natural E expansion, omijamy 90 MIN po W)
+  saintWadowice: { dx: -7, dy: 3, anchor: "end" },    // W od kropki (Wadowice)
 };
 
 // Statystyki sekcji — wyświetlane w side panel.
@@ -302,10 +303,12 @@ const offViewAnnotations: Record<string, { distanceKm: number; bearing: string }
                       class="vv-atlas__hub-dot"
                       aria-hidden="true"
                     />
-                    {/* Label */}
+                    {/* Label + time STACK nad hubem (label wyżej, time tuż pod).
+                        Większy odstęp od kropki (22px) bo Pyrzowice sąsiadują
+                        z bazą TG — chcemy jasną separację typograficzną. */}
                     <text
                       x={p.svgX}
-                      y={p.svgY - 14}
+                      y={p.svgY - 22}
                       class="vv-atlas__hub-label"
                       text-anchor="middle"
                       aria-hidden="true"
@@ -314,7 +317,7 @@ const offViewAnnotations: Record<string, { distanceKm: number; bearing: string }
                     </text>
                     <text
                       x={p.svgX}
-                      y={p.svgY + 22}
+                      y={p.svgY - 12}
                       class="vv-atlas__hub-time"
                       text-anchor="middle"
                       aria-hidden="true"
@@ -357,21 +360,22 @@ const offViewAnnotations: Record<string, { distanceKm: number; bearing: string }
               class="vv-atlas__base-core"
               aria-hidden="true"
             />
-            {/* Label 2-linijkowy */}
+            {/* Label 2-linijkowy — przesunięty na W od bazy żeby nie nachodzić
+                z hub-time pod Pyrzowicami (które są na E+N od bazy). */}
             <text
-              x={base.svgX}
-              y={base.svgY + 22}
+              x={base.svgX - 14}
+              y={base.svgY + 4}
               class="vv-atlas__base-label"
-              text-anchor="middle"
+              text-anchor="end"
               aria-hidden="true"
             >
               {base.label}
             </text>
             <text
-              x={base.svgX}
-              y={base.svgY + 35}
+              x={base.svgX - 14}
+              y={base.svgY + 15}
               class="vv-atlas__base-sublabel"
-              text-anchor="middle"
+              text-anchor="end"
               aria-hidden="true"
             >
               · {dict.atlas.base.label.toUpperCase()} ·

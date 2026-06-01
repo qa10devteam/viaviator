@@ -207,18 +207,21 @@ function walkCoords(coords) {
 
 for (const f of simplifiedKeep) walkCoords(f.geometry.coordinates);
 
-// Padding 8% wokół focal bbox — daje breathing room dla huba Wrocław (extreme W).
-// Dodatkowy padding asymetryczny: + 5% na zachód (Wrocław leży NW od rdzenia
-// i potrzebuje miejsca na off-rdzeń marker), + 2% na północ (Niepokalanów/Licheń
-// pokazane jako off-view arrows, ale chcemy żeby Pyrzowice nie dotykał górnej krawędzi).
+// Padding asymetryczny dookoła focal bbox 4 rdzeniowych województw.
+// CEL: pokazać "całą południową Polskę" jako base-map context — ghost regions
+// (12 woj.) muszą mieć widoczne fragmenty stykające się z rdzeniem.
+// Stąd N (góra SVG) padding zwiększony do 2.8x — pokazujemy łódzkie, mazowieckie,
+// pełniej wielkopolskie i dolnośląskie. W (zachód) 1.6x — Wrocław hub headroom.
+// E (wschód) 1.5x — podkarpackie + lubelskie więcej widoczne.
+// S (dół) 0.7x — granica PL już blisko, niewiele do pokazania.
 const widthM = maxX - minX;
 const heightM = maxY - minY;
 const padX = widthM * 0.08;
 const padY = heightM * 0.10;
-minX -= padX * 1.4; // więcej z lewej (Wrocław)
-maxX += padX * 0.6;
-minY -= padY * 0.6;
-maxY += padY * 1.4; // więcej u góry (Częstochowa headroom)
+minX -= padX * 1.6; // W (zachód) — Wrocław hub + dolnośląskie context
+maxX += padX * 1.5; // E (wschód) — podkarpackie + lubelskie context
+minY -= padY * 0.7; // S (południe) — granica blisko
+maxY += padY * 2.8; // N (północ) — łódzkie/mazowieckie/wielkopolskie context
 
 // Aspekt po padding:
 const aspectFocal = (maxX - minX) / (maxY - minY);
