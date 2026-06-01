@@ -415,21 +415,10 @@ const drawerAriaLabel = dict.nav.mobileMenuAria;
 
 <style>
   .vv-header {
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
+    position: relative;
     z-index: var(--vv-z-header);
     background-color: var(--vv-color-bg-page);
-    border-bottom: 1px solid transparent;
-    transition:
-      border-color var(--vv-motion-duration-fast) var(--vv-motion-easing-standard),
-      box-shadow var(--vv-motion-duration-fast) var(--vv-motion-easing-standard);
-  }
-
-  .vv-header[data-scrolled="true"] {
-    border-bottom-color: var(--vv-color-border-subtle);
-    box-shadow: var(--vv-shadow-sm);
+    border-bottom: 1px solid var(--vv-color-border-subtle);
   }
 
   /* ---- Utility bar ---- */

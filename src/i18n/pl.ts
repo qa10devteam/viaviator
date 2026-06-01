@@ -3,7 +3,7 @@ export const pl = {
     siteName: "Via Viator",
     siteTagline: "Zawsze na miejscu",
     siteDescription:
-      "Przewóz osób w południowej Polsce — transfery lotniskowe, pielgrzymki, transport grupowy, wynajem busa, sprzęt eventowy. Z punktualnością wpisaną w nazwę.",
+      "Przewóz osób w południowej Polsce — transfery, pielgrzymki, transport dostępny, busy z kierowcą, wynajem Mastera, sprzęt na imprezę.",
     home: {
       title: "Via Viator — przewóz osób w południowej Polsce",
       description:
@@ -105,9 +105,9 @@ export const pl = {
   hero: {
     homeHeadline: "Zawsze na miejscu.",
     homeSubhead:
-      "Przewóz osób w południowej Polsce — transfery, pielgrzymki, transport grupowy, wynajem busa, eventy. Z punktualnością wpisaną w nazwę.",
+      "Przewóz osób w południowej Polsce. Transfery lotniskowe, pielgrzymki, transport dostępny, busy z kierowcą, wynajem Mastera, sprzęt na imprezę. Telefon +48 690 691 886.",
     homeCtaPrimary: "Zapytaj o ofertę",
-    homeCtaSecondary: "Zobacz, co robimy",
+    homeCtaSecondary: "Zobacz co robimy",
     homeMicrocopy: "Telefon odbieramy. E-mail czytamy. Brief mamy zwięzły.",
   },
   segments: {
@@ -147,11 +147,12 @@ export const pl = {
         title: "Sprawdź, zanim podpiszesz",
         body: "To są pytania, które koordynatorzy zadają nam najczęściej — i nasze szczere odpowiedzi.",
         items: [
-          { q: "Czy macie SLA na piśmie?", a: "Tak. Punkt po punkcie: czas podstawienia, awaryjny kontakt, definicja opóźnienia, kary umowne. Wzór wyślemy do briefu." },
-          { q: "Czy faktura VAT z 14-dniowym terminem?", a: "Standardowo tak. Dłuższy termin negocjowalny przy ryczałcie miesięcznym." },
-          { q: "Co jeśli mój gość spóźni się z odprawą?", a: "Czekamy do 60 minut bez dopłaty. Powyżej — postojowe, stawka w cenniku." },
-          { q: "Czy macie referencje?", a: "Tak. Wyślemy 3 kontakty B2B na życzenie — zadzwoń lub napisz." },
-          { q: "Jakie auta?", a: "Renault Trafic 8-osobowy, do 4 osób z bagażem. Większe składy — łączymy w konwój." },
+          { q: "Kto będzie moim kontaktem awaryjnym, jeśli kierowca nie dojedzie?", a: "Jedna osoba z imienia i nazwiska — telefon i mail. Dla umów ramowych dodatkowy numer dyspozytora 24/7." },
+          { q: "Czy wystawiacie fakturę z odroczonym terminem płatności?", a: "Tak. Faktura VAT z terminem 14 dni, wysłana tego samego dnia po realizacji." },
+          { q: "Czy macie jakieś referencje od podobnych firm?", a: "Damy wam referencje od trzech ostatnich klientów z waszego segmentu. Imię, nazwisko, numer telefonu — możecie zadzwonić sami." },
+          { q: "Potrzebuję wiedzieć cenę z góry — moja kierowniczka nie znosi niespodzianek.", a: "Cena w ofercie jest finalna. Bez dopłat za korek, bagaż czy zmianę godziny w ramach okna ±15 min." },
+          { q: "Co jeśli mój gość spóźni się z odprawą?", a: "Czekamy do 60 minut bez dopłaty. Powyżej — postojowe, stawka w cenniku, którą widzisz wcześniej niż fakturę." },
+          { q: "Jakie auta podstawicie?", a: "Renault Trafic, osiem miejsc, do czterech osób z bagażem walizkowym. Większe składy — drugi bus w konwoju, ten sam kierowca koordynuje." },
         ],
       },
       faq: {
@@ -201,11 +202,12 @@ export const pl = {
         title: "Sprawdź, zanim zamówisz",
         body: "Pielgrzymki to nie zwykły transfer — pytania też są inne.",
         items: [
-          { q: "Jaki rocznik macie auto?", a: "Renault Trafic, rocznik 2020+. Klima działa, pasy są, w środku czysto." },
-          { q: "Czy kierowca może poczekać w trakcie mszy?", a: "Tak. Czas oczekiwania uzgadniamy w briefie i nie doliczamy potem osobno." },
-          { q: "Czy macie miejsce na bagaż?", a: "Bus 8-osobowy mieści 8 osób z bagażem podręcznym. Większy bagaż — zabieramy Master jako wsparcie, dopłata uzgadniana." },
-          { q: "Czy wystawicie fakturę na parafię?", a: "Tak. Dane do faktury bierzemy w briefie." },
-          { q: "Wjeżdżacie pod sanktuarium czy stoicie na parkingu?", a: "Pod Jasną Górę — wjazd autokarowy, podstawienie pod bramą. Łagiewniki — parking podziemny lub górny, w zależności od dnia." },
+          { q: "Jaki macie autokar i czy w środku jest czysto?", a: "Renault Trafic, rocznik 2020 albo nowszy. Klima działa, pasy są, w środku czysto. Sprzątamy między kursami, nie między sezonami." },
+          { q: "Czy kierowca będzie czekał pod bramą podczas mszy, czy mam dzwonić?", a: "Czeka. Czas oczekiwania uzgadniamy w briefie i nie doliczamy go potem osobno. Numer kierowcy macie w komórce koordynatora od dnia wcześniej." },
+          { q: "Czy macie miejsce na bagaż grupy?", a: "Osiem osób z bagażem podręcznym — w sam raz w Traficu. Większy bagaż albo dewocjonalia — Master jako wsparcie, dopłata uzgadniana w briefie, nie po fakcie." },
+          { q: "Czy możecie wystawić fakturę na parafię z opisem zgodnym z naszą księgowością?", a: "Tak. Dane do faktury bierzemy w briefie, opis ustalamy ze skarbnikiem parafii zanim wsiadacie do busa." },
+          { q: "Wjeżdżacie pod samo sanktuarium czy stoicie na parkingu?", a: "Pod Jasną Górę — wjazd autokarowy, podstawienie pod bramą. Łagiewniki — parking podziemny albo górny, zależy od dnia tygodnia. Wadowice — podjazd pod rynkiem." },
+          { q: "Co jeśli starsza pani z grupy potrzebuje więcej czasu na wejście?", a: "Dajemy minutę. Kierowca wysiada, asystuje, czeka. Tempo dopasowane do pasażera, nie do zegarka." },
         ],
       },
       faq: {
@@ -255,11 +257,12 @@ export const pl = {
         title: "Pytania, które stawia każda placówka",
         body: "Wiemy, że transport dla podopiecznych to nie jest kontrakt jak każdy inny. Dlatego mówimy wprost.",
         items: [
-          { q: "Czy wasz kierowca wie, jak pomóc komuś na wózku?", a: "Tak. Szkolimy z transferu pasażera, mocowania wózka, asysty przy wsiadaniu. Konkretną procedurę pokazujemy na spotkaniu." },
-          { q: "Co jeśli pasażer potrzebuje więcej czasu?", a: "Czekamy. Nasza obietnica „Zawsze na miejscu” obejmuje też: będziemy, dopóki nie jesteś gotowy." },
-          { q: "Czy cena może być stabilna przez 12 miesięcy?", a: "Tak. W umowie ramowej blokujemy stawkę na rok. Indeksacja roczna, zawsze uzgadniana na piśmie." },
-          { q: "Faktura zgodna z subwencją?", a: "Tak. Opis dopasowujemy do linii — transport sanitarny, transport socjalny, transport edukacyjny. Wzór do akceptacji księgowej." },
-          { q: "Co z RODO?", a: "Dane pasażera (imię, adres, kontakt opiekuna) przetwarzamy tylko w celu wykonania kursu. Umowa powierzenia w pakiecie." },
+          { q: "Czy wasz kierowca naprawdę wie, jak pomóc komuś na wózku, czy tylko mówicie że wie?", a: "Wie. Szkolimy z transferu pasażera, mocowania wózka, asysty przy wsiadaniu. Konkretną procedurę pokażemy u was na spotkaniu, nie w PDF-ie." },
+          { q: "Co jeśli nasz mieszkaniec potrzebuje pięciu minut więcej, żeby się przygotować?", a: "Czekamy. Nasza obietnica „Zawsze na miejscu” oznacza: będziemy tam, dopóki on nie jest gotowy. Nie odjeżdżamy z zegarkiem w ręku." },
+          { q: "Czy cena może być stabilna przez 12 miesięcy — bo my mamy budżet roczny zatwierdzony przez wójta?", a: "Tak. W umowie ramowej blokujemy stawkę na rok. Indeksacja roczna ustalana na piśmie, najpóźniej w listopadzie na następny rok." },
+          { q: "Faktura musi pasować do linii subwencyjnej, inaczej księgowość mi to oddaje.", a: "Wystawiamy z opisem zgodnym z linią — transport sanitarny, transport socjalny, transport edukacyjny. Wzór konsultujemy z waszą księgową przed pierwszą fakturą." },
+          { q: "Co z danymi naszych mieszkańców — RODO?", a: "Dane pasażera (imię, adres, kontakt opiekuna) przetwarzamy tylko w celu wykonania kursu. Umowa powierzenia w pakiecie. Niczego nie wysyłamy poza UE." },
+          { q: "Czy zawsze będzie ten sam kierowca, czy będzie się zmieniał?", a: "Stały kierowca przypisany do trasy. Jeśli choruje — uprzedzamy 24 godziny wcześniej i wysyłamy zastępcę z briefem o pasażerze." },
         ],
       },
       faq: {
@@ -309,11 +312,12 @@ export const pl = {
         title: "Pytania, które słyszymy od rodzin",
         body: "Bez ściemy. To co najczęściej pytacie, to co Wam najczęściej mówimy.",
         items: [
-          { q: "Ile za trasę?", a: "Cena zależy od dystansu i godziny (noc — dopłata). Konkretna kwota tego samego dnia po krótkim briefie." },
-          { q: "Czy mogę mieć fotelik dla dziecka?", a: "Tak. Bez dopłaty, jeśli zgłosisz w briefie z rocznikiem i wagą dziecka." },
-          { q: "Co jeśli wesele się przeciągnie?", a: "Robimy kurs powrotny o ustalonej godzinie. Jeśli się przedłuża — przedłużamy, dopłata po stawce godzinowej z cennika." },
-          { q: "Czy odbierzecie z lotniska o 4 rano?", a: "Tak. Dopłata nocna jest, ale uczciwa — w cenniku, nie z kapelusza." },
-          { q: "Czy wystawicie fakturę?", a: "Tak, na firmę albo na osobę prywatną. Dane do faktury bierzemy w briefie." },
+          { q: "Ile to będzie kosztować — całość, nie „od”?", a: "Cena zależy od dystansu i godziny (noc dopłata). Po krótkim briefie tego samego dnia podajemy konkretną kwotę, która jest finalna. Bez gwiazdek." },
+          { q: "Mamy małe dziecko — czy będzie fotelik?", a: "Tak. Bez dopłaty, jeśli zgłosisz w briefie rocznik i wagę dziecka. Fotelik 0-9 kg, 9-18 kg, 15-36 kg — mamy każdy z trzech." },
+          { q: "A jeśli wesele się przeciągnie do trzeciej w nocy?", a: "Robimy kurs powrotny o ustalonej godzinie. Jeśli się przedłuża — przedłużamy, dopłata po stawce godzinowej z cennika, którą widzisz wcześniej. Bez „cena ustalana indywidualnie po fakcie”." },
+          { q: "Czy odbierzecie nas z Pyrzowic o czwartej rano w niedzielę?", a: "Tak. Dopłata nocna jest, ale uczciwa — w cenniku, nie z kapelusza. Niedziela bez dopłaty świątecznej." },
+          { q: "Wystawicie fakturę na firmę męża?", a: "Tak, na firmę albo na osobę prywatną. Dane do faktury bierzemy w briefie, wysyłamy mailem tego samego dnia." },
+          { q: "Mamy psa, czy go zabierzecie?", a: "Tak, w transporterze albo na kocu. Bez dopłaty, ale prosimy o uprzedzenie — żeby kierowca wiedział i zabrał kocyk z auta." },
         ],
       },
       faq: {
@@ -362,11 +366,12 @@ export const pl = {
         title: "Pytania przed podpisem",
         body: "Wynajem to nie loteria. Pytaj śmiało, my odpowiadamy konkretnie.",
         items: [
-          { q: "Ile za dobę?", a: "Stawka aktualna na stronie. Cennik widoczny przed kontaktem, nie ukryty za formularzem." },
-          { q: "Jaki limit kilometrów?", a: "300 km/doba w cenie. Powyżej — stawka z cennika, też publiczna." },
-          { q: "Kaucja?", a: "Stała kwota, wpisana w cennik. Zwrotna w 48 godzin po oddaniu auta." },
-          { q: "Mogę odebrać w sobotę?", a: "Tak. Niedzielę uzgadniamy, ale zwykle też dajemy radę." },
-          { q: "Co z ubezpieczeniem?", a: "OC w cenie. AC z udziałem własnym — opcja, dopłata na stronie." },
+          { q: "Ile to mnie wyjdzie za dobę — bez „od” i bez gwiazdek?", a: "Stawka dobowa widoczna na stronie. Cennik publiczny przed kontaktem, nie ukryty za formularzem. Co tam czytasz, to płacisz." },
+          { q: "Jaki limit kilometrów dziennie i co jeśli przekroczę?", a: "300 km na dobę w cenie. Powyżej — stawka z cennika, też publiczna. Kierowca, który nie liczy kilometrów, nie jest naszym problemem — ale stawkę widzisz wcześniej." },
+          { q: "Ile kaucji i kiedy wraca?", a: "Stała kwota, wpisana w cennik. Zwrotna na konto w 48 godzin po oddaniu auta. Bez „w ciągu miesiąca”, bez „proszę przypomnieć”." },
+          { q: "Czy mogę odebrać w sobotę rano — bo w tygodniu pracuję?", a: "Tak. Niedzielę uzgadniamy, ale zwykle też dajemy radę. Standardowo otwarte 8-16 w sobotę, awaryjnie poza tym oknem na telefon." },
+          { q: "Co z ubezpieczeniem — co jeśli będzie stłuczka?", a: "OC w cenie. AC z udziałem własnym — opcja, dopłata na stronie. Wyceniana raz, nie po szkodzie." },
+          { q: "Mogę pojechać do Czech albo do Niemiec?", a: "Czechy, Słowacja, Niemcy — bez dopłaty granicznej. Dalej — uzgadniamy, ale auto ma zielone karty na całą Europę." },
         ],
       },
       faq: {
@@ -415,11 +420,12 @@ export const pl = {
         title: "Co warto wiedzieć przed zamówieniem",
         body: "Sprzęt eventowy to detale. Pytaj wcześnie, bo na imprezie już za późno.",
         items: [
-          { q: "Jaki rozmiar namiotu mi się przyda?", a: "Na 30 osób — namiot 5x10 m. Na 50 osób — 6x12 m. Konkretny rozmiar dobierzemy do działki i liczby gości." },
-          { q: "Ile cukru bierze wata?", a: "Worek 1 kg starcza na około 40 porcji. Cukier po Twojej stronie albo dodajemy w komplecie." },
-          { q: "Czy maszyny mają instrukcję?", a: "Tak, ale przy odbiorze pokażemy obsługę na żywo. Wata cukrowa to nie atom, ale są patenty." },
-          { q: "Co z prądem?", a: "Maszyny — standardowe gniazdko 230V. Namiot — bez prądu. Oświetlenie do namiotu — opcja, dopłata uzgadniana." },
-          { q: "A jeśli będzie padać?", a: "Namiot trzyma deszcz. Maszyny pod namiotem albo zadaszeniem. Wiatr powyżej 60 km/h — odradzamy, ale ostateczna decyzja Twoja." },
+          { q: "Jaki rozmiar namiotu mi się przyda na 40 osób?", a: "Na 30 osób — namiot 5x10 m. Na 50 osób — 6x12 m. Na 40 osób środkowy z dwóch, zależy ile będzie stołów. Dobierzemy do działki i liczby gości, bez sprzedaży większego." },
+          { q: "Ile worków cukru wziąć do waty na komunii?", a: "Worek 1 kg starcza na około 40 porcji. Cukier po twojej stronie albo dodajemy w komplecie — drożej o stawkę z marketu plus dowóz." },
+          { q: "Czy babcia da radę obsłużyć maszynę do popcornu?", a: "Da. Pokażemy na miejscu, przy odbiorze, na żywo. Instrukcja papierowa też jest, ale wystarczy minuta z kierowcą." },
+          { q: "Co z prądem — bo u nas tylko jedno gniazdko w stodole?", a: "Maszyny biorą zwykłe 230 V, jedna na gniazdko. Namiot prądu nie potrzebuje. Oświetlenie do namiotu — opcja, dopłata uzgadniana w briefie." },
+          { q: "A jeśli będzie padać albo wiało?", a: "Namiot trzyma deszcz. Maszyny pod namiot albo pod zadaszenie. Wiatr powyżej 60 km/h — odradzamy stawianie namiotu, ale ostateczna decyzja twoja. Mówimy ci szczerze, nie sprzedajemy się na siłę." },
+          { q: "Z jakim wyprzedzeniem muszę rezerwować?", a: "Maj-wrzesień — trzy do czterech tygodni wcześniej. Poza sezonem tydzień wystarczy. Komunie majowe rezerwują zwykle już w marcu." },
         ],
       },
       faq: {
@@ -436,7 +442,8 @@ export const pl = {
   home: {
     sectionWhatWeDo: {
       title: "Co robimy",
-      body: "Przewozimy ludzi i sprzęt w południowej Polsce. Lotnisko, sanktuarium, wesele, DPS, wynajem busa, sprzęt na event. Sześć rodzajów kursów, jedna obietnica: będziesz na czas. Bo nasza firma nazywa się Via Viator, a nie „spróbujemy zdążyć”.",
+      body: "Sześć usług, jedna marka. Transfery na Pyrzowice, Balice, Wrocław. Pielgrzymki z postojem przy bramie sanktuarium. Transport osób na wózku, w fotelu, z asystą. Wesele, komunia, urodziny rodzinne. Wynajem Mastera na dobę bez kierowcy. Sprzęt na imprezę plenerową.",
+      callout: "Każda usługa ma własną ścieżkę poniżej. Wybierz to, czego potrzebujesz.",
       cta: "Zobacz pełną ofertę",
     },
     sectionForWhom: {
@@ -454,7 +461,7 @@ export const pl = {
     },
     sectionFleet: {
       title: "Nasza flota",
-      body: "Renault Trafic do osobówki — 8 miejsc, klima, czysto. Renault Master do cargo — przeprowadzki, sprzęt eventowy, większy bagaż. Auta na bieżących przeglądach, zimą na zimowych oponach, w środku bez papierka po kanapce. Flotę powiększamy — jeśli czegoś dziś nie ma, jutro może być.",
+      body: "Renault Trafic do transportu osobowego — cztery lub osiem miejsc, klimatyzacja, fotelik dla dziecka w cenie. Renault Master do wynajmu bez kierowcy — doba, limit km, kaucja na stronie. Pas czerwony po boku, numer telefonu z tyłu, brak naklejek tematycznych.",
       vehicles: {
         traficName: "Renault Trafic",
         traficDesc: "8-osobowy, klimatyzacja, pasy, fotelik na życzenie. Do transferów, pielgrzymek, transportu rodzinnego.",
@@ -466,20 +473,20 @@ export const pl = {
       title: "Dlaczego my",
       points: [
         {
-          title: "Punktualność wpisana w nazwę",
-          body: "Via Viator znaczy „w drodze”. Jesteśmy 10 minut przed czasem, nie minutę po. Jeśli się spóźnimy — przyznajemy się przed Tobą.",
+          title: "Sprawdzamy w 30 minut",
+          body: "Każde zapytanie weryfikujemy w 30 minut w godzinach pracy. Jeśli mamy pojazd — potwierdzamy. Jeśli nie — mówimy od razu, żebyś nie tracił czasu.",
         },
         {
-          title: "Cena, którą widzisz, to cena, którą płacisz",
-          body: "Bez gwiazdek, bez „od”, bez doliczania po fakcie. Wycena trzyma się umowy.",
+          title: "Cennik bez gwiazdek",
+          body: "Wynajem Mastera ma stawkę dobową, limit km i kaucję na stronie. Bez „od X zł”, bez „cena ustalana indywidualnie”.",
         },
         {
-          title: "Mówimy po polsku, nie po firmowemu",
-          body: "Bez „dedykowanych rozwiązań” i „efektywnej synergii”. Konkret: skąd, dokąd, kiedy, za ile, na czym jeździmy.",
+          title: "Faktura VAT do 14 dni",
+          body: "B2B z odroczonym terminem. DPS i fundacje z opisem zgodnym z subwencją. Wysyłka tego samego dnia po realizacji.",
         },
         {
-          title: "Telefon odbieramy. E-mail czytamy.",
-          body: "Awaryjny numer to numer do kierownictwa, nie do infolinii. Brief mamy zwięzły, odpowiedź szybką.",
+          title: "Kierowca, który pomaga",
+          body: "Wózek wniesiemy. Walizkę też. Fotelik dla dziecka w cenie. To nie opcja — to standard.",
         },
       ],
     },
@@ -501,29 +508,61 @@ export const pl = {
       "Jesteśmy przewoźnikiem osobowym z południowej Polski. Bazujemy w śląskim, jeździmy po opolskim, małopolskim i świętokrzyskim. Nie obiecujemy „rozwiązań transportowych” — obiecujemy, że będziesz na czas. To są dwie różne rzeczy.",
     mission: {
       title: "Po co jesteśmy",
-      body: "Bo transport osobowy w południowej Polsce za długo wyglądał tak: dzwonisz do trzech firm, jedna nie odbiera, druga obiecuje i nie przyjedzie, trzecia wystawi cenę zupełnie inną niż przez telefon. My zaczęliśmy od pytania, jak by miało wyglądać, gdyby działało normalnie. I tak działamy.",
+      body: "Dowozimy ludzi tam, gdzie się umówili, w czasie, który ustaliliśmy. Niezależnie od celu — lotnisko, pielgrzymka, wizyta w przychodni, wesele kuzyna. Cztery województwa, cztery jednoznaczne zobowiązania: punktualność, transparentny cennik, jasna faktura, kierowca który pomaga zamiast czekać aż go poprosisz.",
     },
-    archetypes: {
-      title: "Jak myślimy",
-      body: "Mędrzec — bo trasy, godziny, parkingi, bramy. Wiemy, gdzie podjechać pod Jasną Górą, którą bramą wjechać na Pyrzowice w godzinach szczytu, gdzie postawić się pod halą przylotów w Krakowie-Balicach. Opiekun — bo pasażer to człowiek, nie pozycja w grafiku. Jeśli ktoś potrzebuje minuty, dajemy minutę. Odkrywca — bo flotę powiększamy i robimy też trasy nieoczywiste. Ale 90% naszego dnia to mędrzec i opiekun.",
+    howWeWork: {
+      title: "Jak jeździmy",
+      body: "Sześć reguł operacyjnych. Tak samo dla transferu o czwartej rano i dla pielgrzymki w niedzielę po południu.",
+      rules: [
+        {
+          title: "Punktualność jest zasadą, nie obietnicą",
+          body: "Wyjeżdżamy 20 minut przed planowaną godziną odbioru. Przy transferze lotniskowym wjeżdżamy na terminal 2 minuty przed lądowaniem gościa.",
+        },
+        {
+          title: "Jedna osoba kontaktowa z imienia i nazwiska",
+          body: "Dla klientów ramowych i grupowych przypisujemy stały kontakt operacyjny. Dzwonisz pod ten sam numer, piszesz do tego samego maila.",
+        },
+        {
+          title: "Faktura VAT z 14-dniowym terminem",
+          body: "Każda usługa kończy się fakturą — odroczony termin płatności do 14 dni dla B2B. Dla DPS i fundacji opis zgodny z subwencją na życzenie.",
+        },
+        {
+          title: "Wnoszenie wózka i bagażu jako standard",
+          body: "Kierowca otwiera drzwi, bierze walizki, asystuje przy wsiadaniu. To nie ekstra opcja — to obsługa, którą zawsze włączamy.",
+        },
+        {
+          title: "Sprawdzamy w 30 minut",
+          body: "Każde zapytanie weryfikujemy w 30 minut w godzinach pracy. Jeśli mamy pojazd — potwierdzamy. Jeśli nie — mówimy od razu, żebyś nie tracił czasu.",
+        },
+        {
+          title: "Cztery województwa, jeden numer",
+          body: "Operujemy w śląskim, opolskim, małopolskim i świętokrzyskim. Pyrzowice, Kraków-Balice i Wrocław jako naturalne huby lotniskowe.",
+        },
+      ],
     },
     team: {
       title: "Zespół",
+      body: "Mała flota, znajome twarze, ten sam numer telefonu od dwóch lat.",
       patrykName: "Patryk Tomeczek",
       patrykRole: "Współwłaściciel, operacja",
       patrykBio:
-        "Patryk prowadzi codzienną operację — flota, kierowcy, briefy, kontakt z klientem. Jeśli zadzwonisz do firmy, prawdopodobnie odbierze Patryk albo ktoś, kogo Patryk zna z imienia. Bez warstwy „przekażę dalej, oddzwonimy”.",
-      foundingNote: "Spółka założona przez Patryka Tomeczka i Adriana Kaszowskiego.",
+        "Odbiera telefon. Zna lokalne lotniska, parkingi pod sanktuariami, godziny korków na A1 i A4. Decyzje podejmuje od razu — nie ma „zadzwonimy do Państwa”.",
+      foundingNote: "Via Viator założyli wspólnie z Adrianem Kaszowskim. Adrian pozostaje w tle operacji — strona handlowa i kontakt to Patryk.",
     },
     region: {
       title: "Gdzie jeździmy",
-      body: "Bazujemy w południowej Polsce. Standardowe huby — Pyrzowice, Kraków-Balice, Wrocław. Codzienny zasięg — śląskie, opolskie, małopolskie, świętokrzyskie. Dłuższe trasy — Warszawa, Trójmiasto, Niemcy, Czechy — robimy z wyprzedzeniem.",
+      body: "Bazujemy w południowej Polsce. Standardowe huby lotniskowe — Pyrzowice, Kraków-Balice, Wrocław. Codzienny zasięg — śląskie, opolskie, małopolskie, świętokrzyskie. Dłuższe trasy — Warszawa, Trójmiasto, Niemcy, Czechy — robimy z wyprzedzeniem.",
       hubs: ["Pyrzowice", "Kraków-Balice", "Wrocław"],
       regions: ["Śląskie", "Opolskie", "Małopolskie", "Świętokrzyskie"],
     },
     fleet: {
       title: "Flota",
-      body: "Renault Trafic — bus osobowy, 8 miejsc, do transferów i pielgrzymek. Renault Master — cargo, do wynajmu krótkoterminowego, przeprowadzek, sprzętu eventowego. Auta na bieżących przeglądach, zimą na zimowych oponach. Flotę powiększamy — jeśli czegoś dziś nie ma, jutro może być.",
+      body: "Dwa Renaulty dziś, więcej w 2026. Karoseria czarna albo grafitowa, pas czerwony po boku, numer telefonu z tyłu.",
+      items: [
+        { model: "Renault Trafic", desc: "Osobowy, klimatyzacja, fotelik dziecięcy w cenie. Cztery lub osiem miejsc — zależy od trasy." },
+        { model: "Renault Master", desc: "Wynajem bez kierowcy. Doba, limit km, kaucja — wszystko na stronie." },
+      ],
+      eventEquipment: "Plus sprzęt na imprezę: namiot eventowy, maszyna do popcornu, maszyna do waty cukrowej. Jesienią 2026 dochodzą stoły i ławki biesiadne.",
     },
     values: {
       title: "Czego nie robimy",
@@ -623,7 +662,7 @@ export const pl = {
       {
         name: "Reprodukowalność",
         body:
-          "Pełna ścieżka decyzji w repo. Brief, brand book, korespondencja, commit history.",
+          "Pełna ścieżka decyzji w repo. Brief klienta, korespondencja, dokumenty źródłowe, commit history.",
       },
       {
         name: "Holistyczność zmian",
@@ -632,7 +671,7 @@ export const pl = {
       },
       {
         name: "Wierność marki",
-        body: "Zgodność z Brand Book v1.0 zatwierdzonym przez klienta.",
+        body: "Zgodność ze strategią marki zatwierdzoną przez klienta — głos, ton, sposób mówienia o usłudze.",
       },
     ],
     contractor: "Wykonawca: QA10 sp. z o.o. — qa10.io",

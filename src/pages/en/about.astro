@@ -1,14 +1,18 @@
 ---
 /**
- * /en/about — strona „About" Via Viator (EN mirror /o-nas.astro).
+ * /en/about — Via Viator "About" page (EN mirror of /o-nas.astro).
  *
- * Identyczna struktura + sekcje co PL, różnice:
- *   - locale="en", dict z en.ts
- *   - tekst lokalny (manifest, archetypy, mini-bio) przepisany na EN
- *   - mapa SVG: nazwy regionów z dict.about.region.regions (EN labels)
- *   - SEO: seoMap.oNas (titleEn/descriptionEn), pathEn
- *
+ * Identyczna struktura sekcji co PL, locale="en", dict z en.ts.
  * Parytet językowy — pierścień jakości #6 QA10 Quality Seal v1.0.
+ *
+ * Sekcje:
+ *  1. Hero          — close-up V logo, eyebrow factual (Patryk answers the phone).
+ *  2. Why we exist  — Mission, why the company was founded.
+ *  3. How we drive  — 6 operating rules, numbered list.
+ *  4. Team          — Patryk (face of brand) + short founding note.
+ *  5. Where we drive — 4 regions + 3 airport hubs, right column = inline PL map SVG.
+ *  6. Fleet         — Trafic + Master as cards, plus event gear note below.
+ *  7. CTA           — "Plan a trip / rental with us" → /en/contact.
  */
 
 import BaseLayout from "@layouts/BaseLayout.astro";
@@ -37,76 +41,66 @@ const alternates = buildAlternates("oNas", SITE);
 const breadcrumbJsonLd = breadcrumbForRoute("oNas", locale, SITE);
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Treść lokalna — EN przepisana z parytetem semantycznym wobec PL
+// Adapter danych z dict — opcjonalne pola pozwalają stronie zadziałać
+// nawet jeśli słownik tymczasowo nie dostarczy `howWeWork`, `fleet.items`
+// lub `team.body`. Gdy słownik je zawiera — używamy ich bezpośrednio.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const missionManifest =
-  "Punctuality in the name. Four regions, one phone number, one promise: you'll be on time.";
+interface AboutRule {
+  title: string;
+  body: string;
+}
+interface AboutHowWeWork {
+  title: string;
+  body: string;
+  rules: ReadonlyArray<AboutRule>;
+}
+interface AboutFleetItem {
+  model: string;
+  desc: string;
+}
 
-const archetypes = [
-  {
-    icon: "shield-check" as const,
-    name: "Sage",
-    weight: "60%",
-    body:
-      "We know the parkings, the gates, the traffic. Expertise isn't marketing — it's hours saved on the route.",
-  },
-  {
-    icon: "users" as const,
-    name: "Caregiver",
-    weight: "30%",
-    body:
-      "We'll carry the wheelchair, the suitcase too, buckle the child into the seat. Small things nobody rewards.",
-  },
-  {
-    icon: "sparkles" as const,
-    name: "Explorer",
-    weight: "10%",
-    body:
-      "Trips, pilgrimages, family weekends. The route isn't just point A to point B.",
-  },
-];
+type AboutLike = {
+  howWeWork?: AboutHowWeWork;
+  team?: { body?: string };
+  fleet?: { items?: ReadonlyArray<AboutFleetItem>; eventEquipment?: string };
+};
 
-const patrykBio =
-  dict.about.team.patrykBio ??
-  "Picks up the phone. Knows the local airports. Decides fast.";
+const aboutExtra = dict.about as unknown as AboutLike;
 
-const adrianNote =
-  "Company co-founded with Adrian Kaszowski. Adrian stays behind the scenes of operations.";
+const howWeWork: AboutHowWeWork = aboutExtra.howWeWork ?? {
+  title: "How we drive",
+  body: "Six operating rules. The same for a 4 a.m. airport transfer and a Sunday afternoon pilgrimage.",
+  rules: [],
+};
 
-const patrykInitials = "PT";
+const fleetItems: ReadonlyArray<AboutFleetItem> =
+  aboutExtra.fleet?.items ?? [
+    {
+      model: "Renault Trafic",
+      desc: "Passenger van, 8 seats. Transfers, pilgrimages, family transport.",
+    },
+    {
+      model: "Renault Master",
+      desc: "Passenger or cargo, 8 seats. Short-term rental, moves, event gear.",
+    },
+  ];
 
-// EN labels for region — z dict.about.region.regions (Silesia / Opole / Lesser Poland / Świętokrzyskie)
+const fleetEventEquipment: string =
+  aboutExtra.fleet?.eventEquipment ??
+  "Plus event gear: tent, popcorn machine, cotton candy machine. From autumn 2026 we add party tables and benches.";
+
+const teamBody: string =
+  aboutExtra.team?.body ??
+  "Small fleet, familiar faces, the same phone number for two years.";
+
+// Region labels — używamy dict (EN: Silesia / Opole / Lesser Poland / Świętokrzyskie),
+// nie company.region (PL labels). Parytet językowy.
 const regionsEn = dict.about.region.regions;
 const hubsEn = dict.about.region.hubs;
 
-// Section titles/labels (parytet EN)
-const fleetTableHeaders = {
-  model: "Model",
-  type: "Type",
-  seats: "Seats",
-  branding: "Branding",
-};
-
-// Type labels — z company.fleet (osobowy/cargo) → EN equivalents
-const typeLabelsEn: Record<string, string> = {
-  osobowy: "Passenger",
-  "osobowy/cargo": "Passenger / cargo",
-  cargo: "Cargo",
-};
-
-// EN labels for event equipment (przekład z company.eventEquipment)
-const eventEquipmentLabelsEn: Record<string, string> = {
-  "namiot eventowy": "Event tent",
-  "maszyna do popcornu": "Popcorn machine",
-  "maszyna do waty cukrowej": "Cotton candy machine",
-  "stoły biesiadne": "Banquet tables",
-  "ławki biesiadne": "Banquet benches",
-};
-
-function translateEquipment(pl: string): string {
-  return eventEquipmentLabelsEn[pl] ?? pl;
-}
+// Inicjały Patryka — placeholder zamiast portretu (klient nie udostępnił zdjęcia).
+const patrykInitials = "PT";
 ---
 
 <BaseLayout
@@ -121,7 +115,7 @@ function translateEquipment(pl: string): string {
 >
   {/* 1. HERO — close-up V logo */}
   <Hero
-    eyebrow="Patryk Tomeczek, Adrian Kaszowski, and a van"
+    eyebrow="Patryk Tomeczek answers the phone"
     headline={dict.about.h1}
     subhead={dict.about.intro}
     image="/images/brand-detail/brand-logo-close.jpg"
@@ -131,59 +125,54 @@ function translateEquipment(pl: string): string {
     priority={true}
   />
 
-  {/* 2. Why we exist — Mission + manifest */}
+  {/* 2. Why we exist — why the company was founded */}
   <Section tone="elevated" ariaLabelledby="about-mission-title">
     <Container size="default">
       <div class="vv-about-mission">
         <h2 id="about-mission-title" class="vv-about-section-title">
           {dict.about.mission.title}
         </h2>
-        <p class="vv-about-section-lead">{dict.about.mission.body}</p>
-        <p class="vv-about-mission__manifest">{missionManifest}</p>
+        <p class="vv-about-mission__lead">{dict.about.mission.body}</p>
       </div>
     </Container>
   </Section>
 
-  {/* 3. How we think — 3 archetypes */}
-  <Section tone="default" ariaLabelledby="about-archetypes-title">
+  {/* 3. How we drive — 6 operating rules of Via Viator */}
+  <Section tone="default" ariaLabelledby="about-rules-title">
     <Container size="default">
       <header class="vv-about-section-head">
-        <h2 id="about-archetypes-title" class="vv-about-section-title">
-          {dict.about.archetypes.title}
+        <h2 id="about-rules-title" class="vv-about-section-title">
+          {howWeWork.title}
         </h2>
-        <p class="vv-about-section-lead">{dict.about.archetypes.body}</p>
+        <p class="vv-about-section-lead">{howWeWork.body}</p>
       </header>
 
-      <ul class="vv-about-archetypes" role="list">
+      <ol class="vv-about-rules" role="list">
         {
-          archetypes.map((a) => (
+          howWeWork.rules.map((rule, index) => (
             <li>
-              <Card tone="default" class="vv-about-archetype">
-                <div class="vv-about-archetype__head">
-                  <span class="vv-about-archetype__icon" aria-hidden="true">
-                    <Icon name={a.icon} size={22} />
-                  </span>
-                  <span class="vv-about-archetype__weight" aria-label={`share ${a.weight}`}>
-                    {a.weight}
-                  </span>
-                </div>
-                <h3 class="vv-about-archetype__name">{a.name}</h3>
-                <p class="vv-about-archetype__body">{a.body}</p>
+              <Card tone="default" class="vv-about-rule">
+                <span class="vv-about-rule__number" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h3 class="vv-about-rule__title">{rule.title}</h3>
+                <p class="vv-about-rule__body">{rule.body}</p>
               </Card>
             </li>
           ))
         }
-      </ul>
+      </ol>
     </Container>
   </Section>
 
-  {/* 4. Team — Patryk + Adrian */}
+  {/* 4. Team — Patryk + short founding note */}
   <Section tone="surface" ariaLabelledby="about-team-title">
     <Container size="default">
       <header class="vv-about-section-head">
         <h2 id="about-team-title" class="vv-about-section-title">
           {dict.about.team.title}
         </h2>
+        <p class="vv-about-section-lead">{teamBody}</p>
       </header>
 
       <div class="vv-about-team">
@@ -194,12 +183,12 @@ function translateEquipment(pl: string): string {
           <div class="vv-about-team__copy">
             <h3 class="vv-about-team__name">{dict.about.team.patrykName}</h3>
             <p class="vv-about-team__role">{dict.about.team.patrykRole}</p>
-            <p class="vv-about-team__bio">{patrykBio}</p>
+            <p class="vv-about-team__bio">{dict.about.team.patrykBio}</p>
           </div>
         </Card>
 
         <Card tone="outlined" class="vv-about-team__card vv-about-team__card--note">
-          <p class="vv-about-team__note">{adrianNote}</p>
+          <p class="vv-about-team__note">{dict.about.team.foundingNote}</p>
         </Card>
       </div>
     </Container>
@@ -290,7 +279,7 @@ function translateEquipment(pl: string): string {
     </Container>
   </Section>
 
-  {/* 6. Fleet */}
+  {/* 6. Fleet — vehicle cards grid + event gear note below */}
   <Section tone="elevated" ariaLabelledby="about-fleet-title">
     <Container size="default">
       <header class="vv-about-section-head">
@@ -300,67 +289,20 @@ function translateEquipment(pl: string): string {
         <p class="vv-about-section-lead">{dict.about.fleet.body}</p>
       </header>
 
-      <div class="vv-about-fleet__table-wrap">
-        <table class="vv-about-fleet__table">
-          <caption class="visually-hidden">
-            List of Via Viator vehicles with type, seat count and branding status.
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">{fleetTableHeaders.model}</th>
-              <th scope="col">{fleetTableHeaders.type}</th>
-              <th scope="col">{fleetTableHeaders.seats}</th>
-              <th scope="col">{fleetTableHeaders.branding}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              company.fleet.map((v) => (
-                <tr>
-                  <th scope="row" class="vv-about-fleet__model">
-                    {v.model}
-                  </th>
-                  <td>{typeLabelsEn[v.type] ?? v.type}</td>
-                  <td>{v.seats}</td>
-                  <td>
-                    {v.branded ? (
-                      <span class="vv-about-fleet__check" aria-label="Branded yes">
-                        <Icon name="check" size={16} />
-                      </span>
-                    ) : (
-                      <span class="vv-about-fleet__dash" aria-label="No branding">
-                        —
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-      </div>
+      <ul class="vv-about-fleet__grid" role="list">
+        {
+          fleetItems.map((vehicle) => (
+            <li>
+              <Card tone="default" class="vv-about-fleet__card">
+                <h3 class="vv-about-fleet__model">{vehicle.model}</h3>
+                <p class="vv-about-fleet__desc">{vehicle.desc}</p>
+              </Card>
+            </li>
+          ))
+        }
+      </ul>
 
-      <aside class="vv-about-fleet__events">
-        <h3 class="vv-about-fleet__events-title">Plus: event gear</h3>
-        <ul class="vv-about-fleet__events-list" role="list">
-          {
-            company.eventEquipment.map((eq) => (
-              <li>
-                <Icon name="check" size={16} />
-                <span>{translateEquipment(eq)}</span>
-              </li>
-            ))
-          }
-        </ul>
-        {company.eventEquipmentPlanned.length > 0 && (
-          <p class="vv-about-fleet__events-planned">
-            From autumn 2026 we add:{" "}
-            <strong>
-              {company.eventEquipmentPlanned.map(translateEquipment).join(", ")}
-            </strong>.
-          </p>
-        )}
-      </aside>
+      <p class="vv-about-fleet__event-note">{fleetEventEquipment}</p>
     </Container>
   </Section>
 
@@ -414,78 +356,63 @@ function translateEquipment(pl: string): string {
     max-width: 65ch;
   }
 
-  .vv-about-mission__manifest {
-    margin: var(--vv-space-6) 0 0 0;
-    padding: var(--vv-space-5) var(--vv-space-6);
-    background-color: var(--vv-color-bg-page);
-    border-left: 4px solid var(--vv-color-brand-red);
-    border-radius: var(--vv-radius-md);
-    font-family: var(--vv-typography-font-family-display);
+  .vv-about-mission__lead {
+    margin: 0;
     font-size: var(--vv-typography-font-size-lg);
-    font-weight: var(--vv-typography-font-weight-semibold);
+    line-height: var(--vv-typography-line-height-relaxed);
     color: var(--vv-color-fg-primary);
-    line-height: var(--vv-typography-line-height-snug);
-    text-wrap: balance;
+    text-wrap: pretty;
   }
 
-  .vv-about-archetypes {
+  .vv-about-rules {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--vv-space-5);
+    gap: var(--vv-space-6);
   }
 
   @media (min-width: 768px) {
-    .vv-about-archetypes {
+    .vv-about-rules {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .vv-about-rules {
       grid-template-columns: repeat(3, 1fr);
     }
   }
 
-  .vv-about-archetype {
+  .vv-about-rule {
     height: 100%;
   }
 
-  .vv-about-archetype__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--vv-space-3);
-  }
-
-  .vv-about-archetype__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--vv-radius-md);
-    background-color: var(--vv-color-brand-red-50);
-    color: var(--vv-color-brand-red-700);
-  }
-
-  .vv-about-archetype__weight {
+  .vv-about-rule__number {
+    display: block;
     font-family: var(--vv-typography-font-family-mono);
-    font-size: var(--vv-typography-font-size-sm);
-    font-weight: var(--vv-typography-font-weight-bold);
+    font-size: var(--vv-typography-font-size-2xl);
+    font-weight: var(--vv-typography-font-weight-extrabold);
     color: var(--vv-color-brand-red-700);
-    letter-spacing: var(--vv-typography-letter-spacing-wider);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin: 0 0 var(--vv-space-3) 0;
   }
 
-  .vv-about-archetype__name {
+  .vv-about-rule__title {
     font-family: var(--vv-typography-font-family-display);
-    font-size: var(--vv-typography-font-size-xl);
+    font-size: var(--vv-typography-font-size-lg);
     font-weight: var(--vv-typography-font-weight-bold);
+    line-height: var(--vv-typography-line-height-tight);
     color: var(--vv-color-fg-primary);
-    margin: 0;
-    line-height: var(--vv-typography-line-height-snug);
+    margin: 0 0 var(--vv-space-2) 0;
   }
 
-  .vv-about-archetype__body {
+  .vv-about-rule__body {
     font-size: var(--vv-typography-font-size-base);
     color: var(--vv-color-fg-secondary);
-    line-height: var(--vv-typography-line-height-relaxed);
+    line-height: var(--vv-typography-line-height-normal);
     margin: 0;
   }
 
@@ -669,114 +596,52 @@ function translateEquipment(pl: string): string {
     line-height: var(--vv-typography-line-height-relaxed);
   }
 
-  .vv-about-fleet__table-wrap {
-    overflow-x: auto;
-    border-radius: var(--vv-radius-lg);
-    background-color: var(--vv-color-bg-page);
-    border: 1px solid var(--vv-color-border-subtle);
+  .vv-about-fleet__grid {
+    list-style: none;
     margin: 0 0 var(--vv-space-8) 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--vv-space-5);
   }
 
-  .vv-about-fleet__table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: var(--vv-typography-font-size-base);
+  @media (min-width: 768px) {
+    .vv-about-fleet__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
-  .vv-about-fleet__table thead th {
-    font-family: var(--vv-typography-font-family-display);
-    font-size: var(--vv-typography-font-size-xs);
-    font-weight: var(--vv-typography-font-weight-bold);
-    text-transform: uppercase;
-    letter-spacing: var(--vv-typography-letter-spacing-wider);
-    color: var(--vv-color-fg-muted);
-    text-align: left;
-    padding: var(--vv-space-4) var(--vv-space-5);
-    background-color: var(--vv-color-bg-surface);
-    border-bottom: 1px solid var(--vv-color-border-subtle);
-  }
-
-  .vv-about-fleet__table tbody td,
-  .vv-about-fleet__table tbody th {
-    padding: var(--vv-space-4) var(--vv-space-5);
-    border-bottom: 1px solid var(--vv-color-border-subtle);
-    text-align: left;
-    color: var(--vv-color-fg-primary);
-    vertical-align: middle;
-  }
-
-  .vv-about-fleet__table tbody tr:last-child td,
-  .vv-about-fleet__table tbody tr:last-child th {
-    border-bottom: 0;
+  .vv-about-fleet__card {
+    height: 100%;
   }
 
   .vv-about-fleet__model {
     font-family: var(--vv-typography-font-family-display);
+    font-size: var(--vv-typography-font-size-xl);
     font-weight: var(--vv-typography-font-weight-bold);
+    color: var(--vv-color-fg-primary);
+    margin: 0 0 var(--vv-space-2) 0;
+    line-height: var(--vv-typography-line-height-snug);
   }
 
-  .vv-about-fleet__check {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background-color: color-mix(in srgb, var(--vv-color-state-success) 15%, transparent);
-    color: var(--vv-color-state-success);
+  .vv-about-fleet__desc {
+    font-size: var(--vv-typography-font-size-base);
+    color: var(--vv-color-fg-secondary);
+    line-height: var(--vv-typography-line-height-relaxed);
+    margin: 0;
   }
 
-  .vv-about-fleet__dash {
-    color: var(--vv-color-fg-muted);
-    font-weight: var(--vv-typography-font-weight-bold);
-  }
-
-  .vv-about-fleet__events {
+  .vv-about-fleet__event-note {
     background-color: var(--vv-color-bg-page);
     border: 1px solid var(--vv-color-border-subtle);
     border-left: 4px solid var(--vv-color-brand-red);
     border-radius: var(--vv-radius-md);
-    padding: var(--vv-space-6);
-  }
-
-  .vv-about-fleet__events-title {
-    font-family: var(--vv-typography-font-family-display);
-    font-size: var(--vv-typography-font-size-lg);
-    font-weight: var(--vv-typography-font-weight-bold);
-    color: var(--vv-color-fg-primary);
-    margin: 0 0 var(--vv-space-4) 0;
-  }
-
-  .vv-about-fleet__events-list {
-    list-style: none;
-    margin: 0 0 var(--vv-space-4) 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--vv-space-2);
-  }
-
-  .vv-about-fleet__events-list li {
-    display: flex;
-    align-items: center;
-    gap: var(--vv-space-3);
+    padding: var(--vv-space-5) var(--vv-space-6);
     font-size: var(--vv-typography-font-size-base);
-    color: var(--vv-color-fg-primary);
-  }
-
-  .vv-about-fleet__events-list li :global(.vv-icon) {
-    color: var(--vv-color-brand-red-700);
-    flex-shrink: 0;
-  }
-
-  .vv-about-fleet__events-planned {
-    font-size: var(--vv-typography-font-size-sm);
-    color: var(--vv-color-fg-secondary);
-    margin: 0;
     line-height: var(--vv-typography-line-height-relaxed);
-  }
-
-  .vv-about-fleet__events-planned strong {
     color: var(--vv-color-fg-primary);
+    margin: 0;
   }
 </style>
+</content>
+</invoke>

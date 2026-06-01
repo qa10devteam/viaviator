@@ -5,7 +5,7 @@ export const en: Dictionary = {
     siteName: "Via Viator",
     siteTagline: "Always there",
     siteDescription:
-      "Passenger transport in southern Poland — airport transfers, pilgrimages, group travel, van rental, event gear. Punctuality is in our name.",
+      "Passenger transport in southern Poland — airport transfers, pilgrimages, accessible transport, drivers, van rental, event gear.",
     home: {
       title: "Via Viator — passenger transport in southern Poland",
       description:
@@ -107,7 +107,7 @@ export const en: Dictionary = {
   hero: {
     homeHeadline: "Always there.",
     homeSubhead:
-      "Passenger transport in southern Poland — transfers, pilgrimages, group travel, van rental, events. Punctuality is in our name.",
+      "Passenger transport in southern Poland. Airport transfers, group trips, accessible transport, drivers, van rental, event gear. Call +48 690 691 886.",
     homeCtaPrimary: "Get a quote",
     homeCtaSecondary: "See what we do",
     homeMicrocopy: "We pick up the phone. We read e-mail. Our briefs are short.",
@@ -149,11 +149,12 @@ export const en: Dictionary = {
         title: "Check this before you sign",
         body: "These are the questions coordinators ask us most often — and our straight answers.",
         items: [
-          { q: "Do you have a written SLA?", a: "Yes. Point by point: pickup time, emergency contact, delay definition, penalties. Template sent with your first brief." },
-          { q: "VAT invoice with 14-day terms?", a: "Standard. Longer terms negotiable on monthly retainers." },
-          { q: "What if my guest is delayed in customs?", a: "We wait up to 60 minutes free of charge. Beyond that — waiting fee, rate published in the price list." },
-          { q: "Do you have references?", a: "Yes. We share 3 B2B contacts on request — call or e-mail." },
-          { q: "What vehicles?", a: "Renault Trafic, 8 seats, up to 4 passengers with luggage. Larger groups — convoy." },
+          { q: "Who's my emergency contact if the driver doesn't show?", a: "One named person — phone and e-mail. For framework contracts an additional 24/7 dispatcher number." },
+          { q: "Do you issue invoices with deferred payment?", a: "Yes. VAT invoice with 14-day terms, sent the same day after the trip." },
+          { q: "Any references from similar companies?", a: "We'll give you references from three recent clients in your segment. Name, surname, phone — call them yourself." },
+          { q: "I need to know the price upfront — my manager hates surprises.", a: "The price in our quote is final. No add-ons for traffic, luggage or a schedule change within a ±15-minute window." },
+          { q: "What if my guest is delayed in customs?", a: "We wait up to 60 minutes free of charge. Beyond that — waiting fee, rate you see in the price list before the invoice." },
+          { q: "What vehicles do you bring?", a: "Renault Trafic, eight seats, up to four passengers with suitcase luggage. Larger groups — second van in convoy, same lead driver coordinates." },
         ],
       },
       faq: {
@@ -203,11 +204,12 @@ export const en: Dictionary = {
         title: "Check this before you book",
         body: "Pilgrimages aren't standard transfers — the questions are different too.",
         items: [
-          { q: "What year is the vehicle?", a: "Renault Trafic, 2020 or newer. Air conditioning works, seatbelts in place, clean inside." },
-          { q: "Can the driver wait during Mass?", a: "Yes. Waiting time is agreed in the brief and not billed separately later." },
-          { q: "What about luggage?", a: "8-seat van takes 8 passengers with hand luggage. Larger luggage — we add a Master as support, surcharge agreed upfront." },
-          { q: "Invoice to the parish?", a: "Yes. Invoice details captured in the brief." },
-          { q: "Do you drive up to the sanctuary or stop at the lot?", a: "Jasna Góra — coach entrance, pickup by the gate. Łagiewniki — underground or upper lot, depending on the day." },
+          { q: "What vehicle do you bring and is it clean inside?", a: "Renault Trafic, 2020 or newer. Air conditioning works, seatbelts in place, clean inside. We clean between trips, not between seasons." },
+          { q: "Will the driver wait at the gate during Mass or do I have to call?", a: "He waits. Waiting time is agreed in the brief and not billed separately later. The group coordinator has the driver's number from the day before." },
+          { q: "What about the group's luggage?", a: "Eight passengers with hand luggage — comfortable in the Trafic. Bigger luggage or devotional items — Master as backup, surcharge agreed in the brief, not after the fact." },
+          { q: "Can you invoice the parish with a description our accountant will accept?", a: "Yes. Invoice details captured in the brief, description agreed with your parish treasurer before you board the van." },
+          { q: "Do you drive up to the sanctuary itself or stop at the parking?", a: "Jasna Góra — coach entrance, pickup by the gate. Łagiewniki — underground or upper lot, depending on the day. Wadowice — drop-off below the square." },
+          { q: "What if an older lady in the group needs more time to board?", a: "We give the minute. Driver steps out, helps, waits. Pace set by the passenger, not by the clock." },
         ],
       },
       faq: {
@@ -257,11 +259,12 @@ export const en: Dictionary = {
         title: "Questions every institution asks",
         body: "We know transport for vulnerable passengers isn't a standard contract. So we speak straight.",
         items: [
-          { q: "Does your driver know how to assist a wheelchair passenger?", a: "Yes. Training covers passenger transfer, wheelchair securing, boarding assistance. We walk you through the procedure at the first meeting." },
-          { q: "What if a passenger needs more time?", a: "We wait. \"Always there\" also means: we'll be there until you're ready." },
-          { q: "Can the price stay stable for 12 months?", a: "Yes. The framework agreement locks the rate for a year. Annual indexation, always agreed in writing." },
-          { q: "Invoice aligned with our funding?", a: "Yes. We tailor the description — medical transport, social transport, education transport. Template for your accounting team's approval." },
-          { q: "What about GDPR?", a: "Passenger data (name, address, carer's contact) is processed only to deliver the trip. Data processing agreement included." },
+          { q: "Does your driver actually know how to help a wheelchair passenger, or just say so?", a: "He does. Training covers passenger transfer, wheelchair securing, boarding assistance. We walk you through the procedure at your site — not in a PDF." },
+          { q: "What if our resident needs five extra minutes to get ready?", a: "We wait. \"Always there\" means we'll be there until they're ready. We don't drive off with a watch in hand." },
+          { q: "Can the price stay stable for 12 months — our budget is approved annually?", a: "Yes. The framework agreement locks the rate for a year. Annual indexation agreed in writing, latest by November for the following year." },
+          { q: "The invoice has to match our funding line, otherwise accounting sends it back.", a: "We issue invoices with descriptions matching your funding — medical transport, social transport, education transport. We agree the template with your accountant before the first invoice." },
+          { q: "What about our residents' data — GDPR?", a: "Passenger data (name, address, carer's contact) is processed only to deliver the trip. Data processing agreement included. Nothing leaves the EU." },
+          { q: "Will it always be the same driver, or will it keep changing?", a: "Same driver assigned to the route. If he's sick, we notify 24 hours ahead and send a backup briefed on the passenger." },
         ],
       },
       faq: {
@@ -311,11 +314,12 @@ export const en: Dictionary = {
         title: "What families ask",
         body: "Straight answers. What you ask most often, and what we say.",
         items: [
-          { q: "How much per route?", a: "Depends on distance and time of day (night surcharge applies). Specific number same-day after a short brief." },
-          { q: "Can I have a child seat?", a: "Yes. No surcharge if you mention it in the brief with age and weight." },
-          { q: "What if the wedding runs long?", a: "We schedule the return at an agreed time. If it runs over — we extend at the hourly rate from the price list." },
-          { q: "Pickup from the airport at 4 a.m.?", a: "Yes. Night surcharge applies, but it's published, not invented on the spot." },
-          { q: "Invoice?", a: "Yes, to a company or a private person. Invoice details captured in the brief." },
+          { q: "How much will this cost — total, no \"from\"?", a: "Depends on distance and time of day (night surcharge applies). After a short brief we give you a specific final number the same day. No asterisks." },
+          { q: "We have a small child — will there be a car seat?", a: "Yes. No surcharge if you tell us in the brief: age and weight. Seats for 0-9 kg, 9-18 kg, 15-36 kg — we carry all three." },
+          { q: "What if the wedding runs until 3 a.m.?", a: "We schedule the return at an agreed time. If it runs over — we extend at the hourly rate from the price list, the one you see before booking. No \"price agreed individually after the fact\"." },
+          { q: "Will you pick us up from Katowice airport at 4 a.m. on a Sunday?", a: "Yes. Night surcharge applies, but it's fair — published in the price list, not invented on the spot. Sunday with no holiday surcharge." },
+          { q: "Will you invoice my husband's company?", a: "Yes, to a company or a private person. Invoice details captured in the brief, sent by e-mail the same day." },
+          { q: "We have a dog — will you take her?", a: "Yes, in a carrier or on a blanket. No surcharge, but please tell us in advance — so the driver knows and brings a blanket from the depot." },
         ],
       },
       faq: {
@@ -364,11 +368,12 @@ export const en: Dictionary = {
         title: "Questions before you sign",
         body: "Rental isn't a gamble. Ask away, we answer concretely.",
         items: [
-          { q: "Daily rate?", a: "Current rate on the website. Price list visible before contact, not hidden behind a form." },
-          { q: "Mileage limit?", a: "300 km/day included. Above that — public rate." },
-          { q: "Deposit?", a: "Fixed amount, published. Returned within 48 hours of drop-off." },
-          { q: "Saturday pickup?", a: "Yes. Sundays usually fine too, by arrangement." },
-          { q: "Insurance?", a: "Third-party liability included. Comprehensive (CDW) with excess — optional, surcharge published." },
+          { q: "What's the daily rate — no \"from\", no asterisks?", a: "Daily rate visible on the website. Price list public before contact, not hidden behind a form. What you read is what you pay." },
+          { q: "What's the daily mileage limit and what if I go over?", a: "300 km/day included. Above that — published rate. A driver who doesn't count kilometres isn't our problem — but you see the rate upfront." },
+          { q: "How much deposit and when do I get it back?", a: "Fixed amount, published in the price list. Returned to your account within 48 hours of drop-off. No \"within a month\", no \"please remind us\"." },
+          { q: "Can I pick up Saturday morning — I work weekdays?", a: "Yes. Sundays by arrangement, usually fine too. Standard hours 8-16 on Saturday, out-of-hours by phone." },
+          { q: "What about insurance — what if there's a bump?", a: "Third-party liability included. Comprehensive (CDW) with excess — optional, surcharge published. Quoted once, not after the damage." },
+          { q: "Can I drive to Czechia or Germany?", a: "Czechia, Slovakia, Germany — no border surcharge. Further afield — by arrangement, but the van's green card covers all of Europe." },
         ],
       },
       faq: {
@@ -417,11 +422,12 @@ export const en: Dictionary = {
         title: "What to know before ordering",
         body: "Event gear is about details. Ask early — at the event it's too late.",
         items: [
-          { q: "What size tent for my guests?", a: "30 guests — 5x10 m tent. 50 guests — 6x12 m. We size it to your plot and headcount." },
-          { q: "How much sugar for the cotton candy?", a: "A 1 kg bag does about 40 portions. Sugar on your side or we include it." },
-          { q: "Manuals for the machines?", a: "Yes, but we walk you through on handover. Cotton candy isn't rocket science, but there are tricks." },
-          { q: "Power?", a: "Machines — standard 230 V socket. Tent — no power needed. Tent lighting — optional, surcharge by agreement." },
-          { q: "What about rain?", a: "The tent holds rain. Machines under the tent or a canopy. Wind over 60 km/h — we advise against, but the call is yours." },
+          { q: "What tent size do I need for 40 guests?", a: "30 guests — 5x10 m tent. 50 guests — 6x12 m. For 40, the middle of the two — depends on how many tables. We size it to your plot and headcount, no upsell." },
+          { q: "How many bags of sugar should I buy for the cotton candy?", a: "A 1 kg bag does about 40 portions. Sugar on your side, or we include it — extra at supermarket rate plus delivery." },
+          { q: "Can my grandmother handle the popcorn machine?", a: "She can. We walk you through on handover, live, on site. Paper manual is there too, but a minute with the driver is enough." },
+          { q: "What about power — we only have one socket in the shed?", a: "Machines run on standard 230 V, one per socket. Tent needs no power. Tent lighting — optional, surcharge agreed in the brief." },
+          { q: "What if it rains or it's windy?", a: "The tent holds rain. Machines under the tent or a canopy. Wind over 60 km/h — we advise against setting up the tent, but the call is yours. We tell you straight, we don't push a sale." },
+          { q: "How far in advance do I book?", a: "May-September — three to four weeks ahead. Off-season a week is fine. May First Communions usually book back in March." },
         ],
       },
       faq: {
@@ -438,7 +444,8 @@ export const en: Dictionary = {
   home: {
     sectionWhatWeDo: {
       title: "What we do",
-      body: "We move people and gear across southern Poland. Airport, sanctuary, wedding, care home, van rental, event kit. Six kinds of trips, one promise: you'll arrive on time. Because our name is Via Viator, not \"we'll try to make it\".",
+      body: "Six services, one brand. Transfers to Katowice, Kraków and Wrocław airports. Pilgrimages with the driver waiting at the sanctuary gate. Transport for passengers in a wheelchair, in a seat, with assistance. Weddings, christenings, family birthdays. Renault Master rental by the day, no driver. Event gear for open-air parties.",
+      callout: "Each service has its own path below. Pick what you need.",
       cta: "See full offer",
     },
     sectionForWhom: {
@@ -456,7 +463,7 @@ export const en: Dictionary = {
     },
     sectionFleet: {
       title: "Our fleet",
-      body: "Renault Trafic for passengers — 8 seats, air con, clean. Renault Master for cargo — moves, event gear, larger loads. Vehicles on current service, winter tyres in winter, no sandwich wrappers inside. We're expanding — if it's not on the list today, it might be tomorrow.",
+      body: "Renault Trafic for passenger transport — four or eight seats, air conditioning, child seat included. Renault Master for self-drive rental — daily rate, mileage limit, deposit on the website. Red stripe down the side, phone number on the back, no themed stickers.",
       vehicles: {
         traficName: "Renault Trafic",
         traficDesc: "8-seater, air conditioning, seatbelts, child seat on request. For transfers, pilgrimages, family transport.",
@@ -468,20 +475,20 @@ export const en: Dictionary = {
       title: "Why us",
       points: [
         {
-          title: "Punctuality is in our name",
-          body: "Via Viator means \"on the way\". We're there 10 minutes early, not a minute late. If we slip — we tell you first.",
+          title: "30-minute confirmation",
+          body: "We verify every enquiry within 30 minutes during business hours. If we have the vehicle, we confirm. If we don't, we say so straight away, so you don't waste time.",
         },
         {
-          title: "The price you see is the price you pay",
-          body: "No asterisks, no \"from\", no post-trip additions. The quote matches the contract.",
+          title: "Price list without asterisks",
+          body: "Master rental shows the daily rate, mileage limit and deposit on the website. No \"from X PLN\", no \"price agreed individually\".",
         },
         {
-          title: "We speak plain language",
-          body: "No \"dedicated solutions\", no \"synergies\". Concrete: from, to, when, how much, what vehicle.",
+          title: "VAT invoice with 14-day terms",
+          body: "B2B with deferred payment. Care homes and foundations with descriptions matching your funding. Sent the same day after the trip.",
         },
         {
-          title: "We answer the phone. We read e-mail.",
-          body: "The emergency number reaches management, not a call centre. Brief is short, the answer is fast.",
+          title: "A driver who helps",
+          body: "We carry the wheelchair. The suitcase too. Child seat included. Not an option — it's the standard.",
         },
       ],
     },
@@ -503,29 +510,61 @@ export const en: Dictionary = {
       "We're a passenger transport company from southern Poland. Based in Silesia, operating across Opole, Lesser Poland and Świętokrzyskie. We don't promise \"transport solutions\" — we promise you'll arrive on time. That's a different thing.",
     mission: {
       title: "Why we exist",
-      body: "Because passenger transport in southern Poland looked like this for too long: you call three firms, one doesn't pick up, the second promises and never shows, the third quotes a price totally different from what they said on the phone. We started from the question of what it would look like if it just worked. So that's how we work.",
+      body: "We get people where they agreed to be, at the time we agreed. Whatever the trip — airport, pilgrimage, clinic visit, cousin's wedding. Four regions, four clear commitments: punctuality, transparent pricing, clean invoicing, and a driver who helps instead of waiting to be asked.",
     },
-    archetypes: {
-      title: "How we think",
-      body: "Sage — because of the routes, the times, the parkings, the gates. We know where to pull up at Jasna Góra, which gate to take into Katowice airport at peak hours, where to stand at Kraków arrivals. Caregiver — because the passenger is a person, not a row in the schedule. If someone needs a minute, we give the minute. Explorer — because we're expanding the fleet and we take on the non-obvious routes. But 90% of our day is sage and caregiver.",
+    howWeWork: {
+      title: "How we drive",
+      body: "Six operating rules. The same for a 4 a.m. airport transfer and a Sunday afternoon pilgrimage.",
+      rules: [
+        {
+          title: "Punctuality is a rule, not a promise",
+          body: "We leave 20 minutes before the scheduled pickup. For airport transfers we pull into the terminal 2 minutes before the guest lands.",
+        },
+        {
+          title: "One named point of contact",
+          body: "For framework and group clients we assign a permanent operational contact. Same number, same inbox.",
+        },
+        {
+          title: "VAT invoice with 14-day terms",
+          body: "Every trip ends with an invoice — deferred payment up to 14 days for B2B. For care homes and foundations, descriptions matching your funding line on request.",
+        },
+        {
+          title: "Carrying the wheelchair and luggage as standard",
+          body: "The driver opens the door, takes the suitcases, assists with boarding. Not an add-on — that's the service we always include.",
+        },
+        {
+          title: "We confirm in 30 minutes",
+          body: "We verify every enquiry within 30 minutes during business hours. If we have the vehicle, we confirm. If we don't, we tell you straight away so you don't waste time.",
+        },
+        {
+          title: "Four regions, one phone number",
+          body: "We operate in Silesia, Opole, Lesser Poland and Świętokrzyskie. Katowice, Kraków and Wrocław airports as natural hubs.",
+        },
+      ],
     },
     team: {
       title: "Team",
+      body: "Small fleet, familiar faces, the same phone number for two years.",
       patrykName: "Patryk Tomeczek",
       patrykRole: "Co-owner, operations",
       patrykBio:
-        "Patryk runs daily operations — fleet, drivers, briefs, client contact. If you call the company, Patryk picks up — or someone Patryk knows by name. No \"I'll pass it on, we'll call you back\" layer.",
-      foundingNote: "Company founded by Patryk Tomeczek and Adrian Kaszowski.",
+        "He answers the phone. Knows the local airports, the sanctuary car parks, the rush-hour windows on A1 and A4. Makes decisions on the spot — no \"we'll get back to you\".",
+      foundingNote: "Via Viator was founded together with Adrian Kaszowski. Adrian stays behind the scenes — the commercial side and client contact run through Patryk.",
     },
     region: {
       title: "Where we drive",
-      body: "Based in southern Poland. Standard hubs — Katowice, Kraków, Wrocław airports. Daily reach — Silesia, Opole, Lesser Poland, Świętokrzyskie. Longer routes — Warsaw, Tri-City, Germany, Czechia — with notice.",
+      body: "Based in southern Poland. Standard airport hubs — Katowice, Kraków, Wrocław. Daily reach — Silesia, Opole, Lesser Poland, Świętokrzyskie. Longer routes — Warsaw, Tri-City, Germany, Czechia — with notice.",
       hubs: ["Katowice", "Kraków", "Wrocław"],
       regions: ["Silesia", "Opole", "Lesser Poland", "Świętokrzyskie"],
     },
     fleet: {
       title: "Fleet",
-      body: "Renault Trafic — passenger van, 8 seats, for transfers and pilgrimages. Renault Master — cargo, for short-term rental, moves and event gear. Vehicles on current service, winter tyres in winter. We're expanding — if it's not on the list today, it might be tomorrow.",
+      body: "Two Renaults today, more in 2026. Black or graphite bodywork, a red stripe down the side, phone number on the back.",
+      items: [
+        { model: "Renault Trafic", desc: "Passenger, air conditioning, child seat included. Four or eight seats — depends on the trip." },
+        { model: "Renault Master", desc: "Self-drive rental. Daily rate, mileage limit, deposit — all on the website." },
+      ],
+      eventEquipment: "Plus event gear: tent, popcorn machine, cotton candy machine. From autumn 2026 we add party tables and benches.",
     },
     values: {
       title: "What we don't do",
@@ -625,7 +664,7 @@ export const en: Dictionary = {
       {
         name: "Reproducibility",
         body:
-          "Full decision trail in the repo. Brief, brand book, correspondence, commit history.",
+          "Full decision trail in the repo. Client brief, correspondence, source documents, commit history.",
       },
       {
         name: "Holistic change",
@@ -634,7 +673,7 @@ export const en: Dictionary = {
       },
       {
         name: "Brand fidelity",
-        body: "Conformant with Brand Book v1.0 approved by the client.",
+        body: "Aligned with the brand strategy approved by the client — voice, tone, the way we talk about the service.",
       },
     ],
     contractor: "Contractor: QA10 sp. z o.o. — qa10.io",
