@@ -825,4 +825,10 @@ export const en: Dictionary = {
       cta: "Back to home",
     },
   },
+  floatingPhone: {
+    label: "Call",
+    openAria: "Open phone panel",
+    callAria: "Call: +48 690 691 886",
+    dismissAria: "Hide phone for 24 hours",
+  },
 };

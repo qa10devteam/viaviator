@@ -824,6 +824,12 @@ export const pl = {
       cta: "Wróć na stronę główną",
     },
   },
+  floatingPhone: {
+    label: "Zadzwoń",
+    openAria: "Otwórz panel telefoniczny",
+    callAria: "Zadzwoń: +48 690 691 886",
+    dismissAria: "Schowaj telefon na 24 godziny",
+  },
 } as const;
 
 /**

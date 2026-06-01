@@ -1,0 +1,411 @@
+---
+/**
+ * FloatingPhone — M07 wow#4 omnipresent phone totem.
+ *
+ * Pojawia się po opuszczeniu hero (IntersectionObserver na `.vv-home-hero`/`.vv-hero`)
+ * albo po krótkim timeout na stronach bez hero. Mini-mode (ikona + pulse) na pointer:fine
+ * rozwija się na hover/focus do pełnego numeru. Touch → bezpośrednio uruchamia `tel:`.
+ *
+ * Dismiss localStorage 24h. Anchor Positioning API (Chrome 125+) pozycjonuje dismiss
+ * względem totem; fallback przez fixed positioning.
+ *
+ * Lewy dolny róg desktop, prawy dolny mobile (poza thumb-zone dla scrollu).
+ * Reduced-motion guard — zero animacji, instant visible.
+ */
+import { getDictionary, type Locale } from "@i18n/index";
+import { company } from "@data/company";
+import Icon from "@components/ui/Icon.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = getDictionary(locale);
+---
+
+<button
+  id="vv-floating-phone-trigger"
+  type="button"
+  class="vv-floating-phone"
+  aria-label={dict.floatingPhone.openAria}
+  data-hidden="true"
+  hidden
+>
+  <span class="vv-floating-phone__icon" aria-hidden="true">
+    <Icon name="phone" size={20} />
+  </span>
+  <span class="vv-floating-phone__pulse" aria-hidden="true"></span>
+  <span class="vv-floating-phone__expanded">
+    <span class="vv-floating-phone__label">{dict.floatingPhone.label}</span>
+    <span class="vv-floating-phone__number">{company.phoneDisplay}</span>
+  </span>
+</button>
+
+<a
+  id="vv-floating-phone-link"
+  href={company.phoneHref}
+  class="vv-floating-phone-link"
+  aria-label={dict.floatingPhone.callAria}
+  data-hidden="true"
+  hidden
+>
+  <span class="vv-floating-phone-link__icon" aria-hidden="true">
+    <Icon name="phone" size={18} />
+  </span>
+  <span class="vv-floating-phone-link__text">{company.phoneDisplay}</span>
+</a>
+
+<button
+  id="vv-floating-phone-dismiss"
+  type="button"
+  class="vv-floating-phone-dismiss"
+  aria-label={dict.floatingPhone.dismissAria}
+  data-hidden="true"
+  hidden
+>
+  <Icon name="close" size={14} />
+</button>
+
+<style>
+  /* Floating phone — anchored container, fixed fallback */
+  .vv-floating-phone {
+    --vv-fp-size: 56px;
+    --vv-fp-bottom: var(--vv-space-6);
+    --vv-fp-side: var(--vv-space-6);
+
+    position: fixed;
+    bottom: var(--vv-fp-bottom);
+    left: var(--vv-fp-side);
+    z-index: var(--vv-z-overlay);
+    width: var(--vv-fp-size);
+    height: var(--vv-fp-size);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--vv-space-3);
+
+    padding: 0 var(--vv-space-4) 0 var(--vv-space-3);
+    border: 0;
+    border-radius: 9999px;
+    background: var(--vv-color-brand-red);
+    color: var(--vv-color-fg-inverse);
+    box-shadow:
+      0 8px 24px rgba(241, 50, 35, 0.32),
+      0 2px 8px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    transition:
+      opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 400ms cubic-bezier(0.16, 1, 0.3, 1),
+      width 380ms cubic-bezier(0.16, 1, 0.3, 1),
+      padding 380ms cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+
+  @media (max-width: 767px) {
+    .vv-floating-phone {
+      left: auto;
+      right: var(--vv-fp-side);
+    }
+  }
+
+  .vv-floating-phone[data-shown="true"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .vv-floating-phone[hidden] {
+    display: none !important;
+  }
+
+  .vv-floating-phone__icon {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vv-floating-phone__pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    box-shadow: 0 0 0 0 rgba(241, 50, 35, 0.55);
+    animation: vv-fp-pulse 2200ms cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes vv-fp-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(241, 50, 35, 0.55);
+    }
+    70% {
+      box-shadow: 0 0 0 18px rgba(241, 50, 35, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(241, 50, 35, 0);
+    }
+  }
+
+  .vv-floating-phone__expanded {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.1;
+    opacity: 0;
+    max-width: 0;
+    transition:
+      opacity 220ms ease,
+      max-width 380ms cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .vv-floating-phone__label {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  .vv-floating-phone__number {
+    font-family: var(--vv-typography-font-family-mono);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  @media (pointer: fine) {
+    .vv-floating-phone:hover,
+    .vv-floating-phone:focus-visible {
+      width: 220px;
+    }
+
+    .vv-floating-phone:hover .vv-floating-phone__expanded,
+    .vv-floating-phone:focus-visible .vv-floating-phone__expanded {
+      opacity: 1;
+      max-width: 200px;
+    }
+  }
+
+  .vv-floating-phone:focus-visible {
+    outline: 2px solid var(--vv-color-fg-inverse);
+    outline-offset: 2px;
+  }
+
+  /* Link variant — ukryta wersja <a> używana jako semantyczny target href.
+     Trigger button kieruje do tego href przez window.location, ale anchor
+     pozostaje w DOM dla screen readers i wyszukiwarek (route to tel:). */
+  .vv-floating-phone-link {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .vv-floating-phone-link[hidden] {
+    display: none !important;
+  }
+
+  /* Dismiss button — appears alongside totem when shown */
+  .vv-floating-phone-dismiss {
+    position: fixed;
+    z-index: calc(var(--vv-z-overlay) + 1);
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: var(--vv-color-bg-page);
+    color: var(--vv-color-fg-secondary);
+    border: 1px solid var(--vv-color-border-strong);
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity 280ms cubic-bezier(0.16, 1, 0.3, 1) 120ms,
+      transform 280ms cubic-bezier(0.16, 1, 0.3, 1) 120ms;
+  }
+
+  .vv-floating-phone-dismiss[hidden] {
+    display: none !important;
+  }
+
+  .vv-floating-phone-dismiss[data-shown="true"] {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .vv-floating-phone-dismiss:focus-visible {
+    outline: 2px solid var(--vv-color-brand-red);
+    outline-offset: 2px;
+  }
+
+  /* Anchor positioning enhancement (Chrome 125+) */
+  @supports (anchor-name: --vv-fp-anchor) {
+    .vv-floating-phone {
+      anchor-name: --vv-fp-anchor;
+    }
+
+    .vv-floating-phone-dismiss {
+      position: fixed;
+      position-anchor: --vv-fp-anchor;
+      top: anchor(top);
+      left: anchor(right);
+      bottom: auto;
+      right: auto;
+      translate: -8px -8px;
+    }
+  }
+
+  /* Fallback positioning for dismiss — gdy brak anchor positioning */
+  @supports not (anchor-name: --vv-fp-anchor) {
+    .vv-floating-phone-dismiss {
+      bottom: calc(var(--vv-space-6) + 44px);
+      left: calc(var(--vv-space-6) + 44px);
+    }
+
+    @media (max-width: 767px) {
+      .vv-floating-phone-dismiss {
+        left: auto;
+        right: calc(var(--vv-space-6) + 44px);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vv-floating-phone,
+    .vv-floating-phone__expanded,
+    .vv-floating-phone__pulse,
+    .vv-floating-phone-dismiss {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+</style>
+
+<script>
+  const DISMISS_KEY = "vv:fp:dismissed";
+  const DISMISS_HOURS = 24;
+
+  function init() {
+    const trigger = document.getElementById(
+      "vv-floating-phone-trigger",
+    ) as HTMLButtonElement | null;
+    const link = document.getElementById(
+      "vv-floating-phone-link",
+    ) as HTMLAnchorElement | null;
+    const dismissBtn = document.getElementById(
+      "vv-floating-phone-dismiss",
+    ) as HTMLButtonElement | null;
+    if (!trigger || !link || !dismissBtn) return;
+
+    // Check dismiss state — localStorage może rzucić w private mode
+    try {
+      const dismissed = localStorage.getItem(DISMISS_KEY);
+      if (dismissed) {
+        const dismissedAt = parseInt(dismissed, 10);
+        if (!Number.isNaN(dismissedAt)) {
+          const hoursAgo = (Date.now() - dismissedAt) / (1000 * 60 * 60);
+          if (hoursAgo < DISMISS_HOURS) return; // still dismissed
+        }
+      }
+    } catch {
+      // localStorage zablokowane (private mode, iframe sandbox) → proceed
+    }
+
+    // Detect hero presence — HomeHero (`.vv-home-hero`) lub Hero (`.vv-hero`)
+    const hero = document.querySelector(
+      ".vv-home-hero, .vv-hero",
+    ) as HTMLElement | null;
+
+    function showTotem() {
+      if (!trigger || !dismissBtn) return;
+      trigger.hidden = false;
+      dismissBtn.hidden = false;
+      // double-rAF: hidden flip → next frame → opacity transition
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (!trigger || !dismissBtn) return;
+          trigger.dataset.shown = "true";
+          dismissBtn.dataset.shown = "true";
+        });
+      });
+    }
+
+    function hideTotem() {
+      if (!trigger || !dismissBtn) return;
+      delete trigger.dataset.shown;
+      delete dismissBtn.dataset.shown;
+      window.setTimeout(() => {
+        if (!trigger || !dismissBtn) return;
+        if (trigger.dataset.shown !== "true") {
+          trigger.hidden = true;
+          dismissBtn.hidden = true;
+        }
+      }, 420);
+    }
+
+    if (hero) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting || entry.intersectionRatio === 0) {
+              // hero out of view → show totem
+              showTotem();
+            } else if (entry.intersectionRatio > 0.5) {
+              // hero majority back in view → hide
+              hideTotem();
+            }
+          }
+        },
+        { threshold: [0, 0.5] },
+      );
+      observer.observe(hero);
+    } else {
+      // No hero (e.g. legal pages, 404) → show after small delay
+      window.setTimeout(showTotem, 1200);
+    }
+
+    // Trigger click → uruchamia tel: niezależnie od pointer type.
+    // Na pointer:fine hover wcześniej rozwinie button, więc użytkownik widzi numer
+    // przed kliknięciem; click oznacza świadomą decyzję dzwonienia.
+    trigger.addEventListener("click", () => {
+      if (!link) return;
+      window.location.href = link.href;
+    });
+
+    // Keyboard: Enter/Space już trigger'ują click na <button>; nic dodatkowego.
+
+    // Dismiss — zapisz timestamp, schowaj totem na 24h
+    dismissBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      try {
+        localStorage.setItem(DISMISS_KEY, String(Date.now()));
+      } catch {
+        // ignore — totem schowamy tylko na tę sesję
+      }
+      hideTotem();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+  document.addEventListener("astro:page-load", init);
+</script>
