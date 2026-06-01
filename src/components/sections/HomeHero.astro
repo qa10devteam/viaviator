@@ -357,6 +357,13 @@ const scrollTarget = "#dla-kogo";
       calc(200ms + var(--vv-word-i, 0) * 80ms) forwards;
   }
 
+  /* Spacja między kolejnymi słowami — natywny whitespace tracony przez
+     inline-block + Astro SSR ignoruje literal " " w warunkowym JSX.
+     CSS adjacent-sibling działa deterministycznie. */
+  .vv-home-hero__word + .vv-home-hero__word {
+    margin-left: 0.28em;
+  }
+
   .vv-home-hero__dot {
     display: inline-block;
     color: var(--vv-color-brand-red);
