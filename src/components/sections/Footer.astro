@@ -14,7 +14,6 @@ import {
 } from "@data/nav";
 import { company } from "@data/company";
 import Container from "@components/ui/Container.astro";
-import QualitySealBadge from "./QualitySealBadge.astro";
 import Icon from "@components/ui/Icon.astro";
 
 interface Props {
@@ -210,7 +209,7 @@ const logoHref = locale === "pl" ? "/" : "/en/";
 
       <div class="vv-footer__strip-seal">
         <span class="vv-footer__built-by">{dict.footer.builtBy}</span>
-        <QualitySealBadge locale={locale} />
+        <a href="https://qa10.io" class="vv-footer__qa10-link" rel="noopener" target="_blank">QA10 sp. z o.o.</a>
       </div>
     </div>
   </Container>

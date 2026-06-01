@@ -111,34 +111,47 @@ function init(): void {
   indexCascadeChildren(document.body);
 
   // 2. Reduced-motion: end-state instant, no observation.
-  //    matchMedia może być undefined w bardzo starych engine'ach,
-  //    optional chaining ratuje.
+  //    NIE dodajemy klasy js-reveal → CSS default zostaje opacity:1 = visible.
   const prefersReduce =
     typeof window !== "undefined" &&
     typeof window.matchMedia === "function" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (prefersReduce) {
-    document
-      .querySelectorAll<HTMLElement>(".vv-reveal")
-      .forEach((el) => {
-        el.dataset.revealed = "true";
-      });
     return;
   }
 
-  // 3. Modern browser z scroll-timeline — CSS obsługuje wszystko,
-  //    nie marnujemy CPU na IO.
+  // 3. Modern browser z scroll-timeline — CSS animation-timeline obsługuje
+  //    wszystko. Dodajemy klasę żeby reveal CSS się zaaplikowało.
   if (SUPPORTS_SCROLL_TIMELINE) {
+    document.documentElement.classList.add("js-reveal");
     return;
   }
 
-  // 4. Fallback — disconnect poprzedni observer (Astro nav re-init),
-  //    setup nowy.
+  // 4. Fallback — IO required. Sprawdź dostępność before promising visual.
+  if (typeof IntersectionObserver === "undefined") {
+    return; // klasa NIE dodana → CSS zostaje visible
+  }
+
+  // 5. Wszystko OK — dodajemy klasę (CSS aplikuje opacity:0 + transform),
+  //    setup IO który będzie ustawiał data-revealed na intersection.
+  document.documentElement.classList.add("js-reveal");
+
   if (activeObserver !== null) {
     activeObserver.disconnect();
   }
   activeObserver = setupObserver();
+
+  // Safety net: po 4s wymuszamy reveal wszystkich, nawet jeśli IO
+  // nie odpalił z jakiegoś powodu (np. CSP delay, bug Safari).
+  // White flash > permanent white void.
+  setTimeout(() => {
+    document
+      .querySelectorAll<HTMLElement>(".vv-reveal:not([data-revealed='true'])")
+      .forEach((el) => {
+        el.dataset.revealed = "true";
+      });
+  }, 4000);
 }
 
 /**

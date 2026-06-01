@@ -67,16 +67,25 @@
  *
  * Composition note: `transform` używamy translateY — nie `top` / `margin` —
  * żeby trzymać GPU pipeline, nie wywoływać layout. */
+/* Progressive enhancement: default visible (no-JS / orchestrator missing /
+ * CSP block = wszystko widzi user od razu). Klasa `js-reveal` na <html>
+ * dodawana przez orchestrator TYLKO gdy:
+ *   - JS się odpalił
+ *   - nie reduce-motion
+ *   - IO dostępne
+ * Inaczej fallback = full opacity, brak białych pól. */
 .vv-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+html.js-reveal .vv-reveal {
   opacity: 0;
   transform: translateY(var(--vv-motion-distance-md));
   transition:
     opacity 600ms var(--vv-motion-easing-entrance),
     transform 600ms var(--vv-motion-easing-entrance);
   transition-delay: var(--vv-reveal-delay, 0ms);
-  /* will-change pominięty deliberately — element transitionuje raz po
-   * `data-revealed="true"`, więc upfront promotion to waste.
-   * Browser allocates layer JIT przy starcie transition. */
 }
 
 .vv-reveal[data-revealed="true"] {
