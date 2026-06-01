@@ -314,21 +314,15 @@ export function localBusinessSchema(siteUrl: string): Record<string, unknown> {
     availableLanguage: AVAILABLE_LANGUAGES,
     parentOrganization: { "@id": `${base}/#organization` },
     sameAs: buildSameAs(),
-    // Centrum operacyjne — śląskie (brak konkretnego adresu, ale geo
-    // generalne dla rozpoznania regionu w SERPie lokalnym).
-    // UWAGA: bez PostalAddress, bo company.address === null.
-    // Jeśli klient poda adres — dodać tu PostalAddress + geo (lat/long).
-  };
-
-  // Dołączamy PostalAddress TYLKO jeśli adres istnieje
-  if (company.address) {
-    schema.address = {
+    address: {
       "@type": "PostalAddress",
-      streetAddress: company.address,
-      addressCountry: "PL",
-      addressRegion: company.region[0] ?? "śląskie",
-    };
-  }
+      streetAddress: company.address.street,
+      postalCode: company.address.postalCode,
+      addressLocality: company.address.city,
+      addressRegion: company.address.region,
+      addressCountry: company.address.country,
+    },
+  };
 
   return schema;
 }

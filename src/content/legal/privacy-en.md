@@ -11,9 +11,11 @@ summary: "How Via Viator sp. z o.o. handles personal data of passengers, busines
 The controller of personal data within the meaning of Article 4(7) of Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 on the protection of natural persons with regard to the processing of personal data and on the free movement of such data, and repealing Directive 95/46/EC (the "GDPR") is:
 
 **Via Viator sp. z o.o.**
+Registered office: ul. Władysława Broniewskiego 25, 42-600 Tarnowskie Góry, śląskie voivodeship, Poland
 Polish Tax ID (NIP): 6452595911
-National Court Register (KRS): <!-- TODO: to be completed by the client -->
-Registered office: <!-- TODO: to be completed by the client -->
+National Court Register (KRS): 0001198600 (District Court in Gliwice, 10th Commercial Division, registered 2025-10-07)
+Statistical number (REGON): 542929466
+Share capital: PLN 5,000.00
 E-mail: kontakt@viaviator.pl
 Phone: +48 690 691 886
 
@@ -287,6 +289,6 @@ For all matters related to your personal data, this Policy, exercising rights un
 **Via Viator sp. z o.o.**
 E-mail: **kontakt@viaviator.pl**
 Phone: **+48 690 691 886** (Mon-Fri 7:00-20:00, Sat 8:00-16:00, Central European Time)
-Correspondence address: <!-- TODO: to be completed by the client -->
+Correspondence address: ul. Władysława Broniewskiego 25, 42-600 Tarnowskie Góry, Poland
 
 We reply as fast as our promise allows — usually within 4 hours during business hours; for matters related to the exercise of GDPR rights, no later than 30 days, in line with Article 12(3) of the GDPR.

@@ -43,10 +43,21 @@ export interface CompanyData {
   readonly legalName: string;
   readonly brand: string;
   readonly nip: string;
-  /** KRS — do uzupełnienia przez klienta przed launchem (potrzebne do impressum + Organization schema). */
-  readonly krs: string | null;
-  /** Adres siedziby — do uzupełnienia przez klienta (decyzja czy publikujemy w impressum). */
-  readonly address: string | null;
+  readonly krs: string;
+  readonly regon: string;
+  readonly shareCapital: string;
+  readonly registrationCourt: string;
+  readonly registrationDate: string;
+  readonly pkdCode: string;
+  readonly pkdDescription: string;
+  readonly address: {
+    readonly street: string;
+    readonly postalCode: string;
+    readonly city: string;
+    readonly region: string;
+    readonly country: string;
+    readonly formatted: string;
+  };
 
   // ── Kontakt ────────────────────────────────────────────────────────────
   readonly phone: string;
@@ -97,12 +108,25 @@ export interface CompanyData {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const company: CompanyData = {
-  // ── Identyfikacja prawna ───────────────────────────────────────────────
+  // ── Identyfikacja prawna (KRS 2025-10-07, Sąd Rejonowy w Gliwicach, X Wydz. Gosp.) ──
   legalName: "Via Viator sp. z o.o.",
   brand: "Via Viator",
   nip: "6452595911",
-  krs: null, // TODO: do uzupełnienia przez klienta
-  address: null, // TODO: do uzupełnienia przez klienta (decyzja: publikacja w impressum tak/nie)
+  krs: "0001198600",
+  regon: "542929466",
+  shareCapital: "5 000,00 zł",
+  registrationCourt: "Sąd Rejonowy w Gliwicach, X Wydział Gospodarczy KRS",
+  registrationDate: "2025-10-07",
+  pkdCode: "49.39.Z",
+  pkdDescription: "Transport pasażerski na żądanie pojazdem z kierowcą",
+  address: {
+    street: "ul. Władysława Broniewskiego 25",
+    postalCode: "42-600",
+    city: "Tarnowskie Góry",
+    region: "śląskie",
+    country: "PL",
+    formatted: "ul. Władysława Broniewskiego 25, 42-600 Tarnowskie Góry, woj. śląskie",
+  },
 
   // ── Kontakt ────────────────────────────────────────────────────────────
   phone: "+48 690 691 886",
